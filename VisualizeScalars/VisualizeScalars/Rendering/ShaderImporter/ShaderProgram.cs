@@ -2,9 +2,9 @@
 using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
-using VisualizeScalars.Logging;
+using SoilSpot.Logging;
 
-namespace VisualizeScalars.Rendering.ShaderImporter
+namespace SoilSpot.Rendering.ShaderImporter
 {
     public class ShaderProgram
     {

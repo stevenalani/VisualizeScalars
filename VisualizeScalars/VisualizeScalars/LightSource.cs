@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace VisualizeScalars
+namespace SASVoxelEngine
 {
     public class LightSource
     {

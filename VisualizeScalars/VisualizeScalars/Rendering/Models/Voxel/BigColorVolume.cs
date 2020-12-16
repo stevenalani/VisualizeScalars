@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
     public struct Box
     {
@@ -35,7 +35,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         }
     }
 
-    public class BigColorVolume : Volume
+    public class BigColorVolume : Volume<PositionColorNormalVertex>
     {
         public static readonly string MapPath = ".\\maps\\";
         public Vector3Int ChunkCount;

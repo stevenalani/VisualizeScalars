@@ -4,14 +4,15 @@
  * http://graphics.stanford.edu/courses/cs468-12-spring/LectureSlides/06_smoothing.pdf
  * http://wiki.unity3d.com/index.php?title=MeshSmoother
  */
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using OpenTK;
-using VisualizeScalars.Rendering.Models;
+using SoilSpot.Rendering.DataStructures;
+using SoilSpot.Rendering.Models;
 
-namespace VisualizeScalars.Rendering
+namespace SoilSpot.Rendering
 {
     class MeshSmoother
     {

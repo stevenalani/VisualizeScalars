@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.DataStructures;
-using VisualizeScalars.Rendering.Models.Voxel;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Processors.Transforms;
+using SoilSpot.Rendering.Models;
+using SoilSpot.Rendering.Models.Voxel;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering
+namespace SoilSpot.Rendering
 {
     public static class MaterialGenerator
     {
@@ -98,7 +104,7 @@ namespace VisualizeScalars.Rendering
             return vol;
         }
         
-        public ColorVolume GenerateMapFromHeightData(int scale = 1)
+        public ColorVolume<PositionColorNormalVertex> GenerateMapFromHeightData(int scale = 1)
         {
             short[,] height;
             if (scale > 1)
@@ -122,7 +128,7 @@ namespace VisualizeScalars.Rendering
                 if (minVal > height[x, z]) minVal = height[x, z];
             }
             var deltaheight = maxVal - minVal;
-            var volume = new ColorVolume(rowCount+2, deltaheight+4, colCount+2);
+            var volume = new ColorVolume<PositionColorNormalVertex>(rowCount+2, deltaheight+4, colCount+2);
             for (var z = 0; z < colCount; z++)
             for (var x = 0; x < rowCount; x++)
             {

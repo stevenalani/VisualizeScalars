@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenTK;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.ShaderImporter;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.ShaderImporter;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     public abstract class Model : IDisposable
     {

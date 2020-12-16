@@ -1,7 +1,7 @@
 ﻿using System;
 using OpenTK;
 
-namespace VisualizeScalars.Rendering
+namespace SoilSpot.Rendering
 {
     public enum PROJECTIONTYPE
     {

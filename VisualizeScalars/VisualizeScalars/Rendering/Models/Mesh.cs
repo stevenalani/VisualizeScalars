@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.DataStructures;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     public class Mesh
     {
@@ -13,6 +14,7 @@ namespace VisualizeScalars.Rendering.Models
         //public List<Vector3> PrimitiveNormals { get; set; } = new List<Vector3>();
         public List<int> ColorIndices { get; set; } = new List<int>();
         public List<int> Indices { get; set; } = new List<int>();
+        public List<Vector3> Normals { get; private set; } = new List<Vector3>();
 
         public Mesh()
         {
@@ -38,7 +40,7 @@ namespace VisualizeScalars.Rendering.Models
             Indices.Add(Vertices[pos3]);
         }
 
-        public void AppendTriangle(PositionColorNormalVertex v1, PositionColorNormalVertex v2, PositionColorNormalVertex v3)
+        public void AppendTriangle(IVertex v1, IVertex v2, IVertex v3)
         {
             Vertices.TryAdd(v1.Position, Vertices.Count); 
             Vertices.TryAdd(v2.Position, Vertices.Count);
@@ -56,17 +58,18 @@ namespace VisualizeScalars.Rendering.Models
             ColorIndices.Add(Colors.IndexOf(v2.Color));
             ColorIndices.Add(Colors.IndexOf(v3.Color));
         }
-        public void AppendTriangle(PositionColorNormalVertex[] vertices)
+        public void AppendTriangle<T>(T[] vertices) where T : IVertex
         {
             var v1 = vertices[0];
             var v2 = vertices[1];
             var v3 = vertices[2];
             AppendTriangle(v1, v2, v3);
         }
-        public PositionColorNormalVertex[] GetVertices()
+        public T[] GetVertices<T>() where T:IVertex, new()
         {
-            var positions = new List<PositionColorNormalVertex>();
+            var positions = new List<T>();
             var ordered = Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
+            Normals.Clear();
             
             for (int i = 0; i < Indices.Count; i+=3)
             {
@@ -75,9 +78,10 @@ namespace VisualizeScalars.Rendering.Models
                 var pos2 = ordered[Indices[i +1]];
                 var pos3 = ordered[Indices[i +2]];
                 var normal = MathHelpers.GetSurfaceNormal(pos3, pos2, pos1);
-                positions.Add(new PositionColorNormalVertex(){ Position = pos2, Normal = normal });
-                positions.Add(new PositionColorNormalVertex(){ Position = pos2, Normal = normal});
-                positions.Add(new PositionColorNormalVertex(){ Position = pos3, Normal = normal});
+                positions.Add(new T(){ Position = pos1, Normal = normal });
+                positions.Add(new T(){ Position = pos2, Normal = normal});
+                positions.Add(new T(){ Position = pos3, Normal = normal});
+                
             }
 
             return positions.ToArray();

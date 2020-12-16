@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace VisualizeScalars.Rendering.VoxelImporter
+namespace SoilSpot.Rendering.VoxelImporter
 {
     public class Chunk
     {

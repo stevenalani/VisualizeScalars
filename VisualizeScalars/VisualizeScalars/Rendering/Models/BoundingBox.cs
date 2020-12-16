@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using OpenTK;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.DataStructures;
+using SASVoxelEngine;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     public class BoundingBox : Cube
     {

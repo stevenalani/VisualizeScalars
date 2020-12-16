@@ -1,23 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Text;
 using OpenTK.Graphics.OpenGL4;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
-using VisualizeScalars.DataQuery;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.DataStructures;
-using VisualizeScalars.Rendering.ShaderImporter;
+using SoilSpot.DataQuery;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
+using SoilSpot.Rendering.ShaderImporter;
 using Vector4 = OpenTK.Vector4;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
-    class VisualizationModel : ColorVolume
+    class VisualizationModel : ColorVolume<PositionNormalVertex>
     {
         public int Ssbo = -1;
         public float[] ssboData;
-
+        public string HeightMapping { get; private set; }
         public VisualizationDataGrid VisualizationData { get; private set; }
         private int colCount = 0;
         private int rowCount = 0;
+        public byte[] ImageBuffer { get; set; }
+        private int TextureID;
 
         public VisualizationModel(VisualizationDataGrid visualizationData, float scale = 1f) : base(1,1,1,1)
         {

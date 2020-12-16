@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
-    public abstract class Volume : PositionColorNormalModel
+    public abstract class Volume<T> : RenderObject<T> where T : struct, IVertex
     {
     public bool[][,] CheckedInVoxels;
     public float CubeScale = 1f;
@@ -13,13 +13,13 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public List<Material> Materials = new List<Material> {new Material()};
     public byte[][,] VolumeData;
 
-    protected Volume(Vector3Int dimensions):base(null,null)
+    protected Volume(Vector3Int dimensions)
     {
         this.Dimensions = dimensions;
 
     }
 
-    protected Volume(int dimX, int dimY, int dimZ):base(null,null)
+    protected Volume(int dimX, int dimY, int dimZ)
     {
         Dimensions = new Vector3Int(dimX, dimY, dimZ);
         InitializeVolumeData();

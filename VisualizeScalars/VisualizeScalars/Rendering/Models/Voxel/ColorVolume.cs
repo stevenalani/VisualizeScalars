@@ -1,11 +1,14 @@
-﻿using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
+﻿using System.Collections.Generic;
+using System.Linq;
+using OpenTK;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
     public enum MeshMode{ MarchingCubes, Cubes, GreedyCubes }
     public enum Smoothing { None, Laplacian1 = 1, Laplacian2 = 2, Laplacian5 = 5, Laplacian10 = 10, LaplacianHc1 = 1, LaplacianHc2 = 2, LaplacianHc5 = 5, LaplacianHc10 = 10 }
-    public class ColorVolume : Volume
+    public class ColorVolume<T> : Volume<T> where T : struct,IVertex
     {
         protected int voxelCount = 0;
         public MeshMode MeshMode { get; set; } = MeshMode.Cubes;
@@ -154,13 +157,13 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         public virtual void ComputeVertices(){}
         private void ComputeMarchingCubesMesh()
         {
-            var marchingCubes = new MarchingCubes();
+            var marchingCubes = new MarchingCubes<T>();
             marchingCubes.run(this);
             var results = marchingCubes.GetResults();
             mesh = new Mesh();
             foreach (var result in results)
             {
-                mesh.AppendTriangle(result.p);
+                mesh.AppendTriangle<T>(result.p);
             }
         }
 
@@ -228,7 +231,8 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         {
             ComputeMesh();
 
-            Vertices = mesh.GetVertices();
+
+            Vertices = mesh.GetVertices<T>();
             Indices = mesh.GetIndices();
             base.InitBuffers();
         }

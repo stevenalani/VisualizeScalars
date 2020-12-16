@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using OpenTK;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
     public static class MeshUtils
     {

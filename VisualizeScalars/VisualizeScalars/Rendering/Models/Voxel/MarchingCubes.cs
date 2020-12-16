@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.DataStructures;
+using SoilSpot.Helpers;
+using SoilSpot.Rendering.DataStructures;
 using Vector3 = OpenTK.Vector3;
 
-namespace VisualizeScalars.Rendering.Models.Voxel
+namespace SoilSpot.Rendering.Models.Voxel
 {
-    public class Triangle 
+    public class Triangle<T> where T : IVertex
     {
-        public PositionColorNormalVertex[] p = new PositionColorNormalVertex[3];
+        public T[] p = new T[3];
 
         public void UpdateNormal()
         {
@@ -19,25 +19,25 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         }
     }
 
-    public class MarchingCubes 
+    public class MarchingCubes<T> where T : struct, IVertex
     {
 
-        public Triangle[] GetResults()
+        public Triangle<T>[] GetResults()
         {
             return results.ToArray();
         }
 
-        private List<Triangle> results;
-        private Volume volume;
+        private List<Triangle<T>> results;
+        private Volume<T> volume;
         private int[,] heights;
         private List<Material> materials => volume.Materials;
         private byte[][,] volumeData => volume.VolumeData;
         private Vector3Int Dimensions => volume.Dimensions;
 
 
-        public void run(Volume volume, float density = 0.1f) 
+        public void run(Volume<T> volume, float density = 0.1f) 
         {
-            results = new List<Triangle>();
+            results = new List<Triangle<T>>();
             this.volume = volume;
 
             for (int y = 0; y < volume.Dimensions.Y - 1; y++)
@@ -49,7 +49,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 {
                     for (int z = 0; z < volume.Dimensions.Z - 1; z++)
                     {
-                        var vertlist = new PositionColorNormalVertex[12];
+                        var vertlist = new T[12];
 
                         var vertexMatIndex1 = plane1[x, z];
                         var vertexMatIndex2 = plane1[x + 1, z];
@@ -138,7 +138,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
                         for (var i = 0; TriangleTable[cubeindex][i] != -1; i += 3)
                         {
-                            Triangle triangle = new Triangle();
+                            Triangle<T> triangle = new Triangle<T>();
                             triangle.p[0] = vertlist[TriangleTable[cubeindex][i]];
                             triangle.p[1] = vertlist[TriangleTable[cubeindex][i + 1]];
                             triangle.p[2] = vertlist[TriangleTable[cubeindex][i + 2]];
@@ -156,17 +156,17 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             }
         }
 
-        PositionColorNormalVertex VertexInterpolation(float isolevel, Vector3 p1, Vector3 p2, float valp1, float valp2)
+        T VertexInterpolation(float isolevel, Vector3 p1, Vector3 p2, float valp1, float valp2)
         {
             double mu;
-            PositionColorNormalVertex p = new PositionColorNormalVertex();
+            T p = new T();
 
             if (Math.Abs(isolevel - valp1) < 0.00001)
-                return new PositionColorNormalVertex() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
+                return new T() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
             if (Math.Abs(isolevel - valp2) < 0.00001)
-                return new PositionColorNormalVertex() { Position = p2, Color = materials[volumeData[(int)p2.Y][(int)p2.X, (int)p2.Z]].Color };
+                return new T() { Position = p2, Color = materials[volumeData[(int)p2.Y][(int)p2.X, (int)p2.Z]].Color };
             if (Math.Abs(valp1 - valp2) < 0.00001)
-                return new PositionColorNormalVertex() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
+                return new T() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
             mu = (isolevel - valp1) / (valp2 - valp1);
             var color1 = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color;
             var color2 = materials[volumeData[(int)p2.Y][(int)p2.X, (int)p2.Z]].Color;

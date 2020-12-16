@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
-using VisualizeScalars.Rendering.DataStructures;
-using VisualizeScalars.Rendering.ShaderImporter;
+using SoilSpot.Rendering.DataStructures;
+using SoilSpot.Rendering.ShaderImporter;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     public class PositionColorModel : Model
     {

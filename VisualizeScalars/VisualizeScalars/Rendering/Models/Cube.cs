@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
-using VisualizeScalars.Rendering.ShaderImporter;
+using SoilSpot.Rendering.DataStructures;
+using SoilSpot.Rendering.ShaderImporter;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     public static class CubeData
     {

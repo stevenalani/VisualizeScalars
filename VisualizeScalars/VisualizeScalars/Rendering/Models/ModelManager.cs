@@ -1,9 +1,11 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using VisualizeScalars.Rendering.ShaderImporter;
+using SoilSpot.Rendering.Models.Voxel;
+using SoilSpot.Rendering.ShaderImporter;
 
-namespace VisualizeScalars.Rendering.Models
+namespace SoilSpot.Rendering.Models
 {
     internal class ModelManager
     {

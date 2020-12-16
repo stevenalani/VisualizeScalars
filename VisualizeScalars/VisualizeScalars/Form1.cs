@@ -130,7 +130,7 @@ namespace VisualizeScalars
         }
         private void cmdLoadMap_Click(object sender, EventArgs e)
         {
-            modelManager.ClearModels();
+            
             MeshMode meshMode;
             if (cbxMeshMode.SelectedIndex == 0)
             {
@@ -194,6 +194,7 @@ namespace VisualizeScalars
                 
                 btnUpdateData_Click(sender, e);
             }
+            modelManager.ClearModels();
             var model = new VisualizationModel(VisualizationDataGrid,interpol);
             modelManager.AddModel(model);
             //mapgen = new Mapgenerator(heights);
