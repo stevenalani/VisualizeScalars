@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.ShaderImporter;
 using BeginMode = OpenTK.Graphics.OpenGL4.BeginMode;
 using BufferRangeTarget = OpenTK.Graphics.OpenGL4.BufferRangeTarget;
 using BufferTarget = OpenTK.Graphics.OpenGL4.BufferTarget;
@@ -12,7 +11,7 @@ using DrawElementsType = OpenTK.Graphics.OpenGL4.DrawElementsType;
 using GL = OpenTK.Graphics.OpenGL4.GL;
 using VertexAttribPointerType = OpenTK.Graphics.OpenGL4.VertexAttribPointerType;
 
-namespace SoilSpot.Rendering.Models
+namespace VisualizeScalars.Rendering.Models
 {
     public class PositionColorNormalModel : Model
     {

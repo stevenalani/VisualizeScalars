@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.Models.Voxel;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.Models.Voxel;
 
-namespace SoilSpot.Rendering.VoxelImporter
+namespace VisualizeScalars.Rendering.VoxelImporter
 {
     public static class VoxelImporter
     {

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Markup;
-using OpenTK;
 using OpenTK.Graphics.OpenGL4;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.ShaderImporter;
 
-namespace SoilSpot.Rendering.Models
+namespace VisualizeScalars.Rendering.Models
 {
     public class RenderObject<T> : Model where T : struct, IVertex
     {

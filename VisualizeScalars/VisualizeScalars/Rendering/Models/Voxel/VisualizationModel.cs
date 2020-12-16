@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Numerics;
-using System.Text;
 using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
-using SoilSpot.DataQuery;
-using SoilSpot.Helpers;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.DataQuery;
+using VisualizeScalars.Helpers;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.ShaderImporter;
 using Vector4 = OpenTK.Vector4;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     class VisualizationModel : ColorVolume<PositionNormalVertex>
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.ShaderImporter;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     internal class RandomDiscoVolume : ColorVolume<PositionColorNormalVertex>
     {

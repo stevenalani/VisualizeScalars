@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using SoilSpot.Helpers;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Helpers;
+using VisualizeScalars.Rendering.DataStructures;
 using Vector3 = OpenTK.Vector3;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public class Triangle<T> where T : IVertex
     {

@@ -1,4 +1,4 @@
-﻿namespace SoilSpot.Rendering
+﻿namespace VisualizeScalars.Rendering
 {
     public enum CameraMovement
     {

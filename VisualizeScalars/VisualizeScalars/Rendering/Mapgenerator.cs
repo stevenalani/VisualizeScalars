@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Processing.Processors.Transforms;
-using SoilSpot.Rendering.Models;
-using SoilSpot.Rendering.Models.Voxel;
-using SoilSpot.Helpers;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Helpers;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.Models.Voxel;
 
-namespace SoilSpot.Rendering
+namespace VisualizeScalars.Rendering
 {
     public static class MaterialGenerator
     {

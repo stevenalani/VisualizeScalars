@@ -1,6 +1,6 @@
-﻿using SoilSpot.Rendering.Models;
+﻿using VisualizeScalars.Rendering.Models;
 
-namespace SoilSpot.Rendering.DataStructures
+namespace VisualizeScalars.Rendering.DataStructures
 {
     public interface IBoundinBox
     {

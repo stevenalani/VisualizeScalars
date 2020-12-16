@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Rendering.DataStructures;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public struct Box
     {

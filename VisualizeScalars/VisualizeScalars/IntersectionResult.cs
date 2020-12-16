@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using SoilSpot.Rendering.Models;
+using VisualizeScalars.Rendering.Models;
 
-namespace SASVoxelEngine
+namespace VisualizeScalars
 {
     public class IntersectionResult
     {

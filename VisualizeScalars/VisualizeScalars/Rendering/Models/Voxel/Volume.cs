@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Rendering.DataStructures;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public abstract class Volume<T> : RenderObject<T> where T : struct, IVertex
     {

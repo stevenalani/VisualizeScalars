@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using OpenTK;
-using SoilSpot.Helpers;
-using SoilSpot.Rendering.DataStructures;
+﻿using OpenTK;
+using VisualizeScalars.Rendering.DataStructures;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public enum MeshMode{ MarchingCubes, Cubes, GreedyCubes }
     public enum Smoothing { None, Laplacian1 = 1, Laplacian2 = 2, Laplacian5 = 5, Laplacian10 = 10, LaplacianHc1 = 1, LaplacianHc2 = 2, LaplacianHc5 = 5, LaplacianHc10 = 10 }

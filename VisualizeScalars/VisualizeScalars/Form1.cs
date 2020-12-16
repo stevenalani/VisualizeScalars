@@ -34,7 +34,7 @@ namespace VisualizeScalars
             modelManager = new ModelManager();
             shaderManager = new ShaderManager();
 
-            shaderManager.AddShader(new []{typeof(ColorVolume) }, ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
+            shaderManager.AddShader(new []{typeof(ColorVolume<PositionColorNormalVertex>) }, ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.frag");
             shaderManager.AddShader(new[] { typeof(VisualizationModel) }, ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");

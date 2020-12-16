@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public class Material
     {

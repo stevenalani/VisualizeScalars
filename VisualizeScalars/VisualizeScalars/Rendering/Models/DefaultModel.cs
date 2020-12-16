@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.ShaderImporter;
 
-namespace SoilSpot.Rendering.Models
+namespace VisualizeScalars.Rendering.Models
 {
     public class DefaultModel : Model
     {

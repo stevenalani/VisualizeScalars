@@ -5,10 +5,10 @@ using OpenTK.Graphics.OpenGL4;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Tga;
 using SixLabors.ImageSharp.PixelFormats;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.ShaderImporter;
 using Vector4 = System.Numerics.Vector4;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public struct Vector3Int
     {

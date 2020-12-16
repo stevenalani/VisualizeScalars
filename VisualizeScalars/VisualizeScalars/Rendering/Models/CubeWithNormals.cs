@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
-using SoilSpot.Rendering.Models.Voxel;
+using VisualizeScalars.Rendering.DataStructures;
+using VisualizeScalars.Rendering.Models.Voxel;
 
-namespace SoilSpot.Rendering.Models
+namespace VisualizeScalars.Rendering.Models
 {
     public enum FaceOrientation{ Front, Back, Left, Right, Bottom, Top }
     public class CubeWithNormals : PositionColorNormalModel

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SoilSpot.Rendering.ShaderImporter
+namespace VisualizeScalars.Rendering.ShaderImporter
 {
     internal class ShaderImporter
     {

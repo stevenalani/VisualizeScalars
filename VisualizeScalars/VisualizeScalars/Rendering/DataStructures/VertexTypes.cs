@@ -1,8 +1,6 @@
-﻿using System;
-using OpenTK;
-using SoilSpot.Rendering.Models;
+﻿using OpenTK;
 
-namespace SoilSpot.Rendering.DataStructures
+namespace VisualizeScalars.Rendering.DataStructures
 {
     public interface IVertex
     {

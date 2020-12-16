@@ -1,4 +1,4 @@
-﻿namespace SoilSpot.Rendering.Models.Voxel
+﻿namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public struct VoxelIndices
     {

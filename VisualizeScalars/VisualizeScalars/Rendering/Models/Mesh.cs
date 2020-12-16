@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
-using SoilSpot.Helpers;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Helpers;
+using VisualizeScalars.Rendering.DataStructures;
 
-namespace SoilSpot.Rendering.Models
+namespace VisualizeScalars.Rendering.Models
 {
     public class Mesh
     {

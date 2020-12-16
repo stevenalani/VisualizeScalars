@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using OpenTK;
-using SoilSpot.Rendering.DataStructures;
+using VisualizeScalars.Rendering.DataStructures;
 
-namespace SoilSpot.Rendering.Models.Voxel
+namespace VisualizeScalars.Rendering.Models.Voxel
 {
     public class BigColorVolumeChunk : ColorVolume<PositionColorNormalVertex>
     {

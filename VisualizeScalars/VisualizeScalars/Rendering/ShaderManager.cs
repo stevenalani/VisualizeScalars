@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SoilSpot.Rendering.Models;
-using SoilSpot.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.Models;
+using VisualizeScalars.Rendering.ShaderImporter;
 
-namespace SoilSpot.Rendering
+namespace VisualizeScalars.Rendering
 {
     public class ShaderManager
     {
