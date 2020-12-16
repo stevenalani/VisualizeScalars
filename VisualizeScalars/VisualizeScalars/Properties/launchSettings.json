@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VisualizeScalars": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
