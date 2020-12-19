@@ -28,7 +28,7 @@ namespace VisualizeScalars.Rendering.Models
 
         public int IndicesCnt { get; set; }
 
-        public override void Draw(ShaderProgram shader)
+        public override void Draw(ShaderProgram shader, Action<ShaderProgram> setUniforms)
         {
             GL.UseProgram(shader.ID);
             GL.DrawElements(BeginMode.Triangles,

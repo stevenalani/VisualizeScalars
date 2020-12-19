@@ -9,7 +9,6 @@ namespace VisualizeScalars.Rendering.Models
     {
         private readonly Dictionary<int, Model> _models = new Dictionary<int, Model>();
         private readonly ConcurrentQueue<Model> UninitializedModels = new ConcurrentQueue<Model>();
-        public bool hasWorld;
 
 
         public bool HasModelUpdates { get; set; }
@@ -86,6 +85,10 @@ namespace VisualizeScalars.Rendering.Models
 
         public void ClearModels()
         {
+            foreach (var modelsValue in _models.Values)
+            {
+                //modelsValue.Dispose();
+            }
             UninitializedModels.Clear();
             this._models.Clear();
         }

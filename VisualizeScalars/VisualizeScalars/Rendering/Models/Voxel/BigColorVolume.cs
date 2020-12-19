@@ -35,12 +35,12 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         }
     }
 
-    public class BigColorVolume : Volume<PositionColorNormalVertex>
+    public class BigColorVolume : Volume<Material>
     {
         public static readonly string MapPath = ".\\maps\\";
         public Vector3Int ChunkCount;
         private readonly bool[,,] ChunkHasChanges;
-        private readonly BigColorVolumeChunk[,,] Chunks;
+        private readonly BigColorVolumeChunk<Material>[,,] Chunks;
         private readonly int ChunkSize;
         private readonly string filename;
 
@@ -51,14 +51,14 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             if (!Directory.Exists(MapPath))
                 Directory.CreateDirectory(MapPath);
             filename = $"{DateTime.Now.Millisecond}_{Dimensions.ToString()}.dat";
-            File.Create(Path.Combine(MapPath, name));
+            File.Create(Path.Combine(MapPath, "map"));
             ChunkSize = chunksize;
             CubeScale = cubeScale;
             var chunksAlongX = (int) Math.Ceiling(Dimensions.X * 1.0 / chunksize);
             var chunksAlongY = (int) Math.Ceiling(Dimensions.Y * 1.0 / chunksize);
             var chunksAlongZ = (int) Math.Ceiling(Dimensions.Z * 1.0 / chunksize);
             ChunkCount = new Vector3Int(chunksAlongX, chunksAlongY, chunksAlongZ);
-            Chunks = new BigColorVolumeChunk[chunksAlongX, chunksAlongY, chunksAlongZ];
+            Chunks = new BigColorVolumeChunk<Material>[chunksAlongX, chunksAlongY, chunksAlongZ];
             ChunkHasChanges = new bool[chunksAlongX, chunksAlongY, chunksAlongZ];
             InitializeChunks();
         }
@@ -72,12 +72,12 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             for (uint y = 0; y < ChunkCount.Y; y++)
             for (uint x = 0; x < ChunkCount.X; x++)
             {
-                var chunk = new BigColorVolumeChunk(ChunkSize, x, y, z, CubeScale);
+                var chunk = new BigColorVolumeChunk<Material>(ChunkSize, x, y, z, CubeScale);
                 Chunks[x, y, z] = chunk;
             }
         }
 
-        public override void SetVoxel(int x, int y, int z, byte materialIndex)
+        public override void SetVoxel(int x, int y, int z, int materialIndex)
         {
             var chunkIdxX = x / ChunkSize;
             var chunkIdxY = y / ChunkSize;
@@ -91,7 +91,6 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             {
                 Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, materialIndex);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
-                IsReady = false;
             }
         }
 
@@ -117,11 +116,10 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
 
             var currentMaterial = Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].GetMaterial(voxelPosX, voxelPosY, voxelPosZ);
-            if (currentMaterial != material || material.Color.W != 0.0f)
+            if (!Equals(currentMaterial, material) || material.IsSetVoxel())
             {
                 Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, material);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
-                IsReady = false;
             }
         }
 
@@ -130,21 +128,10 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             SetVoxel(x, y, z, 0);
         }
 
-        public override void ComputeMesh()
-        {
-            ComputeVertices();
-        }
-
-        public override void InitBuffers()
-        {
-            ComputeMesh();
-            base.InitBuffers();
-        }
-
         public void ComputeVertices()
         {
-            var _chunks = new List<BigColorVolumeChunk>();
-            var vertices = new List<PositionColorNormalVertex>();
+            /*var _chunks = new List<BigColorVolumeChunk<Material>>();
+            var vertices = new List<PositionNormalVertex>();
             var indices = new List<int>();
             for (var z = 0; z < ChunkCount.Z; z++)
             for (var y = 0; y < ChunkCount.Y; y++)
@@ -171,12 +158,10 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 indices.AddRange(chunk.Indices.Select(index => (int)(index + vertexCount)));
             }
 
-            Vertices = vertices.ToArray();
-            Indices = indices.ToArray();
 
             vertices.Clear();
             indices.Clear();
-            _chunks.Clear();
+            _chunks.Clear();*/
         }
 
 

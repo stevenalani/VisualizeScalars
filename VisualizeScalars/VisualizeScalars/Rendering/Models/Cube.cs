@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using OpenTK;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.ShaderImporter;
@@ -138,14 +139,5 @@ namespace VisualizeScalars.Rendering.Models
                 {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
         }
 
-        public override void Draw(ShaderProgram shaderProgram)
-        {
-            base.Draw(shaderProgram);
-        }
-
-        public override void InitBuffers()
-        {
-            base.InitBuffers();
-        }
     }
 }

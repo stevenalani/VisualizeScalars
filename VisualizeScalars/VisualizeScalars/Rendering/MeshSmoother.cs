@@ -13,7 +13,8 @@ using VisualizeScalars.Rendering.Models;
 
 namespace VisualizeScalars.Rendering
 {
-    class MeshSmoother
+    public enum Smoothing { None, Laplacian1 = 1, Laplacian2 = 2, Laplacian5 = 5, Laplacian10 = 10, LaplacianHc1 = 1, LaplacianHc2 = 2, LaplacianHc5 = 5, LaplacianHc10 = 10 }
+    public static class MeshSmoother
     {
         public static Mesh LaplacianFilter(Mesh model, int times = 1)
         {

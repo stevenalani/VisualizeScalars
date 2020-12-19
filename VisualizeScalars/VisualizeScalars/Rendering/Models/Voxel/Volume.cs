@@ -5,18 +5,20 @@ using VisualizeScalars.Rendering.DataStructures;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
-    public abstract class Volume<T> : RenderObject<T> where T : struct, IVertex
+    public class Volume<T> where T : IVolumeData, new()
     {
-    public bool[][,] CheckedInVoxels;
-    public float CubeScale = 1f;
+        public float CubeScale = 1f;
     public Vector3Int Dimensions;
-    public List<Material> Materials = new List<Material> {new Material()};
-    public byte[][,] VolumeData;
+    public List<T> Data = new List<T> {new T()};
+    public int[][,] DataPointers;
 
+    public Volume()
+    {
+        
+    }
     protected Volume(Vector3Int dimensions)
     {
         this.Dimensions = dimensions;
-
     }
 
     protected Volume(int dimX, int dimY, int dimZ)
@@ -27,42 +29,41 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
     protected void InitializeVolumeData()
     {
-        VolumeData = new byte[Dimensions.Y][,];
-        CheckedInVoxels = new bool[Dimensions.Y][,];
+        DataPointers = new int[Dimensions.Y][,];
+
         for (var y = 0; y < Dimensions.Y; y++)
         {
-            VolumeData[y] = new byte[Dimensions.X, Dimensions.Z];
-            CheckedInVoxels[y] = new bool[Dimensions.X, Dimensions.Z];
+            DataPointers[y] = new int[Dimensions.X, Dimensions.Z];
         }
     }
 
-    public virtual uint GetVoxel(int x, int y, int z)
+    public virtual int GetVoxel(int x, int y, int z)
     {
-        return VolumeData[y][x, z];
+        return DataPointers[y][x, z];
     }
 
     public bool IsVoxel(int x, int y, int z)
     {
-        return VolumeData[y][x, z] > 0;
+        return DataPointers[y][x, z] > 0;
     }
 
-    public virtual void SetVoxel(int x, int y, int z, byte materialIndex)
+    public virtual void SetVoxel(int x, int y, int z, int materialIndex)
     {
         if (IsValidVoxelPosition(x, y, z))
         {
-            VolumeData[y][x, z] = materialIndex;
+            DataPointers[y][x, z] = materialIndex;
         }
     }
 
-    public virtual void SetVoxel(int x, int y, int z, Material material)
+    public virtual void SetVoxel(int x, int y, int z, T material)
     {
-        if (!Materials.Contains(material)) Materials.Add(material);
-        var colorIndex = (byte) Materials.IndexOf(material);
+        if (!Data.Contains(material)) Data.Add(material);
+        var dataIndex = Data.IndexOf(material);
 
-        SetVoxel(x, y, z, colorIndex);
+        SetVoxel(x, y, z, dataIndex);
     }
 
-    public virtual void SetVoxel(Vector3 position, Material material)
+    public virtual void SetVoxel(Vector3 position, T material)
     {
         SetVoxel((int) position.X, (int) position.Y, (int) position.Z, material);
     }
@@ -80,33 +81,30 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public virtual void ClearVoxel(int x, int y, int z)
     {
         if (!(x <= Dimensions.X && y <= Dimensions.Y && z <= Dimensions.Z) && IsVoxel(x, y, z)) return;
-        VolumeData[y][y, z] = 0;
+        DataPointers[y][y, z] = 0;
+    }
+    
+    public void AddMaterial(T material)
+    {
+        if (!Data.Contains(material)) Data.Add(material);
     }
 
-    public abstract void ComputeMesh();
-
-    public void AddMaterial(Material material)
+    public int GetMaterialIndex(T material)
     {
-        if (!Materials.Contains(material)) Materials.Add(material);
+        return Data.IndexOf(material);
     }
 
-    public int GetMaterialIndex(Material material)
+    public virtual T GetMaterial(int x, int y, int z)
     {
-        return Materials.IndexOf(material);
+        if (DataPointers != null)
+            return Data[DataPointers[y][x, z]];
+        return Data[0];
     }
 
-    public virtual Material GetMaterial(int x, int y, int z)
-    {
-        if (VolumeData != null)
-            return Materials[VolumeData[y][x, z]];
-        return Materials[0];
-    }
-
-    protected int GetSameNeighborsX(int x, int y, int z)
-    {
+    public int GetSameNeighborsX(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
+        {
         var neighborsX = 0;
-        while (x < Dimensions.X - 1 && IsSameMaterialRight(x, y, z) &&
-               !CheckedInVoxels[y][x + 1, z])
+        while (x < Dimensions.X - 1 && IsSameMaterialRight(x, y, z) && visibilityTestFunction(x, y, z))
         {
             x++;
             neighborsX++;
@@ -114,25 +112,11 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         return neighborsX;
     }
-
-    protected int GetSameNeighborsX(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
-    {
-        var neighborsX = 0;
-        while (x < Dimensions.X - 1 && IsSameMaterialRight(x, y, z) &&
-               !CheckedInVoxels[y][x + 1, z] && visibilityTestFunction(x, y, z))
-        {
-            x++;
-            neighborsX++;
-        }
-
-        return neighborsX;
-    }
-
-    protected int GetSameNeighborsY(int x, int y, int z)
+    
+    public int GetSameNeighborsY(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
     {
         var neighborsY = 0;
-        while (y < Dimensions.Y - 1 && IsSameMaterialUp(x, y, z) &&
-               !CheckedInVoxels[y + 1][x, z])
+        while (y < Dimensions.Y - 1 && IsSameMaterialUp(x, y, z))
         {
             y++;
             neighborsY++;
@@ -141,24 +125,11 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         return neighborsY;
     }
 
-    protected int GetSameNeighborsY(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
-    {
-        var neighborsY = 0;
-        while (y < Dimensions.Y - 1 && IsSameMaterialUp(x, y, z) &&
-               !CheckedInVoxels[y + 1][x, z] && visibilityTestFunction(x, y, z))
-        {
-            y++;
-            neighborsY++;
-        }
 
-        return neighborsY;
-    }
-
-    protected int GetSameNeighborsZ(int x, int y, int z)
+    public int GetSameNeighborsZ(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
     {
         var neighborsZ = 0;
-        while (z < Dimensions.Z - 1 && IsSameMaterialUp(x, y, z) &&
-               !CheckedInVoxels[y][x, z + 1])
+        while (z < Dimensions.Z - 1 && IsSameMaterialUp(x, y, z) && visibilityTestFunction(x, y, z))
         {
             z++;
             neighborsZ++;
@@ -167,88 +138,75 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         return neighborsZ;
     }
 
-    protected int GetSameNeighborsZ(int x, int y, int z, Func<int, int, int, bool> visibilityTestFunction)
+    public bool IsFrontfaceVisible(int x, int y, int z)
     {
-        var neighborsZ = 0;
-        while (z < Dimensions.Z - 1 && IsSameMaterialUp(x, y, z) &&
-               !CheckedInVoxels[y][x, z + 1] && visibilityTestFunction(x, y, z))
-        {
-            z++;
-            neighborsZ++;
-        }
-
-        return neighborsZ;
-    }
-
-    protected bool IsFrontfaceVisible(int x, int y, int z)
-    {
-        if (z == 0 || VolumeData[y][x, z - 1] == 0 || Materials[VolumeData[y][x, z - 1]].Color.W != 1f)
+        if (z == 0 || DataPointers[y][x, z - 1] == 0 || Data[DataPointers[y][x, z - 1]].IsSetVoxel())
             return true;
         return false;
     }
 
-    protected bool IsBackfaceVisible(int x, int y, int z)
+    public bool IsBackfaceVisible(int x, int y, int z)
     {
-        if (z == Dimensions.Z - 1 || VolumeData[y][x, z + 1] == 0 ||
-            Materials[VolumeData[y][x, z + 1]].Color.W != 1f) return true;
+        if (z == Dimensions.Z - 1 || DataPointers[y][x, z + 1] == 0 ||
+            Data[DataPointers[y][x, z + 1]].IsSetVoxel()) return true;
         return false;
     }
 
-    protected bool IsLeftfaceVisible(int x, int y, int z)
+    public bool IsLeftfaceVisible(int x, int y, int z)
     {
-        if (x == 0 || VolumeData[y][x, z] == 0 || Materials[VolumeData[y][x - 1, z]].Color.W != 1f) return true;
+        if (x == 0 || DataPointers[y][x, z] == 0 || Data[DataPointers[y][x - 1, z]].IsSetVoxel()) return true;
         return false;
     }
 
-    protected bool IsRightfaceVisible(int x, int y, int z)
+    public bool IsRightfaceVisible(int x, int y, int z)
     {
-        if (x == Dimensions.X - 1 || VolumeData[y][x + 1, z] == 0 ||
-            Materials[VolumeData[y][x + 1, z]].Color.W != 1f) return true;
+        if (x == Dimensions.X - 1 || DataPointers[y][x + 1, z] == 0 ||
+            Data[DataPointers[y][x + 1, z]].IsSetVoxel()) return true;
         return false;
     }
 
-    protected bool IsBottomfaceVisible(int x, int y, int z)
+    public bool IsBottomfaceVisible(int x, int y, int z)
     {
-        if (y == 0 || VolumeData[y - 1][x, z] == 0 || Materials[VolumeData[y - 1][x, z]].Color.W != 1f)
+        if (y == 0 || DataPointers[y - 1][x, z] == 0 || Data[DataPointers[y - 1][x, z]].IsSetVoxel())
             return true;
         return false;
     }
 
-    protected bool IsTopfaceVisible(int x, int y, int z)
+    public bool IsTopfaceVisible(int x, int y, int z)
     {
-        if (y == Dimensions.Y - 1 || VolumeData[y + 1][x, z] == 0 ||
-            Materials[VolumeData[y + 1][x, z]].Color.W != 1f) return true;
+        if (y == Dimensions.Y - 1 || DataPointers[y + 1][x, z] == 0 ||
+            Data[DataPointers[y + 1][x, z]].IsSetVoxel()) return true;
         return false;
     }
 
-    protected bool IsSameMaterialLeft(int x, int y, int z)
+    public bool IsSameMaterialLeft(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y][x - 1, z];
+        return DataPointers[y][x, z] == DataPointers[y][x - 1, z];
     }
 
-    protected bool IsSameMaterialUp(int x, int y, int z)
+    public bool IsSameMaterialUp(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y + 1][x, z];
+        return DataPointers[y][x, z] == DataPointers[y + 1][x, z];
     }
 
-    protected bool IsSameMaterialDown(int x, int y, int z)
+    public bool IsSameMaterialDown(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y - 1][x, z];
+        return DataPointers[y][x, z] == DataPointers[y - 1][x, z];
     }
 
-    protected bool IsSameMaterialFront(int x, int y, int z)
+    public bool IsSameMaterialFront(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y][x, z + 1];
+        return DataPointers[y][x, z] == DataPointers[y][x, z + 1];
     }
 
-    protected bool IsSameMaterialBack(int x, int y, int z)
+    public bool IsSameMaterialBack(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y][x, z - 1];
+        return DataPointers[y][x, z] == DataPointers[y][x, z - 1];
     }
 
-    protected bool IsSameMaterialRight(int x, int y, int z)
+    public bool IsSameMaterialRight(int x, int y, int z)
     {
-        return VolumeData[y][x, z] == VolumeData[y][x + 1, z];
+        return DataPointers[y][x, z] == DataPointers[y][x + 1, z];
     }
 
     public bool IsValidVoxelPosition(int x, int y, int z)

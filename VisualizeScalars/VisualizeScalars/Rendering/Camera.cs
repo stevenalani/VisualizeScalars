@@ -64,7 +64,7 @@ namespace VisualizeScalars.Rendering
 
         public Vector3 Position { get; set; } = new Vector3(0, 0, -1);
 
-        public Vector3 ViewDirection { get; set; } = Vector3.UnitZ;
+        public Vector3 ViewDirection { get; set; } = -Vector3.UnitZ;
         public static Vector3 Up { get; } = Vector3.UnitY;
         public Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection, Up));
         
@@ -78,7 +78,7 @@ namespace VisualizeScalars.Rendering
 
         public Matrix4 GetView()
         {
-            return Matrix4.LookAt((float)Position.X, (float)Position.Y, (float)Position.Z, (float)Target.X, (float)Target.Y, (float)Target.Z, (float)Up.X, (float)Up.Y, (float)Up.Z);
+            return Matrix4.LookAt(Position.X, Position.Y, Position.Z, Target.X, Target.Y, Target.Z, Up.X, Up.Y, Up.Z);
         }
 
         public Matrix4 GetProjection()

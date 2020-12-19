@@ -53,7 +53,7 @@ namespace VisualizeScalars.Rendering.Models
             OnUpdate?.Invoke(this);
         }
 
-        public override void Draw(ShaderProgram shader)
+        public override void Draw(ShaderProgram shader, Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
 

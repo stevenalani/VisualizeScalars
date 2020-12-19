@@ -18,27 +18,34 @@ namespace VisualizeScalars.Rendering.Models
 
         public Vector3 Position = Vector3.Zero;
         protected internal Vector3 Rotations = Vector3.Zero;
-        public Vector3 Scales = Vector3.One;
-
+        public Vector3 Scales = new Vector3(1f,1f,-1f);
+        public Mesh Mesh { get; set; }
+        protected Model(string name)
+        { 
+            ID = _nextId++;
+            this.name = name;
+        }
         protected Model()
         {
+            
             ID = _nextId++;
+            name = ID.ToString();
         }
 
         public Matrix4 Modelmatrix => Matrix4.Identity *
+                                      Matrix4.CreateTranslation(-PivotPoint)*
                                       MathHelpers.GetRotation(Rotations.X, Rotations.Y, Rotations.Z) *
                                       Matrix4.CreateScale(Scales) *
                                       Matrix4.CreateTranslation(Position);
 
-        public bool IsReady { get; set; }
+        public bool IsReady { get; set; } = false;
 
         public virtual void Dispose()
         {
             GC.SuppressFinalize(this);
         }
 
-
-        public abstract void Draw(ShaderProgram shaderProgram);
+        public abstract void Draw(ShaderProgram shaderProgram,Action<ShaderProgram> setUniforms = null);
 
         public abstract void InitBuffers();
 

@@ -39,6 +39,11 @@ namespace VisualizeScalars.Rendering.Models
             Indices.Add(Vertices[pos3]);
         }
 
+        public void AppendTriangle(Vector3[] pos)
+        {
+            AppendTriangle(pos[0], pos[1], pos[2]);
+        }
+
         public void AppendTriangle(IVertex v1, IVertex v2, IVertex v3)
         {
             Vertices.TryAdd(v1.Position, Vertices.Count); 
@@ -76,11 +81,12 @@ namespace VisualizeScalars.Rendering.Models
                 var pos1 = ordered[Indices[i]];
                 var pos2 = ordered[Indices[i +1]];
                 var pos3 = ordered[Indices[i +2]];
-                var normal = MathHelpers.GetSurfaceNormal(pos3, pos2, pos1);
-                positions.Add(new T(){ Position = pos1, Normal = normal });
-                positions.Add(new T(){ Position = pos2, Normal = normal});
-                positions.Add(new T(){ Position = pos3, Normal = normal});
-                
+                var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
+                var color = Colors.Count > 0 ? Colors[ColorIndices[i]] : new Vector4(0.5f, 0.5f, 0.5f, 1);
+                positions.Add(new T(){ Position = pos1, Normal = normal, Color = color });
+                positions.Add(new T(){ Position = pos2, Normal = normal, Color = color });
+                positions.Add(new T(){ Position = pos3, Normal = normal, Color = color });
+
             }
 
             return positions.ToArray();

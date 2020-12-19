@@ -98,7 +98,7 @@ namespace VisualizeScalars.Rendering
             return vol;
         }
         
-        public ColorVolume<PositionColorNormalVertex> GenerateMapFromHeightData(int scale = 1)
+        public ColorVolume<Material> GenerateMapFromHeightData(int scale = 1)
         {
             short[,] height;
             if (scale > 1)
@@ -122,7 +122,7 @@ namespace VisualizeScalars.Rendering
                 if (minVal > height[x, z]) minVal = height[x, z];
             }
             var deltaheight = maxVal - minVal;
-            var volume = new ColorVolume<PositionColorNormalVertex>(rowCount+2, deltaheight+4, colCount+2);
+            var volume = new ColorVolume<Material>(rowCount+2, deltaheight+4, colCount+2);
             for (var z = 0; z < colCount; z++)
             for (var x = 0; x < rowCount; x++)
             {
@@ -133,9 +133,6 @@ namespace VisualizeScalars.Rendering
                 }
             }
 
-            volume.Position = new OpenTK.Vector3(volume.Dimensions.X/-2f,-minVal,volume.Dimensions.Z/-2f);
-            volume.Scales = new OpenTK.Vector3(30f/scale,1f,30f/scale) /10;
-            volume.Rotations.X = 1f;
             return volume;
         }
 

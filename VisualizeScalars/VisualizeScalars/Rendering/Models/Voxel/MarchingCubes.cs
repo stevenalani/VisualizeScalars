@@ -6,50 +6,35 @@ using Vector3 = OpenTK.Vector3;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
-    public class Triangle<T> where T : IVertex
+    public class Triangle
     {
-        public T[] p = new T[3];
-
+        public Vector3[] p = new Vector3[3];
+        public Vector3 Normal;
         public void UpdateNormal()
         {
-            var normal = MathHelpers.GetSurfaceNormal(p[0].Position, p[1].Position, p[2].Position);
-            p[0].Normal = normal;
-            p[1].Normal = normal;
-            p[2].Normal = normal;
+            var normal = MathHelpers.GetSurfaceNormal(p[0], p[1], p[2]);
+            Normal = normal;
+            Normal = normal;
+            Normal = normal;
         }
     }
 
-    public class MarchingCubes<T> where T : struct, IVertex
+    public static class MarchingCubes
     {
-
-        public Triangle<T>[] GetResults()
+        public static Triangle[] run<T>(Volume<T> volume,Func<T,float> densityFunc, float isolevel = 0.9f) where T : IVolumeData, new()
         {
-            return results.ToArray();
-        }
-
-        private List<Triangle<T>> results;
-        private Volume<T> volume;
-        private int[,] heights;
-        private List<Material> materials => volume.Materials;
-        private byte[][,] volumeData => volume.VolumeData;
-        private Vector3Int Dimensions => volume.Dimensions;
-
-
-        public void run(Volume<T> volume, float density = 0.1f) 
-        {
-            results = new List<Triangle<T>>();
-            this.volume = volume;
-
+            
+            var results = new List<Triangle>();
             for (int y = 0; y < volume.Dimensions.Y - 1; y++)
             {
-                var plane1 = volumeData[y];
-                var plane2 = volumeData[y + 1];
+                var plane1 = volume.DataPointers[y];
+                var plane2 = volume.DataPointers[y + 1];
 
                 for (int x = 0; x < volume.Dimensions.X - 1; x++)
                 {
                     for (int z = 0; z < volume.Dimensions.Z - 1; z++)
                     {
-                        var vertlist = new T[12];
+                        var vertlist = new Vector3[12];
 
                         var vertexMatIndex1 = plane1[x, z];
                         var vertexMatIndex2 = plane1[x + 1, z];
@@ -74,25 +59,25 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                         };
                         var val = new[]
                         {
-                            materials[vertexMatIndex1].Color.W,
-                            materials[vertexMatIndex2].Color.W,
-                            materials[vertexMatIndex3].Color.W,
-                            materials[vertexMatIndex4].Color.W,
-                            materials[vertexMatIndex5].Color.W,
-                            materials[vertexMatIndex6].Color.W,
-                            materials[vertexMatIndex7].Color.W,
-                            materials[vertexMatIndex8].Color.W
+                            densityFunc(volume.Data[vertexMatIndex1]),
+                            densityFunc(volume.Data[vertexMatIndex2]),
+                            densityFunc(volume.Data[vertexMatIndex3]),
+                            densityFunc(volume.Data[vertexMatIndex4]),
+                            densityFunc(volume.Data[vertexMatIndex5]),
+                            densityFunc(volume.Data[vertexMatIndex6]),
+                            densityFunc(volume.Data[vertexMatIndex7]),
+                            densityFunc(volume.Data[vertexMatIndex8]),
                         };
 
                         var cubeindex = 0;
-                        if (val[0] < density) cubeindex |= 1;
-                        if (val[1] < density) cubeindex |= 2;
-                        if (val[2] < density) cubeindex |= 4;
-                        if (val[3] < density) cubeindex |= 8;
-                        if (val[4] < density) cubeindex |= 16;
-                        if (val[5] < density) cubeindex |= 32;
-                        if (val[6] < density) cubeindex |= 64;
-                        if (val[7] < density) cubeindex |= 128;
+                        if (val[0] < isolevel) cubeindex |= 1;
+                        if (val[1] < isolevel) cubeindex |= 2;
+                        if (val[2] < isolevel) cubeindex |= 4;
+                        if (val[3] < isolevel) cubeindex |= 8;
+                        if (val[4] < isolevel) cubeindex |= 16;
+                        if (val[5] < isolevel) cubeindex |= 32;
+                        if (val[6] < isolevel) cubeindex |= 64;
+                        if (val[7] < isolevel) cubeindex |= 128;
 
                         /* Cube is entirely in/out of the surface */
                         if (CubeEdgeFlag[cubeindex] == 0)
@@ -101,50 +86,50 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                         /* Find the vertices where the surface intersects the cube */
                         if ((CubeEdgeFlag[cubeindex] & 1) != 0)
                             vertlist[0] =
-                               VertexInterpolation(density, new Vector3(x, y, z), new Vector3(x + 1, y, z), val[0], val[1]);
+                               VertexInterpolation(isolevel, new Vector3(x, y, z), new Vector3(x + 1, y, z), val[0], val[1]);
                         if ((CubeEdgeFlag[cubeindex] & 2) != 0)
                             vertlist[1] =
-                               VertexInterpolation(density, p[1], p[2], val[1], val[2]);
+                               VertexInterpolation(isolevel, p[1], p[2], val[1], val[2]);
                         if ((CubeEdgeFlag[cubeindex] & 4) != 0)
                             vertlist[2] =
-                               VertexInterpolation(density, p[2], p[3], val[2], val[3]);
+                               VertexInterpolation(isolevel, p[2], p[3], val[2], val[3]);
                         if ((CubeEdgeFlag[cubeindex] & 8) != 0)
                             vertlist[3] =
-                               VertexInterpolation(density, p[3], p[0], val[3], val[0]);
+                               VertexInterpolation(isolevel, p[3], p[0], val[3], val[0]);
                         if ((CubeEdgeFlag[cubeindex] & 16) != 0)
                             vertlist[4] =
-                               VertexInterpolation(density, p[4], p[5], val[4], val[5]);
+                               VertexInterpolation(isolevel, p[4], p[5], val[4], val[5]);
                         if ((CubeEdgeFlag[cubeindex] & 32) != 0)
                             vertlist[5] =
-                               VertexInterpolation(density, p[5], p[6], val[5], val[6]);
+                               VertexInterpolation(isolevel, p[5], p[6], val[5], val[6]);
                         if ((CubeEdgeFlag[cubeindex] & 64) != 0)
                             vertlist[6] =
-                               VertexInterpolation(density, p[6], p[7], val[6], val[7]);
+                               VertexInterpolation(isolevel, p[6], p[7], val[6], val[7]);
                         if ((CubeEdgeFlag[cubeindex] & 128) != 0)
                             vertlist[7] =
-                               VertexInterpolation(density, p[7], p[4], val[7], val[4]);
+                               VertexInterpolation(isolevel, p[7], p[4], val[7], val[4]);
                         if ((CubeEdgeFlag[cubeindex] & 256) != 0)
                             vertlist[8] =
-                               VertexInterpolation(density, p[0], p[4], val[0], val[4]);
+                               VertexInterpolation(isolevel, p[0], p[4], val[0], val[4]);
                         if ((CubeEdgeFlag[cubeindex] & 512) != 0)
                             vertlist[9] =
-                               VertexInterpolation(density, p[1], p[5], val[1], val[5]);
+                               VertexInterpolation(isolevel, p[1], p[5], val[1], val[5]);
                         if ((CubeEdgeFlag[cubeindex] & 1024) != 0)
                             vertlist[10] =
-                               VertexInterpolation(density, p[2], p[6], val[2], val[6]);
+                               VertexInterpolation(isolevel, p[2], p[6], val[2], val[6]);
                         if ((CubeEdgeFlag[cubeindex] & 2048) != 0)
                             vertlist[11] =
-                               VertexInterpolation(density, p[3], p[7], val[3], val[7]);
+                               VertexInterpolation(isolevel, p[3], p[7], val[3], val[7]);
 
                         for (var i = 0; TriangleTable[cubeindex][i] != -1; i += 3)
                         {
-                            Triangle<T> triangle = new Triangle<T>();
+                            Triangle triangle = new Triangle();
                             triangle.p[0] = vertlist[TriangleTable[cubeindex][i]];
                             triangle.p[1] = vertlist[TriangleTable[cubeindex][i + 1]];
                             triangle.p[2] = vertlist[TriangleTable[cubeindex][i + 2]];
-                            if( triangle.p[0].Position == triangle.p[1].Position ||
-                                triangle.p[0].Position == triangle.p[2].Position ||
-                                triangle.p[2].Position == triangle.p[1].Position )
+                            if( triangle.p[0] == triangle.p[1] ||
+                                triangle.p[0] == triangle.p[2] ||
+                                triangle.p[2] == triangle.p[1] )
                                 continue;
                             triangle.UpdateNormal();
                             results.Add(triangle);
@@ -154,41 +139,31 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                     }
                 }
             }
+
+            return results.ToArray();
         }
 
-        T VertexInterpolation(float isolevel, Vector3 p1, Vector3 p2, float valp1, float valp2)
+        static Vector3 VertexInterpolation(float isolevel, Vector3 p1, Vector3 p2, float valp1, float valp2)
         {
             double mu;
-            T p = new T();
+            Vector3 p = new Vector3();
 
             if (Math.Abs(isolevel - valp1) < 0.00001)
-                return new T() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
+                return p1;
             if (Math.Abs(isolevel - valp2) < 0.00001)
-                return new T() { Position = p2, Color = materials[volumeData[(int)p2.Y][(int)p2.X, (int)p2.Z]].Color };
+                return p2;
             if (Math.Abs(valp1 - valp2) < 0.00001)
-                return new T() { Position = p1, Color = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color };
+                return p1;
             mu = (isolevel - valp1) / (valp2 - valp1);
-            var color1 = materials[volumeData[(int)p1.Y][(int)p1.X, (int)p1.Z]].Color;
-            var color2 = materials[volumeData[(int)p2.Y][(int)p2.X, (int)p2.Z]].Color;
-            var pos = new Vector3((float)(p1.X + mu * (p2.X - p1.X)),
+            
+            return new Vector3((float)(p1.X + mu * (p2.X - p1.X)),
                 (float)(p1.Y + mu * (p2.Y - p1.Y)),
                 (float)(p1.Z + mu * (p2.Z - p1.Z)));
-            p.Position = pos;
-            /*p.X = (float)(p1.X + mu * (p2.X - p1.X));
+            /*p = pos;
+            p.X = (float)(p1.X + mu * (p2.X - p1.X));
             p.Y = (float)(p1.Y + mu * (p2.Y - p1.Y));
             p.Z = (float)(p1.Z + mu * (p2.Z - p1.Z));*/
-            if (color1 == materials[0].Color)
-            {
-                p.Color = color2;
-            }
-            else if (color2 == materials[0].Color)
-            {
-                p.Color = color1;
-            }
-            else
-            {
-                p.Color = (color1 + color2) / 2;
-            }
+
             return p;
         }
         private static readonly int[] CubeEdgeFlag =

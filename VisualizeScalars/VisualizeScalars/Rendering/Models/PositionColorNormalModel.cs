@@ -80,7 +80,7 @@ namespace VisualizeScalars.Rendering.Models
             IsReady = true;
         }
 
-        public override void Draw(ShaderProgram shader)
+        public override void Draw(ShaderProgram shader, Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
             shader.SetUniformMatrix4X4("model", Modelmatrix);
@@ -166,7 +166,7 @@ namespace VisualizeScalars.Rendering.Models
             IsReady = true;
         }
 
-        public override void Draw(ShaderProgram shader)
+        public override void Draw(ShaderProgram shader, Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
             shader.SetUniformMatrix4X4("model", Modelmatrix);

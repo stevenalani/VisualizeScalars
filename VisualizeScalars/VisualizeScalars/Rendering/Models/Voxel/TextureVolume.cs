@@ -285,7 +285,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             IsReady = true;
         }
 
-        public override void Draw(ShaderProgram shaderProgram)
+        public override void Draw(ShaderProgram shaderProgram, Action<ShaderProgram> setUniforms)
         {
             shaderProgram.SetUniformVector3("voldimensions", Dimensions.Vector3);
             shaderProgram.SetUniformVector3("volscale", VolumeScales);

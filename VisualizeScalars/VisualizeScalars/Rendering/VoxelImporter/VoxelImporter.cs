@@ -11,7 +11,7 @@ namespace VisualizeScalars.Rendering.VoxelImporter
 {
     public static class VoxelImporter
     {
-        public static ColorVolume<PositionColorNormalVertex> LoadVoxelModelFromVox(string path)
+        public static ColorVolume<Material> LoadVoxelModelFromVox(string path)
         {
             var colorsList = new List<Vector4>();
 
@@ -23,7 +23,7 @@ namespace VisualizeScalars.Rendering.VoxelImporter
             var colorInformation = (RgbaChunk) chunk.ChildChunks.Select(x => x).First(x => x is RgbaChunk);
             var voxelInformation = (XyziChunk) chunk.ChildChunks.Select(x => x).First(x => x is XyziChunk);
             var dimensions = new Vector3(sizeInformation.X, sizeInformation.Y, sizeInformation.Z);
-            var vol = new ColorVolume<PositionColorNormalVertex>((int) dimensions.X, (int) dimensions.X, (int) dimensions.X);
+            var vol = new ColorVolume<Material>((int) dimensions.X, (int) dimensions.X, (int) dimensions.X);
 
             foreach (var color in colorInformation.RGBA)
                 colorsList.Add(new Vector4(color.Item1, color.Item2, color.Item3, color.Item4));
@@ -31,7 +31,6 @@ namespace VisualizeScalars.Rendering.VoxelImporter
             foreach (var voxel in voxelInformation.Voxels)
                 vol.SetVoxel(new Vector3(dimensions.X - voxel.Item1 - 1, voxel.Item3, voxel.Item2),
                     new Material {Color = colorsList[voxel.Item4]});
-            vol.ComputeMesh();
             return vol;
         }
     }

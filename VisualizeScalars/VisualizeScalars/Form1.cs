@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using VisualizeScalars.DataQuery;
+using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models;
@@ -20,7 +22,8 @@ namespace VisualizeScalars
         private readonly HgtFileReader Reader;
         EarthdataDownloader downloader;
         DataFileQuerent Querernt;
-        private VisualizationDataGrid VisualizationDataGrid { get; set; }
+        private DataGrid<GridCell> BaseDataGrid { get; set; }
+        private VisualizationModel<GridCell> Model;
         
         
         private DateTime nextWireframeSwitch = DateTime.Now;
@@ -34,9 +37,9 @@ namespace VisualizeScalars
             modelManager = new ModelManager();
             shaderManager = new ShaderManager();
 
-            shaderManager.AddShader(new []{typeof(ColorVolume<PositionColorNormalVertex>) }, ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
+            shaderManager.AddShader(new []{typeof(ColorVolume<Material>),typeof(RenderObject<PositionColorNormalVertex>) }, ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.frag");
-            shaderManager.AddShader(new[] { typeof(VisualizationModel) }, ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
+            shaderManager.AddShader(new[] { typeof(RenderObject<PositionNormalVertex>) }, ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");
             
             shaderManager.AddShader(typeof(TextureVolume), ".\\Rendering\\Shaders\\VolumetricRenderingShader.vert",
@@ -88,12 +91,19 @@ namespace VisualizeScalars
                 shader.Use();
                 shader.SetUniformMatrix4X4("projection", projection);
                 shader.SetUniformMatrix4X4("view", view);
-                shader.SetUniformVector3("lightPos", Light.LightPosition);
-                shader.SetUniformVector3("lightColor", Light.LightColor);
+                shader.SetUniformVector3("lightPos", Light.Position);
+                shader.SetUniformVector3("lightColor", Light.Color);
                 shader.SetUniformVector3("viewpos", camera.Position);
-                shader.SetUniformFloat("ambientStrength", 0.5f);
-                shader.SetUniformFloat("diffuseStrength", 1f);
-                shader.SetUniformFloat("specularStrength", 1.0f);
+                shader.SetUniformFloat("ambientStrength", AmbientStrength);
+                shader.SetUniformFloat("diffuseStrength", DiffuseStrength);
+                shader.SetUniformFloat("specularStrength", SpecularStrength);
+
+                shader.SetUniformVector4("LayerColor[0]", new Vector4(0.5f, 0.5f, 0.5f, 1f));
+                shader.SetUniformVector4("LayerColor[1]", new Vector4(1f, 0f, 0f, .3f));
+                shader.SetUniformVector4("LayerColor[2]", new Vector4(0f, 1f, 0f, .3f));
+                shader.SetUniformVector4("LayerColor[3]", new Vector4(0f, 0f, 1f, .3f));
+                shader.SetUniformVector4("LayerColor[4]", new Vector4(1f, 0f, 0f, .3f));
+                shader.SetUniformVector4("LayerColor[5]", new Vector4(0f, 1f, 0f, .3f));
                 model.Draw(shader);
             }
 
@@ -101,8 +111,11 @@ namespace VisualizeScalars
             
         }
 
-        public LightSource Light { get; set; } = new LightSource(new OpenTK.Vector3(250,500,250),new OpenTK.Vector3(1f,1f,1f));
-
+        public LightSource Light { get; set; } = new LightSource(new OpenTK.Vector3(0,100,-1),new OpenTK.Vector3(1f,1f,1f));
+        public float AmbientStrength { get; set; } = 0.2f;
+        public float DiffuseStrength { get; set; } = 0.5f;
+        public float SpecularStrength { get; set; } = 1f;
+       
         private void glControl_Resize(object sender, EventArgs e)
         {
             var control = (GLControl) sender;
@@ -126,16 +139,85 @@ namespace VisualizeScalars
 
             var dataSet = Querernt.GetDataForArea(latSouth, lngWest, latNorth, lngEast);
             var gridsize = Querernt.GetGridUnitStep();
-            VisualizationDataGrid = new VisualizationDataGrid(dataSet, gridsize, latSouth, lngWest);
+            
+            BaseDataGrid = new DataGrid<GridCell>(dataSet, gridsize, latSouth, lngWest);
+            comboBox1.Items.Clear();
+            comboBox1.Items.AddRange(BaseDataGrid.PropertyNames);
+            clbScalarselection.Items.Clear();
+            clbScalarselection.Items.AddRange(BaseDataGrid.PropertyNames);
+            //clbScalarselection.SelectionMode = SelectionMode.MultiSimple;
+
         }
         private void cmdLoadMap_Click(object sender, EventArgs e)
         {
+            if (BaseDataGrid == null)
+            {
+                
+                btnUpdateData_Click(sender, e);
+            }
+            MeshMode meshMode = getMeshMode();
+
+            Smoothing smoothing = getSmoothing();
+
+
+            float interpol = Convert.ToSingle(mtbxInterpolation.Text);
+
+            modelManager.ClearModels();
+            DataGrid<GridCell> grid = BaseDataGrid.Select(new[]{"Height", "ParticulateMatter2_5", "ParticulateMatter10","Temperature" });
+            if (interpol != 1)
+            {
+                grid = BaseDataGrid.Scale(interpol,normalize: false);
+            }
             
+            Model = new VisualizationModel<GridCell>(grid);
+            Model.GenerateVolume("Height");
+            Mesh mesh;
+            if(meshMode == MeshMode.MarchingCubes)
+            {
+                var min = grid.Min("Height");
+                var max = grid.Max("Height");
+                var isolevel = 0.0000000001f;
+                mesh = MeshExtractor.ComputeMarchingCubesMesh<GridCell>(Model,
+                    cell => (float)((cell.Height)/(max)),
+                    isolevel);
+            }
+            else if (meshMode == MeshMode.Cubes)
+            {
+                mesh = MeshExtractor.ComputeCubicMesh<GridCell>(Model);
+            }
+            else
+            {
+                mesh = MeshExtractor.ComputeCubicMeshGreedy<GridCell>(Model);
+            }
+            
+            var renderobj = new RenderObject<PositionNormalVertex>(mesh,"model");
+            renderobj.PivotPoint = Model.Dimensions.Vector3 / 2;
+            
+            //renderobj.Buffers.Add(new BufferStorage(Enumerable.Cast<GridCell>()));
+            modelManager.AddModel(renderobj);
+            var coord = new ColorVolume<Material>(5,5,5);
+            for (int i = 0; i < 5; i++)
+            {
+                coord.SetVoxel(i,0,0,new Material(){Color = new Vector4(1,0,0,1)});
+                coord.SetVoxel(0,i,0,new Material(){Color = new Vector4(0,1,0,1)});
+                coord.SetVoxel(0,0,i,new Material(){Color = new Vector4(0,0,1,1)});
+            }
+            var mesh2 = MeshExtractor.ComputeCubicMesh(coord);
+            var renderobj2 = new RenderObject<PositionColorNormalVertex>(mesh2,"coordinates");
+            modelManager.AddModel(renderobj2);
+            camera.ViewDirection = (renderobj.Position - camera.Position).Normalized();
+            mtbxInterpolation.Text = "1";
+            glControl.Invalidate();
+
+        } 
+        MeshMode getMeshMode()
+        {
             MeshMode meshMode;
             if (cbxMeshMode.SelectedIndex == 0)
             {
                 meshMode = MeshMode.MarchingCubes;
-            }else if(cbxMeshMode.SelectedIndex == 1)
+            }
+            else if (cbxMeshMode.SelectedIndex == 1)
 
             {
                 meshMode = MeshMode.Cubes;
@@ -148,22 +230,29 @@ namespace VisualizeScalars
             {
                 meshMode = MeshMode.MarchingCubes;
             }
+
+            return meshMode;
+        }
+        Smoothing getSmoothing()
+        {
             Smoothing smoothing;
             if (cbxSmoothing.SelectedIndex == 0)
             {
                 smoothing = Smoothing.None;
-            }else if (cbxSmoothing.SelectedIndex == 1)
+            }
+            else if (cbxSmoothing.SelectedIndex == 1)
             {
                 smoothing = Smoothing.Laplacian1;
-            }else if (cbxSmoothing.SelectedIndex ==2)
+            }
+            else if (cbxSmoothing.SelectedIndex == 2)
             {
                 smoothing = Smoothing.Laplacian2;
             }
-            else if (cbxSmoothing.SelectedIndex ==3)
+            else if (cbxSmoothing.SelectedIndex == 3)
             {
                 smoothing = Smoothing.Laplacian5;
             }
-            else if (cbxSmoothing.SelectedIndex ==4)
+            else if (cbxSmoothing.SelectedIndex == 4)
             {
                 smoothing = Smoothing.Laplacian10;
             }
@@ -188,29 +277,8 @@ namespace VisualizeScalars
                 smoothing = Smoothing.Laplacian2;
             }
 
-            int interpol = Convert.ToInt32(mtbxInterpolation.Text);
-            if (VisualizationDataGrid == null)
-            {
-                
-                btnUpdateData_Click(sender, e);
-            }
-            modelManager.ClearModels();
-            var model = new VisualizationModel(VisualizationDataGrid,interpol);
-            modelManager.AddModel(model);
-            //mapgen = new Mapgenerator(heights);
-            /*var vol = mapgen.GenerateMapFromHeightData(interpol);
-
-            modelManager.AddModel(vol);
-            //var texVol = mapgen.GenerateTerrain(heights);
-            //modelManager.AddModel(texVol);*/
-            model.MeshMode = meshMode;
-            model.Smoothing = smoothing;
-            camera.ViewDirection = (model.Position - camera.Position).Normalized();
-            mtbxInterpolation.Text = "1";
-            glControl.Invalidate();
+            return smoothing;
         }
-
-
         private void glControl_MouseMove(object sender, MouseEventArgs e)
         {
             var currentPosition = new Vector2(e.X, e.Y);
@@ -292,6 +360,124 @@ namespace VisualizeScalars
         {
             camera.ClippingPlaneNear = (float)trackBar2.Value/1000;
             glControl.Invalidate();
+        }
+        
+        private void trackBar3_Scroll(object sender, EventArgs e)
+        {
+            Light.Position.X = tbLightX.Value;
+            glControl.Invalidate();
+        }
+
+        private void trackBar4_Scroll(object sender, EventArgs e)
+        {
+            Light.Position.Y = tbLightY.Value;
+            glControl.Invalidate();
+        }
+
+        private void trackBar5_Scroll(object sender, EventArgs e)
+        {
+            Light.Position.Z = tbLightZ.Value;
+            glControl.Invalidate();
+        }
+
+        private void tbSpecularFactor_Scroll(object sender, EventArgs e)
+        {
+            SpecularStrength = tbSpecularFactor.Value / 100f;
+            glControl.Invalidate();
+        }
+
+        private void trackBar7_Scroll(object sender, EventArgs e)
+        {
+            AmbientStrength = tbAmbientFactor.Value / 1000f;
+            glControl.Invalidate();
+        }
+
+        private void tbDiffuseFactor_Scroll(object sender, EventArgs e)
+        {
+            DiffuseStrength = tbDiffuseFactor.Value / 1000f;
+            glControl.Invalidate();
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(comboBox1.SelectedIndex == -1) 
+                return;
+            textBox1.Clear();
+            float[,] grid;
+            if (Model != null)
+            {
+                grid = Model.DataGrid.GetDataGrid(comboBox1.Text);
+            }
+            else
+            {
+                grid = BaseDataGrid.GetDataGrid(comboBox1.Text); ;
+            }
+
+            for (int y = 0; y < grid.GetLength(1); y++)
+            {
+                string output = "";
+                for (int  x = 0; x < grid.GetLength(0); x++)
+                {
+                    output += " " + String.Format("{0,10:0.0}", grid[x,y]);
+                }
+
+                textBox1.Text += output + Environment.NewLine;
+            }
+        }
+
+        private void cbxSmoothing_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var model = modelManager.GetModel("model").FirstOrDefault();
+            if (model == null) return;
+            Smoothing smoothing = getSmoothing();
+            if (smoothing == Smoothing.Laplacian1 ||
+                smoothing == Smoothing.Laplacian2 ||
+                smoothing == Smoothing.Laplacian5 ||
+                smoothing == Smoothing.Laplacian10 ||
+                smoothing == Smoothing.LaplacianHc1 ||
+                smoothing == Smoothing.LaplacianHc2 ||
+                smoothing == Smoothing.LaplacianHc5 ||
+                smoothing == Smoothing.LaplacianHc10)
+            {
+                if (smoothing == Smoothing.Laplacian1 ||
+                    smoothing == Smoothing.Laplacian2 ||
+                    smoothing == Smoothing.Laplacian5 ||
+                    smoothing == Smoothing.Laplacian10)
+                {
+                    model.Mesh = MeshSmoother.LaplacianFilter(model.Mesh, (int)smoothing);
+                    model.IsReady = false;
+                }
+                else
+                {
+                    model.Mesh = MeshSmoother.HCFilter(model.Mesh, (int)smoothing);
+                }
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            var model = modelManager.GetModel("model").FirstOrDefault();
+            if (model == null) return;
+            if (checkBox1.Checked)
+            {
+                var interpolation = Convert.ToSingle(mtbxInterpolation.Text);
+                model.Scales = new Vector3(30f/ interpolation, 1f, 30f/ interpolation);
+            }
+            else
+            {
+                model.Scales = Vector3.One;
+            }
+        }
+
+        private void clbScalarselection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(Model == null) return;
+            var items = clbScalarselection.SelectedItems;
+            //Model.DataGrid = Model.DataGrid.Select();
+            var model = modelManager.GetModel("model").FirstOrDefault();
+            if (model == null) return;
+
+
         }
     }
 }

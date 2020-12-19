@@ -24,10 +24,10 @@ namespace VisualizeScalars.DataQuery
         private readonly string _wpFile = "wiltpont.dat";
         
         private DirectoryInfo workingDirectoryInfo;
-        public bool StreamsOpened { get; private set; } = false;
+
         private HgtFileReader hgtFileReader;
         private EarthdataDownloader earthDataLoader;
-        private bool _isOpenForReading = false;
+
         private AirdataReader airdataReader;
         private Dictionary<string,EsriGridInformationProvider> _igbpInformationProviders;
 
@@ -122,7 +122,7 @@ namespace VisualizeScalars.DataQuery
             }
         }
 
-        public ScalarSet GetSoilInformationForCoordinate(double latitude, double longitude)
+        public GridCell GetSoilInformationForCoordinate(double latitude, double longitude)
         {
             var hgtTileName = HgtFileReader.getHgtTileName(latitude, longitude);
             if (!workingDirectoryInfo.GetDirectories().Any(x => x.Name.Contains(hgtTileName)))
@@ -130,7 +130,7 @@ namespace VisualizeScalars.DataQuery
                 earthDataLoader.DownloadDataSets(latitude, longitude);
             }
             
-            ScalarSet si = new ScalarSet
+            GridCell si = new GridCell
             {
                 Height = hgtFileReader.GetElevationAtCoordinate(latitude, longitude),
                 ProfileAvailableWaterCapacity = _igbpInformationProviders[_pawcFile].InformationForCoordinate(latitude, longitude),
@@ -164,7 +164,7 @@ namespace VisualizeScalars.DataQuery
             //airdataReader.DownloadData();
             return airdataReader.BuildGrid(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
         }
-        public ScalarSet[,] GetDataForArea(double latitudeSouth, double longitudeWest, double latitudeNorth, double longitudeEast)
+        public GridCell[,] GetDataForArea(double latitudeSouth, double longitudeWest, double latitudeNorth, double longitudeEast)
         {
             if (latitudeSouth > latitudeNorth)
             {
@@ -201,16 +201,14 @@ namespace VisualizeScalars.DataQuery
                 .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             double[,] WiltingPoint = _igbpInformationProviders[_wpFile]
                 .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);*/
-            ScalarSet[,] results = new ScalarSet[cellCountX,cellCountY];
+            GridCell[,] results = new GridCell[cellCountX,cellCountY];
 
             for (int j = 0; j< cellCountY;j++)
             {
                 for (int i = 0; i < cellCountX; i++)
                 {
-                    results[i,j] = new ScalarSet()
+                    results[i,j] = new GridCell()
                     {
-                        Latitude = j * cellCountY + latitudeSouth,
-                        Longitude = i * cellCountX + longitudeWest,
                         Height = Height[i, j],
                         /*ProfileAvailableWaterCapacity = ProfileAvailableWaterCapacity[i, j],
                         BulkDensity = BulkDensity[i, j],
@@ -221,13 +219,15 @@ namespace VisualizeScalars.DataQuery
                         WiltingPoint = WiltingPoint[i, j],*/
                         Temperature = airdata[i,j].TemperatureAvg,
                         Pressure = airdata[i,j].PressureAvg,
-                        Humiditiy = airdata[i, j].HumidityAvg,
+                        Humidity = airdata[i, j].HumidityAvg,
                         ParticulateMatter10 = airdata[i, j].P1Avg,
                         ParticulateMatter2_5 = airdata[i, j].P2Avg
                     };
                 }
 
             }
+
+            
             return results;
         }
     }

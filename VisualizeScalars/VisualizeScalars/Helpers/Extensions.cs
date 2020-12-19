@@ -1,4 +1,5 @@
-﻿using VisualizeScalars.DataQuery;
+﻿using System.Collections.Generic;
+using VisualizeScalars.DataQuery;
 
 namespace VisualizeScalars.Helpers
 {
@@ -117,41 +118,57 @@ namespace VisualizeScalars.Helpers
 
         }
 
-        public static void Scale(this VisualizationDataGrid self, float scale, bool normalize = false)
+        public static DataGrid<GridCell> Scale(this DataGrid<GridCell> self, float scale, bool normalize = false) 
         {
             int oldWidth = self.Grid.GetLength(0);
             int oldHeight = self.Grid.GetLength(1);
             int newWidth = (int)(oldWidth * scale);
             int newHeight = (int)(oldHeight * scale);
 
-            ScalarSet[,] newData = new ScalarSet[newWidth, newHeight];
-            var hgt = self.HeightGrid(false).Scale(scale);
-            var bd = self.BulkDensityGrid(normalize).Scale(scale);
+            GridCell[,] newData = new GridCell[newWidth, newHeight];
+            Dictionary<string,float[,]> scalarGrids = new Dictionary<string, float[,]>();
+            foreach (var scalarsKey in self.Grid[0,0].Scalars.Keys)
+            {
+                scalarGrids.Add(scalarsKey, self.GetDataGrid(scalarsKey).Scale(scale));
+            }
+            /*var hgt = self.GetDataGrid("Height").Scale(scale);
+            var fc = self.GetDataGrid("FieldCapacity").Scale(scale);
+            var sc = self.GetDataGrid("SoilCarbonDensity").Scale(scale);
+            var tc = self.GetDataGrid("ThermalCapacity").Scale(scale);
+            var bd = self.GetDataGrid("BulkDensity").Scale(scale);
+            var wp = self.GetDataGrid("WiltingPoint").Scale(scale);
+            var pwac = self.GetDataGrid("ProfileAvailableWaterCapacity").Scale(scale);
+            var tnd = self.GetDataGrid("TotalNitrogenDensity").Scale(scale);
+            var temp = self.GetDataGrid("Temperature").Scale(scale);
+            var ps = self.GetDataGrid("Pressure").Scale(scale);
+            var hum = self.GetDataGrid("Humidity").Scale(scale);
+            var p1 = self.GetDataGrid("ParticulateMatter10").Scale(scale);
+            var p2 = self.GetDataGrid("ParticulateMatter2_5").Scale(scale);*/
+
+            //var hgt = self.HeightGrid(false).Scale(scale);
+            /*var bd = self.BulkDensityGrid(normalize).Scale(scale);
             var fc = self.FieldCapacityGrid(normalize).Scale(scale);
             var pwac = self.ProfileAvailableWaterCapacityGrid(normalize).Scale(scale);
             var sc = self.SoilCarbonDensityGrid(normalize).Scale(scale);
             var tc = self.ThermalCapacityGrid(normalize).Scale(scale).Scale(scale);
             var tnd = self.TotalNitrogenDensityGrid(  normalize).Scale(scale);
-            var wp = self.WiltingPointGrid(normalize).Scale(scale);
-            for (int x = 0; x < newWidth; x++)
-            {
-                for (int y = 0; y < newHeight; y++)
+            var wp = self.WiltingPointGrid(normalize).Scale(scale);*/
+           
+            for (int y = 0; y < newHeight; y++)
+            { 
+                for (int x = 0; x < newWidth; x++)
                 {
-                    newData[x, y] = new ScalarSet()
+                     var cell = new GridCell();
+                    foreach (var scalarGrid in scalarGrids)
                     {
-                        Height = hgt[x,y],
-                        FieldCapacity = fc[x,y],
-                        SoilCarbonDensity = sc[x, y],
-                        ThermalCapacity = tc[x, y],
-                        BulkDensity = bd[x, y],
-                        WiltingPoint = wp[x, y],
-                        ProfileAvailableWaterCapacity = pwac[x, y],
-                        TotalNitrogenDensity = tnd[x, y],
-                    };
+                        cell.Value(scalarGrid.Key, scalarGrid.Value[x, y]);
+                    }
+
+                    newData[x, y] = cell;
                 }
             }
 
-            self.Grid = newData;
+            return new DataGrid<GridCell>(newData, self.GridCellsize /= scale,self.South,self.West);
         }
     }        
 

@@ -86,8 +86,9 @@ namespace VisualizeScalars.DataQuery
 
         public AirInformation[,] BuildGrid(double latitudeSouth, double longitudeWest, double latitudeNorth, double longitudeEast, double gridUnit)
         {
-            var cellCountX = (int)((longitudeEast - longitudeWest) / gridUnit);
-            var cellCountY = (int)((latitudeNorth - latitudeSouth) / gridUnit);
+            var cellCountY = (int)Math.Ceiling(Math.Abs(latitudeNorth - latitudeSouth) / gridUnit);
+            var cellCountX = (int)Math.Ceiling(Math.Abs(longitudeEast - longitudeWest) / gridUnit);
+           
             AirInformation[,] result = new AirInformation[cellCountX,cellCountY];
             
             var files = Directory.EnumerateFiles(datadirectory,"*.json");
@@ -102,14 +103,14 @@ namespace VisualizeScalars.DataQuery
 
             for (int y = 0; y < cellCountY; y++)
             {
-                var lat = latitudeNorth - y * gridUnit;
+                var lat = latitudeSouth + y * gridUnit;
                 for (int x = 0; x < cellCountX; x++)
                 {
                     result[x, y] = new AirInformation();
-                    var lng = longitudeEast - x * gridUnit;
+                    var lng = longitudeWest + x * gridUnit;
                     var values = temp.Where(x => Math.Abs(x.location.latitude - lat) < gridUnit && Math.Abs(x.location.longitude - lng) < gridUnit).SelectMany(d => d.sensordatavalues);
                     
-                    if (values.Count() > 0)
+                    if (values.Any())
                     {
                         /*var particularMatterData = values.Where(v =>
                         v.sensordatavalues.All(d => d.value_type == "P1" || d.value_type == "P2"));
