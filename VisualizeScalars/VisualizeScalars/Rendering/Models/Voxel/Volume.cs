@@ -29,6 +29,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
     protected void InitializeVolumeData()
     {
+        Data = new List<T>(){new T()};
         DataPointers = new int[Dimensions.Y][,];
 
         for (var y = 0; y < Dimensions.Y; y++)
@@ -47,25 +48,29 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         return DataPointers[y][x, z] > 0;
     }
 
-    public virtual void SetVoxel(int x, int y, int z, int materialIndex)
+    public virtual void SetVoxel(int x, int y, int z, int dataIndex)
     {
         if (IsValidVoxelPosition(x, y, z))
         {
-            DataPointers[y][x, z] = materialIndex;
+            DataPointers[y][x, z] = dataIndex;
         }
     }
 
-    public virtual void SetVoxel(int x, int y, int z, T material)
+    public virtual void SetVoxel(int x, int y, int z, T data)
     {
-        if (!Data.Contains(material)) Data.Add(material);
-        var dataIndex = Data.IndexOf(material);
+        if (!Data.Contains(data))
+        {
+            Data.Add(data);
+        }
+
+        var dataIndex = Data.IndexOf(data);
 
         SetVoxel(x, y, z, dataIndex);
     }
 
-    public virtual void SetVoxel(Vector3 position, T material)
+    public virtual void SetVoxel(Vector3 position, T data)
     {
-        SetVoxel((int) position.X, (int) position.Y, (int) position.Z, material);
+        SetVoxel((int) position.X, (int) position.Y, (int) position.Z, data);
     }
 
     public virtual void SetVoxel(Vector3 position, byte materialIndex)
@@ -140,7 +145,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
     public bool IsFrontfaceVisible(int x, int y, int z)
     {
-        if (z == 0 || DataPointers[y][x, z - 1] == 0 || Data[DataPointers[y][x, z - 1]].IsSetVoxel())
+        if (z == 0 || DataPointers[y][x, z - 1] == 0 || Data[DataPointers[y][x, z - 1]].IsSet)
             return true;
         return false;
     }
@@ -148,26 +153,26 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public bool IsBackfaceVisible(int x, int y, int z)
     {
         if (z == Dimensions.Z - 1 || DataPointers[y][x, z + 1] == 0 ||
-            Data[DataPointers[y][x, z + 1]].IsSetVoxel()) return true;
+            Data[DataPointers[y][x, z + 1]].IsSet) return true;
         return false;
     }
 
     public bool IsLeftfaceVisible(int x, int y, int z)
     {
-        if (x == 0 || DataPointers[y][x, z] == 0 || Data[DataPointers[y][x - 1, z]].IsSetVoxel()) return true;
+        if (x == 0 || DataPointers[y][x, z] == 0 || Data[DataPointers[y][x - 1, z]].IsSet) return true;
         return false;
     }
 
     public bool IsRightfaceVisible(int x, int y, int z)
     {
         if (x == Dimensions.X - 1 || DataPointers[y][x + 1, z] == 0 ||
-            Data[DataPointers[y][x + 1, z]].IsSetVoxel()) return true;
+            Data[DataPointers[y][x + 1, z]].IsSet) return true;
         return false;
     }
 
     public bool IsBottomfaceVisible(int x, int y, int z)
     {
-        if (y == 0 || DataPointers[y - 1][x, z] == 0 || Data[DataPointers[y - 1][x, z]].IsSetVoxel())
+        if (y == 0 || DataPointers[y - 1][x, z] == 0 || Data[DataPointers[y - 1][x, z]].IsSet)
             return true;
         return false;
     }
@@ -175,7 +180,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public bool IsTopfaceVisible(int x, int y, int z)
     {
         if (y == Dimensions.Y - 1 || DataPointers[y + 1][x, z] == 0 ||
-            Data[DataPointers[y + 1][x, z]].IsSetVoxel()) return true;
+            Data[DataPointers[y + 1][x, z]].IsSet) return true;
         return false;
     }
 

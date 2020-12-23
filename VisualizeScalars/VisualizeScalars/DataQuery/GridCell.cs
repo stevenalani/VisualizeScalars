@@ -8,7 +8,8 @@ namespace VisualizeScalars.DataQuery
 {
     public class BaseGridCell : IVolumeData
     {
-        public Dictionary<string, float> Scalars = new Dictionary<string, float>();
+        public readonly Dictionary<string, float> Scalars = new Dictionary<string, float>();
+        private bool _isSet;
         public float Value(string property) => Scalars.ContainsKey(property)? Scalars[property]:0.0f;
 
         public void Value(string property, float value)
@@ -25,12 +26,21 @@ namespace VisualizeScalars.DataQuery
         }
 
         public virtual Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f,1);
+        public bool IsSet => Scalars.Count > 0; 
 
-        public virtual bool IsSetVoxel()
+        public override bool Equals(object? obj)
         {
-            return Scalars.Count > 0 && Scalars.First().Value > 0;
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            BaseGridCell cell = (BaseGridCell)obj;
+            var cellkeys = cell.Scalars.Keys.Select(x => x).ToArray().All(x => Scalars.ContainsKey(x));
+            var cellvalues = cell.Scalars.Values.Select(x => x).ToArray().All(x => Scalars.ContainsValue(x));
+            return cellvalues && cellkeys;
         }
-
+        public override int GetHashCode()
+        {
+            return Tuple.Create(Scalars.Keys, Scalars.Values).GetHashCode();
+        }
     }
 
     public class GridCell : BaseGridCell
@@ -128,10 +138,6 @@ namespace VisualizeScalars.DataQuery
 
         public override Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f, 1f);
 
-        public override bool IsSetVoxel()
-        {
-            return true;
-        }
     }
 
     

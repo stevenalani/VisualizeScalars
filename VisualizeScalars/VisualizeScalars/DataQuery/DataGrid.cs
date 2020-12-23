@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VisualizeScalars.Helpers;
 
 namespace VisualizeScalars.DataQuery
 {
@@ -100,6 +101,108 @@ namespace VisualizeScalars.DataQuery
                 }
             }
             return new DataGrid<T>(newCells,GridCellsize,South,West);
+        }
+        public DataGrid<K> Select<K>(string[] strings) where K : BaseGridCell, new()
+        {
+            K[,] newCells = new K[Width, Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    newCells[x, y] = new K();
+                    foreach (var property in strings)
+                    {
+                        newCells[x, y].Value(property, Grid[x, y].Value(property));
+                    }
+                }
+            }
+            return new DataGrid<K>(newCells, GridCellsize, South, West);
+        }
+        public DataGrid<T> Scaled(float scale, bool normalize = false,
+            bool trim = false)
+        {
+
+            int oldWidth = Grid.GetLength(0);
+            int oldHeight = Grid.GetLength(1);
+            int newWidth = (int)(oldWidth * scale);
+            int newHeight = (int)(oldHeight * scale);
+
+            T[,] newData = new T[newWidth, newHeight];
+            Dictionary<string, float[,]> scalarGrids = new Dictionary<string, float[,]>();
+            foreach (var scalarsKey in Grid[0, 0].Scalars.Keys)
+            {
+                scalarGrids.Add(scalarsKey, GetDataGrid(scalarsKey, normalize).Scale(scale));
+            }
+            for (int y = 0; y < newHeight; y++)
+            {
+                for (int x = 0; x < newWidth; x++)
+                {
+                    var cell = new T();
+                    foreach (var scalarGrid in scalarGrids)
+                    {
+                        var val = scalarGrid.Value[x, y];
+                        cell.Value(scalarGrid.Key, trim ? (float)Math.Floor(val) : val);
+                    }
+
+                    newData[x, y] = cell;
+                }
+            }
+
+            return new DataGrid<T>(newData, GridCellsize / scale, South, West);
+        }  
+        public void Scale(float scale, bool normalize = false,
+            bool trim = false)
+        {
+
+            int oldWidth = Grid.GetLength(0);
+            int oldHeight = Grid.GetLength(1);
+            int newWidth = (int)(oldWidth * scale);
+            int newHeight = (int)(oldHeight * scale);
+
+            T[,] newData = new T[newWidth, newHeight];
+            Dictionary<string, float[,]> scalarGrids = new Dictionary<string, float[,]>();
+            foreach (var scalarsKey in Grid[0, 0].Scalars.Keys)
+            {
+                scalarGrids.Add(scalarsKey, GetDataGrid(scalarsKey, normalize).Scale(scale));
+            }
+           
+            for (int y = 0; y < newHeight; y++)
+            {
+                for (int x = 0; x < newWidth; x++)
+                {
+                    var cell = new T();
+                    foreach (var scalarGrid in scalarGrids)
+                    {
+                        var val = scalarGrid.Value[x, y];
+                        cell.Value(scalarGrid.Key, trim ? (float)Math.Floor(val) : val);
+                    }
+
+                    newData[x, y] = cell;
+                }
+            }
+
+            GridCellsize /= scale;
+            Grid = newData;
+        }
+        public void RemoveSet(string? property)
+        {
+            if(property == null)
+                return;
+            Minimums.Remove(property);
+            Maximums.Remove(property);
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Grid[x, y].Scalars.Remove(property);
+                }
+            }
+        }
+
+        public float ValueNormalized(in int i, in int i1, string propertyName)
+        {
+            return (float)((Grid[i, i1].Scalars[propertyName] - Minimums[propertyName]) /
+                                 (Maximums[propertyName] - Minimums[propertyName]));
         }
     }
 

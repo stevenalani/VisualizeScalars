@@ -77,7 +77,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             }
         }
 
-        public override void SetVoxel(int x, int y, int z, int materialIndex)
+        public override void SetVoxel(int x, int y, int z, int dataIndex)
         {
             var chunkIdxX = x / ChunkSize;
             var chunkIdxY = y / ChunkSize;
@@ -87,16 +87,16 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             var voxelPosY = y % ChunkSize;
             var voxelPosZ = z % ChunkSize;
             var currentColor = Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].GetVoxel(voxelPosX, voxelPosY, voxelPosZ);
-            if (currentColor != materialIndex)
+            if (currentColor != dataIndex)
             {
-                Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, materialIndex);
+                Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, dataIndex);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
             }
         }
 
-        public override void SetVoxel(Vector3 position, Material material)
+        public override void SetVoxel(Vector3 position, Material data)
         {
-            SetVoxel((int) position.X, (int) position.Y, (int) position.Z, material);
+            SetVoxel((int) position.X, (int) position.Y, (int) position.Z, data);
         }
 
         public override void SetVoxel(Vector3 position, byte materialIndex)
@@ -104,7 +104,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             SetVoxel((int) position.X, (int) position.Y, (int) position.Z, materialIndex);
         }
 
-        public override void SetVoxel(int x, int y, int z, Material material)
+        public override void SetVoxel(int x, int y, int z, Material data)
         {
             var chunkIdxX = x / ChunkSize;
             var chunkIdxY = y / ChunkSize;
@@ -116,9 +116,9 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
 
             var currentMaterial = Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].GetMaterial(voxelPosX, voxelPosY, voxelPosZ);
-            if (!Equals(currentMaterial, material) || material.IsSetVoxel())
+            if (!Equals(currentMaterial, data) || data.IsSet)
             {
-                Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, material);
+                Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, data);
                 ChunkHasChanges[chunkIdxX, chunkIdxY, chunkIdxZ] = true;
             }
         }

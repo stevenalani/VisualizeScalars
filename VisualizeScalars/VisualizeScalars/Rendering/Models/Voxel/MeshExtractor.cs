@@ -4,7 +4,12 @@ using VisualizeScalars.Rendering.DataStructures;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
-    public enum MeshMode { MarchingCubes, Cubes, GreedyCubes }
+    public enum MeshMode { 
+        MarchingCubes, 
+        Cubes, 
+        GreedyCubes,
+        GridMesh
+    }
     public static class MeshExtractor
     {
         public static Mesh ComputeMarchingCubesMesh<T>(Volume<T> volume,Func<T,float> densityFunc,float isolevel = 0.1f) where T : IVolumeData , new()
@@ -191,7 +196,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             for (var k = start.Z; k < end.Z; k++)
             {
                 var voxel = volume.DataPointers[j][i, k];
-                if (volume.Data[voxel].IsSetVoxel())
+                if (volume.Data[voxel].IsSet)
                     checkedin[j][i, k] = true;
             }
         }

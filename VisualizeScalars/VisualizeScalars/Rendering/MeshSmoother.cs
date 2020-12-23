@@ -16,31 +16,30 @@ namespace VisualizeScalars.Rendering
     public enum Smoothing { None, Laplacian1 = 1, Laplacian2 = 2, Laplacian5 = 5, Laplacian10 = 10, LaplacianHc1 = 1, LaplacianHc2 = 2, LaplacianHc5 = 5, LaplacianHc10 = 10 }
     public static class MeshSmoother
     {
-        public static Mesh LaplacianFilter(Mesh model, int times = 1)
+        public static Mesh LaplacianFilter(Mesh mesh, int times = 1)
         {
-            var ordered = model.Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
-            var newVerts =  LaplacianFilter(ordered, model.Indices.ToArray(), times);
-            model.Vertices = new Dictionary<Vector3, int>();
-            //model.Vertices = new List<Vector3>(newVerts);
+            var ordered = mesh.Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
+            var newVerts =  LaplacianFilter(ordered, mesh.Indices.ToArray(), times);
+            mesh.Vertices = new Dictionary<Vector3, int>();
             for (int i = 0; i < newVerts.Length; i++)
             {
-                if (model.Vertices.ContainsKey(newVerts[i]))
+                if (mesh.Vertices.ContainsKey(newVerts[i]))
                 {
-                    var index = model.Vertices[newVerts[i]];
+                    var index = mesh.Vertices[newVerts[i]];
                     int oldindex = -1;
-                    while ((oldindex = model.Indices.IndexOf(i)) != -1)
+                    while ((oldindex = mesh.Indices.IndexOf(i)) != -1)
                     {
-                        model.Indices.RemoveAt(oldindex);
-                        model.Indices.Insert(oldindex, index);
+                        mesh.Indices.RemoveAt(oldindex);
+                        mesh.Indices.Insert(oldindex, index);
                         
                     }
                 }
                 else
                 {
-                    model.Vertices.Add(newVerts[i], i);
+                    mesh.Vertices.Add(newVerts[i], i);
                 }
             }
-            return model;
+            return mesh;
         }
 
         public static Vector3[] LaplacianFilter(Vector3[] vertices, int[] triangles, int times)

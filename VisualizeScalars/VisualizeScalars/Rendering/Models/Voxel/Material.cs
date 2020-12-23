@@ -7,11 +7,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         public Vector4 Color;
         public Vector4 ColorMapping => new Vector4(Color);
 
-        public bool IsSetVoxel()
-        {
-            return Color.W != 0;
-        }
+        public bool IsSet => Color.W != 0;
 
-        public float Density => Color.W;
     }
 }

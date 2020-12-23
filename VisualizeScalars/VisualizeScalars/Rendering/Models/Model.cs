@@ -18,7 +18,7 @@ namespace VisualizeScalars.Rendering.Models
 
         public Vector3 Position = Vector3.Zero;
         protected internal Vector3 Rotations = Vector3.Zero;
-        public Vector3 Scales = new Vector3(1f,1f,-1f);
+        public Vector3 Scales = new Vector3(1f,1f,1f);
         public Mesh Mesh { get; set; }
         protected Model(string name)
         { 

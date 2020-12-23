@@ -24,10 +24,10 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
 
 
-        public override void SetVoxel(int x, int y, int z, T material)
+        public override void SetVoxel(int x, int y, int z, T data)
         {
             CreateVolDataIfNull();
-            base.SetVoxel(x, y, z, material);
+            base.SetVoxel(x, y, z, data);
         }
 
         private void CreateVolDataIfNull()
@@ -35,16 +35,16 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             if (DataPointers == null) InitializeVolumeData();
         }
 
-        public override void SetVoxel(int x, int y, int z, int materialIndex)
+        public override void SetVoxel(int x, int y, int z, int dataIndex)
         {
             CreateVolDataIfNull();
-            base.SetVoxel(x, y, z, materialIndex);
+            base.SetVoxel(x, y, z, dataIndex);
         }
 
-        public override void SetVoxel(Vector3 position, T material)
+        public override void SetVoxel(Vector3 position, T data)
         {
             CreateVolDataIfNull();
-            base.SetVoxel(position, material);
+            base.SetVoxel(position, data);
         }
 
         public override void SetVoxel(Vector3 position, byte materialIndex)

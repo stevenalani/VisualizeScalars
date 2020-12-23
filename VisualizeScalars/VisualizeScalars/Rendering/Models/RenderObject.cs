@@ -20,18 +20,45 @@ namespace VisualizeScalars.Rendering.Models
         protected int Vao = -1;
         // Buffer
         protected int Vbo = -1;
-
-        public RenderObject(Mesh mesh,string name):base(name)
+        public bool DrawInstanced { get; set; } = false;
+        public int Instances { get; set; }
+        public RenderObject(Mesh mesh,string name, bool isInstanced = false, int instances = 2 ) :base(name)
         {
+            DrawInstanced = isInstanced;
+            Instances = instances;
             this.Mesh = mesh;
+        }
+        public RenderObject(string name, bool isInstanced = false, int instances = 2) : base(name)
+        {
+            DrawInstanced = isInstanced;
+            Instances = instances;
         }
         public override void Draw(ShaderProgram shaderProgram,Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
+            if (Mesh.Indices.Count == 0)
+                return;
             setUniforms?.Invoke(shaderProgram);
             shaderProgram.SetUniformMatrix4X4("model", Modelmatrix);
             GL.BindVertexArray(Vao);
-            GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
+            // as set in the shadercode
+            int binding = 2;
+            foreach (var buffer in Buffers)
+            {
+                shaderProgram.SetUniformFloat($"BufferCnt[{binding-2}]", buffer.ValueCount);
+                buffer.Activate(binding++);
+            }
+            if (DrawInstanced)
+            {
+                GL.BindVertexArray(Vao);
+                GL.DrawElementsInstanced(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, Instances);
+            }
+            else
+            {
+                GL.DrawElements(BeginMode.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
+            }
+
+            GL.BindVertexArray(0);
         }
 
         public override void InitBuffers()
@@ -84,7 +111,7 @@ namespace VisualizeScalars.Rendering.Models
     {
         private static int bufferIndices = 2;
         public int BufferID { get; private set; }
-        private int BufferIndex { get; }
+        public int BufferIndex { get; }
         public int ValueCount { get; set; }
         byte[] bufferData;
         private Type type;
@@ -114,11 +141,11 @@ namespace VisualizeScalars.Rendering.Models
             type = typeof(byte);
         }
 
-        public void Activate()
+        public void Activate(int binding)
         {
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, BufferID);
             GL.BufferData(BufferTarget.ShaderStorageBuffer, new IntPtr(bufferData.Length * getSize), bufferData, BufferUsageHint.StaticDraw);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, BufferIndex, BufferID);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, binding, BufferID);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
         }
 

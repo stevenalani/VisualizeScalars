@@ -14,7 +14,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 {
     class VisualizationModel<T> : ColorVolume<T> where T : BaseGridCell, new()
     {
-        public DataGrid<T> DataGrid { get; private set; }
+        public DataGrid<T> DataGrid { get; set; }
         private int colCount = 0;
         private int rowCount = 0;
         public byte[] ImageBuffer { get; set; }
@@ -27,6 +27,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         public void GenerateVolume(string HeightScalar = "Height")
         {
+            HeightMapping = HeightScalar;
             float[,] height = (float[,]) this.DataGrid.GetDataGrid(HeightScalar, false);
             colCount = DataGrid.Width;
             rowCount = DataGrid.Height;
@@ -53,13 +54,48 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 {
                     var minNeighbour = getNeighbours(ref height, x, z).Min();
                     var value = Math.Ceiling(height[x, z]);
-                    for (var i = minNeighbour - minVal - 1; i <= value - minVal; i++)
+                    for (var i = minNeighbour - minVal-2; i <= value - minVal; i++)
                     {
                         SetVoxel(x + 1, (int) (i + 1), z + 1, DataGrid[x, z]);
                     }
                 }
             }
         }
+
+        public BufferStorage[] GetBuffers()
+        {
+            Dictionary<string,List<float>> data = new Dictionary<string, List<float>>();
+            var keys = DataGrid.PropertyNames;
+            foreach (var propertyName in keys)
+            {
+                if (propertyName == this.HeightMapping) continue;
+                data.Add(propertyName, new List<float>());
+            }
+            
+            for (int i = 0; i < DataGrid.Height; i++)
+            {
+                for (int j = 0; j < DataGrid.Width; j++)
+                {            
+                    foreach (var propertyName in data.Keys)
+                    {
+                        if(propertyName == this.HeightMapping) continue;
+                        var value = (float) DataGrid.ValueNormalized(j, i,propertyName);
+                        if (value > 0)
+                        {
+                            data[propertyName].Add((float)j);
+                            data[propertyName].Add((float)i);
+                            data[propertyName].Add(value);
+                        }
+                    }
+                }
+            }
+
+            return data.Values.Select(x => new BufferStorage(x.ToArray())).ToArray();
+
+        }
+
+        public string HeightMapping { get; set; }
+
         /*
         public override void InitBuffers()
         {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using OpenTK;
 using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering.DataStructures;
@@ -13,7 +15,6 @@ namespace VisualizeScalars.Rendering.Models
         //public List<Vector3> PrimitiveNormals { get; set; } = new List<Vector3>();
         public List<int> ColorIndices { get; set; } = new List<int>();
         public List<int> Indices { get; set; } = new List<int>();
-        public List<Vector3> Normals { get; private set; } = new List<Vector3>();
 
         public Mesh()
         {
@@ -73,7 +74,6 @@ namespace VisualizeScalars.Rendering.Models
         {
             var positions = new List<T>();
             var ordered = Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
-            Normals.Clear();
             
             for (int i = 0; i < Indices.Count; i+=3)
             {
@@ -97,6 +97,43 @@ namespace VisualizeScalars.Rendering.Models
             return Enumerable.Range(0, Indices.Count).ToArray();
         }
 
+
+    }
+    public class GridSurface : Mesh
+    {
+        public int Width { get; set; }
+        public int Depth { get; set; }
+
+
+        public GridSurface(float[,] heights,int width, int depth)
+        {
+            Depth = depth;
+            Width = width;
+            float min = Single.MaxValue;
+
+            for (int z = 0; z < Depth; z++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var value = heights[x, z];
+                    if (value < min) min = value;
+                }
+            }
+
+            for (int z = 0; z < Depth; z++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Vertices.Add(new Vector3(x, heights[x, z] - min, z),Vertices.Count);
+                }
+            }
+            for (int i = 0; i < Vertices.Count - width-1; i++)
+            {
+                if((i+1) % (width) == 0) 
+                    continue;
+                Indices.AddRange(new int[] {i, i + 1, i + 1 + width, i + 1 + width, i + width, i});
+            }
+        }
 
     }
 }
