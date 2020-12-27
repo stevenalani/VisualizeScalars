@@ -26,10 +26,11 @@ namespace VisualizeScalars.Rendering
             _shaders.Add(shader, new List<Type>(modeltype));
             _hasShaderUpdates = true;
         }
+
         public void AddShader(Type modeltype, string vsShaderPath, string fsShaderPath = "")
         {
             var shader = ShaderImporter.ShaderImporter.LoadShader(vsShaderPath, fsShaderPath);
-            _shaders.Add(shader, new List<Type>{modeltype});
+            _shaders.Add(shader, new List<Type> {modeltype});
             _hasShaderUpdates = true;
         }
 

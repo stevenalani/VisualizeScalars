@@ -20,14 +20,13 @@ namespace VisualizeScalars.Rendering
 
         public EventHandler<CameraMovedEventArgs> CameraMoved = (param1, param2) => { };
 
-        private Matrix4d pProjection { get; set; }
-
         public Camera()
         {
             ClippingPlaneNear = 0.1f;
             ClippingPlaneFar = 1000f;
             Update();
         }
+
         public Camera(float aspectRatio, PROJECTIONTYPE projection = PROJECTIONTYPE.Perspective)
         {
             AspectRatio = aspectRatio;
@@ -35,7 +34,7 @@ namespace VisualizeScalars.Rendering
             ClippingPlaneFar = 100f;
             _projectionType = projection;
             Update();
-            pProjection = Matrix4d.CreatePerspectiveFieldOfView((float)(fov * (Math.PI / 180)), aspectRatio,
+            pProjection = Matrix4d.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), aspectRatio,
                 ClippingPlaneNear, ClippingPlaneFar);
         }
 
@@ -62,12 +61,14 @@ namespace VisualizeScalars.Rendering
                 clippingPlaneNear, clippingPlaneFar);
         }
 
+        private Matrix4d pProjection { get; }
+
         public Vector3 Position { get; set; } = new Vector3(0, 0, -1);
 
         public Vector3 ViewDirection { get; set; } = Vector3.UnitZ;
         public static Vector3 Up { get; } = Vector3.UnitY;
         public Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection, Up));
-        
+
         public float Speed { get; set; } = SPEED;
 
         public float Zoom { get; set; } = ZOOM;
@@ -83,9 +84,8 @@ namespace VisualizeScalars.Rendering
 
         public Matrix4 GetProjection()
         {
-            return Matrix4.CreatePerspectiveFieldOfView((float)(fov * (Math.PI / 180)), AspectRatio,
+            return Matrix4.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), AspectRatio,
                 ClippingPlaneNear, ClippingPlaneFar);
-
         }
 
         private void Update()

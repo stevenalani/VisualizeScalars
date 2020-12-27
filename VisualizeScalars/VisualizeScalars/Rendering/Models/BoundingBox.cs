@@ -23,10 +23,7 @@ namespace VisualizeScalars.Rendering.Models
         {
             purgesiblings = true;
             Color = color == default ? new Vector4(25.5f, 178f, 255f, 25f) : color;
-            if (model is PositionColorNormalModel)
-            {
-                update((PositionColorNormalModel) model);
-            }
+            if (model is PositionColorNormalModel) update((PositionColorNormalModel) model);
         }
 
         public string series { get; set; } = "default";

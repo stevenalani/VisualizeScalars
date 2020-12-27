@@ -1,6 +1,4 @@
-﻿using System;
-using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
+﻿using OpenTK;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
@@ -16,12 +14,11 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             ChunkIdX = idX;
             ChunkIdY = idY;
             ChunkIdZ = idZ;
-           /* Position.X = dimension * idX * CubeScale + Position.X;
-            Position.Y = dimension * idY * CubeScale + Position.Y;
-            Position.Z = dimension * idZ * CubeScale + Position.Z;*/
+            /* Position.X = dimension * idX * CubeScale + Position.X;
+             Position.Y = dimension * idY * CubeScale + Position.Y;
+             Position.Z = dimension * idZ * CubeScale + Position.Z;*/
             DataPointers = null;
         }
-
 
 
         public override void SetVoxel(int x, int y, int z, T data)

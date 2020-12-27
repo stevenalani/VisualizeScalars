@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models.Voxel;
 
 namespace VisualizeScalars.Rendering.VoxelImporter

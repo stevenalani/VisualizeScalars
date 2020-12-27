@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Linq;
 using OpenTK;
+using OpenTK.Graphics.OpenGL4;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.ShaderImporter;
-using BeginMode = OpenTK.Graphics.OpenGL4.BeginMode;
-using BufferRangeTarget = OpenTK.Graphics.OpenGL4.BufferRangeTarget;
-using BufferTarget = OpenTK.Graphics.OpenGL4.BufferTarget;
-using BufferUsageHint = OpenTK.Graphics.OpenGL4.BufferUsageHint;
-using DrawElementsType = OpenTK.Graphics.OpenGL4.DrawElementsType;
-using GL = OpenTK.Graphics.OpenGL4.GL;
-using VertexAttribPointerType = OpenTK.Graphics.OpenGL4.VertexAttribPointerType;
 
 namespace VisualizeScalars.Rendering.Models
 {
     public class PositionColorNormalModel : Model
     {
-        public Mesh mesh;
         // Indices
         protected int Ebo = -1;
+
+        public Mesh mesh;
+
         // Vertex Array
         protected int Vao = -1;
+
         // Buffer
         protected int Vbo = -1;
-
-        public int Ssbo { get; set; }
         public PositionColorNormalVertex[] Vertices;
 
         public PositionColorNormalModel(PositionColorNormalVertex[] vertices, int[] indices,
@@ -34,11 +29,13 @@ namespace VisualizeScalars.Rendering.Models
             name = modelname + ID;
         }
 
+        public int Ssbo { get; set; }
+
         public int[] Indices { get; set; }
         public Vector3[] PrimitiveNormals { get; set; }
+
         public override void InitBuffers()
         {
-
             if (IsReady)
                 return;
             Vao = GL.GenVertexArray();
@@ -53,7 +50,8 @@ namespace VisualizeScalars.Rendering.Models
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Vertices.Length * sizeof(float) * 3), Vertices,
                 BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices.Select(x => (uint)x).ToArray(),
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)),
+                Indices.Select(x => (uint) x).ToArray(),
                 BufferUsageHint.StaticDraw);
 
 
@@ -62,7 +60,8 @@ namespace VisualizeScalars.Rendering.Models
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, Ssbo);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, PrimitiveNormals.Length * sizeof(float) * 3, PrimitiveNormals, BufferUsageHint.StaticDraw); // allocate 152 bytes of memory
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, PrimitiveNormals.Length * sizeof(float) * 3,
+                PrimitiveNormals, BufferUsageHint.StaticDraw); // allocate 152 bytes of memory
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, Ssbo);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 
@@ -101,15 +100,16 @@ namespace VisualizeScalars.Rendering.Models
 
     public class PositionNormalModel : Model
     {
-        public Mesh mesh;
         // Indices
         protected int Ebo = -1;
+
+        public Mesh mesh;
+
         // Vertex Array
         protected int Vao = -1;
+
         // Buffer
         protected int Vbo = -1;
-
-        public int Ssbo { get; set; }
         public PositionNormalVertex[] Vertices;
 
         public PositionNormalModel(PositionNormalVertex[] vertices, int[] indices,
@@ -120,11 +120,13 @@ namespace VisualizeScalars.Rendering.Models
             name = modelname + ID;
         }
 
+        public int Ssbo { get; set; }
+
         public int[] Indices { get; set; }
         public Vector3[] PrimitiveNormals { get; set; }
+
         public override void InitBuffers()
         {
-
             if (IsReady)
                 return;
             Vao = GL.GenVertexArray();
@@ -139,7 +141,8 @@ namespace VisualizeScalars.Rendering.Models
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Vertices.Length * sizeof(float) * 3), Vertices,
                 BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices.Select(x => (uint)x).ToArray(),
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)),
+                Indices.Select(x => (uint) x).ToArray(),
                 BufferUsageHint.StaticDraw);
 
 
@@ -148,7 +151,8 @@ namespace VisualizeScalars.Rendering.Models
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, Ssbo);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, PrimitiveNormals.Length * sizeof(float) * 3, PrimitiveNormals, BufferUsageHint.StaticDraw); // allocate 152 bytes of memory
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, PrimitiveNormals.Length * sizeof(float) * 3,
+                PrimitiveNormals, BufferUsageHint.StaticDraw); // allocate 152 bytes of memory
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, Ssbo);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 

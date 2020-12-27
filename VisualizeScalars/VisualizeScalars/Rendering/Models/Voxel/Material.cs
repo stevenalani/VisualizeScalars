@@ -8,6 +8,5 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         public Vector4 ColorMapping => new Vector4(Color);
 
         public bool IsSet => Color.W != 0;
-
     }
 }

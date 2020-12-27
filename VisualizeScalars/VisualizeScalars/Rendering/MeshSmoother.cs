@@ -13,57 +13,62 @@ using VisualizeScalars.Rendering.Models;
 
 namespace VisualizeScalars.Rendering
 {
-    public enum Smoothing { None, Laplacian1 = 1, Laplacian2 = 2, Laplacian5 = 5, Laplacian10 = 10, LaplacianHc1 = 1, LaplacianHc2 = 2, LaplacianHc5 = 5, LaplacianHc10 = 10 }
+    public enum Smoothing
+    {
+        None,
+        Laplacian1 = 1,
+        Laplacian2 = 2,
+        Laplacian5 = 5,
+        Laplacian10 = 10,
+        LaplacianHc1 = 1,
+        LaplacianHc2 = 2,
+        LaplacianHc5 = 5,
+        LaplacianHc10 = 10
+    }
+
     public static class MeshSmoother
     {
         public static Mesh LaplacianFilter(Mesh mesh, int times = 1)
         {
             var ordered = mesh.Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
-            var newVerts =  LaplacianFilter(ordered, mesh.Indices.ToArray(), times);
+            var newVerts = LaplacianFilter(ordered, mesh.Indices.ToArray(), times);
             mesh.Vertices = new Dictionary<Vector3, int>();
-            for (int i = 0; i < newVerts.Length; i++)
-            {
+            for (var i = 0; i < newVerts.Length; i++)
                 if (mesh.Vertices.ContainsKey(newVerts[i]))
                 {
                     var index = mesh.Vertices[newVerts[i]];
-                    int oldindex = -1;
+                    var oldindex = -1;
                     while ((oldindex = mesh.Indices.IndexOf(i)) != -1)
                     {
                         mesh.Indices.RemoveAt(oldindex);
                         mesh.Indices.Insert(oldindex, index);
-                        
                     }
                 }
                 else
                 {
                     mesh.Vertices.Add(newVerts[i], i);
                 }
-            }
+
             return mesh;
         }
 
         public static Vector3[] LaplacianFilter(Vector3[] vertices, int[] triangles, int times)
         {
             var network = VertexConnection.BuildNetwork(triangles);
-            for (int i = 0; i < times; i++)
-            {
-                vertices = LaplacianFilter(network, vertices, triangles);
-            }
+            for (var i = 0; i < times; i++) vertices = LaplacianFilter(network, vertices, triangles);
 
             return vertices;
         }
 
-        static Vector3[] LaplacianFilter(Dictionary<int, VertexConnection> network, Vector3[] origin, int[] triangles)
+        private static Vector3[] LaplacianFilter(Dictionary<int, VertexConnection> network, Vector3[] origin,
+            int[] triangles)
         {
-            Vector3[] vertices = new Vector3[origin.Length];
+            var vertices = new Vector3[origin.Length];
             for (int i = 0, n = origin.Length; i < n; i++)
             {
                 var connection = network[i].Connection;
                 var v = Vector3.Zero;
-                foreach (int adj in connection)
-                {
-                    v += origin[adj];
-                }
+                foreach (var adj in connection) v += origin[adj];
 
                 vertices[i] = v / connection.Count;
             }
@@ -79,32 +84,26 @@ namespace VisualizeScalars.Rendering
         public static Mesh HCFilter(Mesh mesh, int times = 5, float alpha = 0.5f, float beta = 0.75f)
         {
             var ordered = mesh.Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
-           // var vertices = HCFilter(mesh.Vertices.ToArray(), mesh.Indices.ToArray(), times, alpha, beta);
+            // var vertices = HCFilter(mesh.Vertices.ToArray(), mesh.Indices.ToArray(), times, alpha, beta);
             var vertices = HCFilter(ordered, mesh.Indices.ToArray(), times, alpha, beta);
             mesh.Vertices = new Dictionary<Vector3, int>();
             //mesh.Vertices = new List<Vector3>(vertices);
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                mesh.Vertices.Add(vertices[i], i);
-            }
+            for (var i = 0; i < vertices.Length; i++) mesh.Vertices.Add(vertices[i], i);
             //mesh.RecalculateNormals();
             //mesh.RecalculateBounds();
             return mesh;
         }
 
-        static Vector3[] HCFilter(Vector3[] vertices, int[] triangles, int times, float alpha, float beta)
+        private static Vector3[] HCFilter(Vector3[] vertices, int[] triangles, int times, float alpha, float beta)
         {
-            alpha = Math.Clamp(alpha,0,1);
-            beta = Math.Clamp(beta,0,1);
+            alpha = Math.Clamp(alpha, 0, 1);
+            beta = Math.Clamp(beta, 0, 1);
 
             var network = VertexConnection.BuildNetwork(triangles);
 
-            Vector3[] origin = new Vector3[vertices.Length];
+            var origin = new Vector3[vertices.Length];
             Array.Copy(vertices, origin, vertices.Length);
-            for (int i = 0; i < times; i++)
-            {
-                vertices = HCFilter(network, origin, vertices, triangles, alpha, beta);
-            }
+            for (var i = 0; i < times; i++) vertices = HCFilter(network, origin, vertices, triangles, alpha, beta);
 
             return vertices;
         }
@@ -112,22 +111,16 @@ namespace VisualizeScalars.Rendering
         public static Vector3[] HCFilter(Dictionary<int, VertexConnection> network, Vector3[] o, Vector3[] q,
             int[] triangles, float alpha, float beta)
         {
-            Vector3[] p = LaplacianFilter(network, q, triangles);
-            Vector3[] b = new Vector3[o.Length];
+            var p = LaplacianFilter(network, q, triangles);
+            var b = new Vector3[o.Length];
 
-            for (int i = 0; i < p.Length; i++)
-            {
-                b[i] = p[i] - (alpha * o[i] + (1f - alpha) * q[i]);
-            }
+            for (var i = 0; i < p.Length; i++) b[i] = p[i] - (alpha * o[i] + (1f - alpha) * q[i]);
 
-            for (int i = 0; i < p.Length; i++)
+            for (var i = 0; i < p.Length; i++)
             {
                 var adjacents = network[i].Connection;
                 var bs = Vector3.Zero;
-                foreach (int adj in adjacents)
-                {
-                    bs += b[adj];
-                }
+                foreach (var adj in adjacents) bs += b[adj];
 
                 p[i] = p[i] - (beta * b[i] + (1 - beta) / adjacents.Count * bs);
             }
@@ -138,22 +131,16 @@ namespace VisualizeScalars.Rendering
 
     public class VertexConnection
     {
-
-        public HashSet<int> Connection
-        {
-            get { return connection; }
-        }
-
-        HashSet<int> connection;
-
         public VertexConnection()
         {
-            this.connection = new HashSet<int>();
+            Connection = new HashSet<int>();
         }
+
+        public HashSet<int> Connection { get; }
 
         public void Connect(int to)
         {
-            connection.Add(to);
+            Connection.Add(to);
         }
 
         public static Dictionary<int, VertexConnection> BuildNetwork(int[] triangles)
@@ -163,20 +150,11 @@ namespace VisualizeScalars.Rendering
             for (int i = 0, n = triangles.Length; i < n; i += 3)
             {
                 int a = triangles[i], b = triangles[i + 1], c = triangles[i + 2];
-                if (!table.ContainsKey(a))
-                {
-                    table.Add(a, new VertexConnection());
-                }
+                if (!table.ContainsKey(a)) table.Add(a, new VertexConnection());
 
-                if (!table.ContainsKey(b))
-                {
-                    table.Add(b, new VertexConnection());
-                }
+                if (!table.ContainsKey(b)) table.Add(b, new VertexConnection());
 
-                if (!table.ContainsKey(c))
-                {
-                    table.Add(c, new VertexConnection());
-                }
+                if (!table.ContainsKey(c)) table.Add(c, new VertexConnection());
 
                 table[a].Connect(b);
                 table[a].Connect(c);
@@ -188,7 +166,5 @@ namespace VisualizeScalars.Rendering
 
             return table;
         }
-
     }
 }
-	

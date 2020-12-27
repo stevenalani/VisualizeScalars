@@ -40,16 +40,19 @@ namespace VisualizeScalars.Helpers
 
             return normal.Normalized();
         }
+
         public static double NormalizeValue(double val, double min, double max)
         {
             if (val == 0.0 || double.IsNaN(val) || max == 0.0)
                 return 0.0;
             return (val - min) / (max - min);
         }
+
         public static double NormalizeValue(double val, double max)
         {
             return NormalizeValue(val, 0, max);
         }
+
         public static Vector3 GetIntersection(Vector3 rayDirection, Vector3 rayPoint, Vector3 planePoint,
             Vector3 planeNormal)
         {

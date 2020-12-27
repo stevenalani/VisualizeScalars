@@ -6,15 +6,15 @@ in vec3 apos;
 in vec3 anormal;
 flat in int instanceID;
 
-layout(std430, binding = 2) buffer layer0
+layout(std430, binding = 0) buffer layer0
 {
     vec3 data1[];
 };
-layout(std430, binding = 3) buffer layer1
+layout(std430, binding = 1) buffer layer1
 {
     vec3 data2[];
 };
-layout(std430, binding = 4) buffer layer2
+layout(std430, binding = 2) buffer layer2
 {
     vec3 data3[];
 };
@@ -61,16 +61,15 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 
-    vec3 norm = normalize((inverse(model) * vec4(anormal,1.0)).xyz);
     vec3 pos = (model * vec4(apos, 1.0)).xyz;
     vec3 lightDir = normalize(lightPos - pos);
-    float diff = dot(norm, lightDir);
+    float diff = dot(anormal, lightDir);
     vec3 diffuse = diffuseStrength*diff * lightColor;
     
     vec4 layerColor = LayerColor[instanceID];
     // specular
     vec3 viewDir = normalize(viewpos - pos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
+    vec3 reflectDir = reflect(-lightDir, anormal);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), specularStrength);
     vec3 specular = spec * lightColor;  
         

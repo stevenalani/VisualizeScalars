@@ -1,39 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using OpenTK.Graphics.OpenGL4;
+using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.ShaderImporter;
-using Buffer = OpenTK.Graphics.OpenGL4.Buffer;
+using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
 namespace VisualizeScalars.Rendering.Models
 {
     public class RenderObject<T> : Model where T : struct, IVertex
     {
-        public T[] Vertices;
-        public int[] Indices;
-
         public List<BufferStorage> Buffers = new List<BufferStorage>();
+
         // Indices
         protected int Ebo = -1;
+        public int[] Indices;
+        private int TextureID = -1;
+
+        private readonly List<int> Textures = new List<int>();
+
         // Vertex Array
         protected int Vao = -1;
+
         // Buffer
         protected int Vbo = -1;
-        public bool DrawInstanced { get; set; } = false;
-        public int Instances { get; set; }
-        public RenderObject(Mesh mesh,string name, bool isInstanced = false, int instances = 2 ) :base(name)
+        public T[] Vertices;
+
+        public RenderObject(Mesh mesh, string name, bool isInstanced = false, int instances = 2) : base(name)
         {
             DrawInstanced = isInstanced;
             Instances = instances;
-            this.Mesh = mesh;
+            Mesh = mesh;
+            Vertices = Mesh.GetVertices<T>();
+            Indices = Mesh.GetIndices();
         }
+
         public RenderObject(string name, bool isInstanced = false, int instances = 2) : base(name)
         {
             DrawInstanced = isInstanced;
             Instances = instances;
         }
-        public override void Draw(ShaderProgram shaderProgram,Action<ShaderProgram> setUniforms)
+
+        public bool DrawInstanced { get; set; }
+        public int Instances { get; set; }
+        public List<Image> Images { get; set; } = new List<Image>();
+
+        private void Gen3DTextures()
+        {
+            if(Images.Count == 0)return;
+            
+            var dataList = new List<byte>();
+            var newWidth = Images.Sum(x => x.Width) / Images.Count;
+            var newHeight = Images.Sum(x => x.Height) / Images.Count;
+            Images = Images.Select(image => image.ResizeImage(newWidth, newHeight)).ToList();
+            foreach (var image in Images)
+            {
+                byte[] data;
+                using (var stream = new MemoryStream())
+                {
+                    image.Save(stream, ImageFormat.Png);
+                    data = stream.ToArray();
+                    dataList.AddRange(data);
+                }
+            }
+
+            var imageBuffer = dataList.ToArray();
+            TextureID = GL.GenTexture();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture3D, TextureID);
+            GL.TexStorage3D(TextureTarget3d.Texture3D, 1, SizedInternalFormat.Rgba32f, newWidth, newHeight,
+                Images.Count);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter,
+                (int) TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS,
+                (int) TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT,
+                (int) TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapR,
+                (int) TextureWrapMode.ClampToEdge);
+            GL.TexSubImage3D(TextureTarget.Texture3D, 0, 0, 0, 0, newWidth, newHeight, Images.Count,
+                PixelFormat.Rgba, PixelType.UnsignedByte, imageBuffer);
+            Textures.Add(TextureID);
+        }
+
+        public override void Draw(ShaderProgram shaderProgram, Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
             if (Mesh.Indices.Count == 0)
@@ -41,17 +95,25 @@ namespace VisualizeScalars.Rendering.Models
             setUniforms?.Invoke(shaderProgram);
             shaderProgram.SetUniformMatrix4X4("model", Modelmatrix);
             GL.BindVertexArray(Vao);
+            if (TextureID != -1)
+            {
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture3D, TextureID);
+            }
+
             // as set in the shadercode
-            int binding = 2;
+            var binding = 0;
             foreach (var buffer in Buffers)
             {
-                shaderProgram.SetUniformFloat($"BufferCnt[{binding-2}]", buffer.ValueCount);
+                shaderProgram.SetUniformFloat($"BufferCnt[{binding - 2}]", buffer.ValueCount);
                 buffer.Activate(binding++);
             }
+
             if (DrawInstanced)
             {
                 GL.BindVertexArray(Vao);
-                GL.DrawElementsInstanced(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero, Instances);
+                GL.DrawElementsInstanced(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt,
+                    IntPtr.Zero, Instances);
             }
             else
             {
@@ -61,14 +123,23 @@ namespace VisualizeScalars.Rendering.Models
             GL.BindVertexArray(0);
         }
 
-        public override void InitBuffers()
+        public void SetMesh(Mesh mesh)
         {
-            if (IsReady || Mesh.Indices.Count == 0)
-                return;
+            Mesh = mesh;
             Vertices = Mesh.GetVertices<T>();
             Indices = Mesh.GetIndices();
-            Vao = GL.GenVertexArray();
+        }
 
+        public override void InitBuffers()
+        {
+            if (IsReady)
+                return;
+            if (Vertices == null && Mesh != null)
+            {
+                Vertices = Mesh.GetVertices<T>();
+                Indices = Mesh.GetIndices();
+            }
+            Vao = GL.GenVertexArray();
             Vbo = GL.GenBuffer();
             Ebo = GL.GenBuffer();
             GL.BindVertexArray(Vao);
@@ -78,21 +149,21 @@ namespace VisualizeScalars.Rendering.Models
             GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), data,
                 BufferUsageHint.StaticDraw);
             var stride = dataPointerLength.Sum();
-            int offset = 0;
+            var offset = 0;
             // assigns pointers to vertex attribs like ordered in data from .GetValueArray()
-            for (int i = 0; i < dataPointerLength.Length; i++)
+            for (var i = 0; i < dataPointerLength.Length; i++)
             {
                 GL.EnableVertexAttribArray(i);
-                GL.VertexAttribPointer(i, dataPointerLength[i], VertexAttribPointerType.Float, false, sizeof(float) * stride , offset * sizeof(float));
+                GL.VertexAttribPointer(i, dataPointerLength[i], VertexAttribPointerType.Float, false,
+                    sizeof(float) * stride, offset * sizeof(float));
                 offset += dataPointerLength[i];
             }
 
-            foreach (var buffer in Buffers)
-            {
-                buffer.SetUp();
-            }
+            Gen3DTextures();
+            foreach (var buffer in Buffers) buffer.SetUp();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, Ebo);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)), Indices.Select(x => (uint)x).ToArray(),
+            GL.BufferData(BufferTarget.ElementArrayBuffer, new IntPtr(Indices.Length * sizeof(uint)),
+                Indices.Select(x => (uint) x).ToArray(),
                 BufferUsageHint.StaticDraw);
             GL.BindVertexArray(0);
 
@@ -102,80 +173,8 @@ namespace VisualizeScalars.Rendering.Models
         public override void Dispose()
         {
             GL.DeleteVertexArray(Vao);
-            GL.DeleteBuffers(2,new []{Vbo, Ebo});
+            GL.DeleteBuffers(2, new[] {Vbo, Ebo});
             Buffers.ForEach(x => x.Dispose());
         }
     }
-
-    public class BufferStorage : IDisposable
-    {
-        private static int bufferIndices = 2;
-        public int BufferID { get; private set; }
-        public int BufferIndex { get; }
-        public int ValueCount { get; set; }
-        byte[] bufferData;
-        private Type type;
-        
-        public bool IsReady { get; set; }
-         
-        public BufferStorage(float[] data)
-        {
-            BufferIndex = bufferIndices++;
-            ValueCount = data.Length;
-            bufferData = data.SelectMany(x => BitConverter.GetBytes(x)).ToArray();
-            type = typeof(float);
-        }
-        public BufferStorage(int[] data)
-        {
-            BufferIndex = bufferIndices++;
-            ValueCount = data.Length;
-            type = typeof(float);
-            bufferData = data.SelectMany(x => BitConverter.GetBytes(x)).ToArray();
-
-        }
-        public BufferStorage(byte[] data)
-        {
-            BufferIndex = bufferIndices++;
-            bufferData = data;
-            ValueCount = data.Length;
-            type = typeof(byte);
-        }
-
-        public void Activate(int binding)
-        {
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, BufferID);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, new IntPtr(bufferData.Length * getSize), bufferData, BufferUsageHint.StaticDraw);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, binding, BufferID);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-        }
-
-        public int getSize
-        {
-            get
-            {
-                if (type == typeof(float))
-                    return sizeof(float); 
-                if (type == typeof(int))
-                    return sizeof(int);
-                return 1;
-            }
-        }
-
-        public void SetUp()
-        {
-            if(IsReady) return;
-            BufferID = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, BufferID);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, bufferData.Length * getSize, bufferData, BufferUsageHint.StaticDraw);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, BufferIndex, BufferID);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-            IsReady = true;
-        }
-
-        public void Dispose()
-        {
-            GL.DeleteBuffer(BufferID);
-        }
-    }
-    
 }

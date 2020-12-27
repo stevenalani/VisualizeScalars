@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using OpenTK;
 using VisualizeScalars.Rendering.DataStructures;
-using VisualizeScalars.Rendering.ShaderImporter;
 
 namespace VisualizeScalars.Rendering.Models
 {
@@ -138,6 +136,5 @@ namespace VisualizeScalars.Rendering.Models
             Vertices = boundingBox.ToArray().Select(x => new PositionColorVertex
                 {Position = x, Color = new Vector4(0.1f, 0.5f, 0.2f, 0.2f)}).ToArray();
         }
-
     }
 }

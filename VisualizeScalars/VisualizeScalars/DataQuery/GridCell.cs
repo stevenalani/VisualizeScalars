@@ -10,33 +10,33 @@ namespace VisualizeScalars.DataQuery
     {
         public readonly Dictionary<string, float> Scalars = new Dictionary<string, float>();
         private bool _isSet;
-        public float Value(string property) => Scalars.ContainsKey(property)? Scalars[property]:0.0f;
+
+        public virtual Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f, 1);
+        public bool IsSet => Scalars.Count > 0;
+
+        public float Value(string property)
+        {
+            return Scalars.ContainsKey(property) ? Scalars[property] : 0.0f;
+        }
 
         public void Value(string property, float value)
         {
             if (Scalars.ContainsKey(property))
-            {
                 Scalars[property] = value;
-            }
             else
-            {
-                Scalars.Add(property,value);
-            }
-            
+                Scalars.Add(property, value);
         }
-
-        public virtual Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f,1);
-        public bool IsSet => Scalars.Count > 0; 
 
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
-            BaseGridCell cell = (BaseGridCell)obj;
+            var cell = (BaseGridCell) obj;
             var cellkeys = cell.Scalars.Keys.Select(x => x).ToArray().All(x => Scalars.ContainsKey(x));
             var cellvalues = cell.Scalars.Values.Select(x => x).ToArray().All(x => Scalars.ContainsValue(x));
             return cellvalues && cellkeys;
         }
+
         public override int GetHashCode()
         {
             return Tuple.Create(Scalars.Keys, Scalars.Values).GetHashCode();
@@ -46,99 +46,107 @@ namespace VisualizeScalars.DataQuery
     public class GridCell : BaseGridCell
     {
         /// <summary>
-        /// Höhen informationen
+        ///     Höhen informationen
         /// </summary>
         public double Height
         {
             get => Value("Height");
-            set => Value("Height", (float)value);
+            set => Value("Height", (float) value);
         }
+
         /// <summary>
-        /// Schüttdichte - wie Kompakt ist ein Boden
+        ///     Schüttdichte - wie Kompakt ist ein Boden
         /// </summary>
         public double BulkDensity
         {
             get => Value("BulkDensity");
-            set => Value("BulkDensity", (float)value);
+            set => Value("BulkDensity", (float) value);
         }
+
         /// <summary>
-        /// Wassermänge die der durchtränkte Boden halten kann (2-3 Tage)
+        ///     Wassermänge die der durchtränkte Boden halten kann (2-3 Tage)
         /// </summary>
         public double FieldCapacity
         {
             get => Value("FieldCapacity");
-            set => Value("FieldCapacity", (float)(double.IsNaN(value)?0.0:value));
+            set => Value("FieldCapacity", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         /// <summary>
-        /// Wassermänge welche für Pflanzen zur Verfügung steht
+        ///     Wassermänge welche für Pflanzen zur Verfügung steht
         /// </summary>
         public double ProfileAvailableWaterCapacity
         {
             get => Value("ProfileAvailableWaterCapacity");
-            set => Value("ProfileAvailableWaterCapacity", (float)value);
+            set => Value("ProfileAvailableWaterCapacity", (float) value);
         }
+
         /// <summary>
-        /// Bodenkohlenstoff Dichte - bestimmt die Fruchtbarkeit maßgeblich
+        ///     Bodenkohlenstoff Dichte - bestimmt die Fruchtbarkeit maßgeblich
         /// </summary>
         public double SoilCarbonDensity
         {
             get => Value("SoilCarbonDensity");
-            set => Value("SoilCarbonDensity", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("SoilCarbonDensity", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         /// <summary>
-        /// Wärmespeicherzahl 
+        ///     Wärmespeicherzahl
         /// </summary>
         public double ThermalCapacity
         {
             get => Value("ThermalCapacity");
-            set => Value("ThermalCapacity", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("ThermalCapacity", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         /// <summary>
-        /// Stickstoffgehalt
+        ///     Stickstoffgehalt
         /// </summary>
         public double TotalNitrogenDensity
         {
             get => Value("TotalNitrogenDensity");
-            set => Value("TotalNitrogenDensity", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("TotalNitrogenDensity", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         /// <summary>
-        /// Welkepunkt
+        ///     Welkepunkt
         /// </summary>
         public double WiltingPoint
         {
             get => Value("WiltingPoint");
-            set => Value("WiltingPoint", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("WiltingPoint", (float) (double.IsNaN(value) ? 0.0 : value));
         }
 
         public double Temperature
         {
             get => Value("Temperature");
-            set => Value("Temperature", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("Temperature", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         public double Pressure
         {
             get => Value("Pressure");
-            set => Value("Pressure", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("Pressure", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         public double Humidity
         {
             get => Value("Humidity");
-            set => Value("Humidity", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("Humidity", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         public double ParticulateMatter2_5
         {
             get => Value("ParticulateMatter2_5");
-            set => Value("ParticulateMatter2_5", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("ParticulateMatter2_5", (float) (double.IsNaN(value) ? 0.0 : value));
         }
+
         public double ParticulateMatter10
         {
             get => Value("ParticulateMatter10");
-            set => Value("ParticulateMatter10", (float)(double.IsNaN(value) ? 0.0 : value));
+            set => Value("ParticulateMatter10", (float) (double.IsNaN(value) ? 0.0 : value));
         }
 
         public override Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f, 1f);
-
     }
-
-    
 }

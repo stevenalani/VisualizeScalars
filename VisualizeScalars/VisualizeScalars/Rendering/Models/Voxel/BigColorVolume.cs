@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using OpenTK;
-using VisualizeScalars.Rendering.DataStructures;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
@@ -38,11 +35,11 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public class BigColorVolume : Volume<Material>
     {
         public static readonly string MapPath = ".\\maps\\";
-        public Vector3Int ChunkCount;
         private readonly bool[,,] ChunkHasChanges;
         private readonly BigColorVolumeChunk<Material>[,,] Chunks;
         private readonly int ChunkSize;
         private readonly string filename;
+        public Vector3Int ChunkCount;
 
         public BigColorVolume(int dimensionsX, int dimensionsY, int dimensionsZ, float cubeScale = 1f,
             int chunksize = 16)

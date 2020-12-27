@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using OpenTK;
-using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp.PixelFormats;
 using VisualizeScalars.DataQuery;
-using VisualizeScalars.Helpers;
-using VisualizeScalars.Rendering.ShaderImporter;
-using Vector4 = OpenTK.Vector4;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
-    class VisualizationModel<T> : ColorVolume<T> where T : BaseGridCell, new()
+    internal class VisualizationModel<T> : ColorVolume<T> where T : BaseGridCell, new()
     {
-        public DataGrid<T> DataGrid { get; set; }
-        private int colCount = 0;
-        private int rowCount = 0;
-        public byte[] ImageBuffer { get; set; }
-        private int TextureID;
         public delegate float DensityFunction();
-        public VisualizationModel(DataGrid<T> data) : base(1,1,1,1)
+
+        private int colCount;
+        private int rowCount;
+        private int TextureID;
+
+        public VisualizationModel(DataGrid<T> data) : base(1, 1, 1)
         {
-            this.DataGrid = data;
+            DataGrid = data;
         }
+
+        public DataGrid<T> DataGrid { get; set; }
+        public byte[] ImageBuffer { get; set; }
+
+        public string HeightMapping { get; set; }
 
         public void GenerateVolume(string HeightScalar = "Height")
         {
             HeightMapping = HeightScalar;
-            float[,] height = (float[,]) this.DataGrid.GetDataGrid(HeightScalar, false);
+            var height = DataGrid.GetDataGrid(HeightScalar);
             colCount = DataGrid.Width;
             rowCount = DataGrid.Height;
-            float maxVal = height[0, 0];
-            float minVal = height[0, 0];
+            var maxVal = height[0, 0];
+            var minVal = height[0, 0];
             for (var z = 1; z < rowCount; z++)
             for (var x = 1; x < colCount; x++)
             {
@@ -42,59 +40,48 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             }
 
             var deltaheight = maxVal - minVal;
-            this.Dimensions.X = colCount + 2;
-            this.Dimensions.Y = (int) Math.Ceiling(deltaheight + 4);
-            this.Dimensions.Z = rowCount + 2;
-            this.InitializeVolumeData();
+            Dimensions.X = colCount + 2;
+            Dimensions.Y = (int) Math.Ceiling(deltaheight + 4);
+            Dimensions.Z = rowCount + 2;
+            InitializeVolumeData();
 
 
-            for (var z = 0; z < rowCount; z++) 
-            { 
-                for (var x = 0; x < colCount; x++)
-                {
-                    var minNeighbour = getNeighbours(ref height, x, z).Min();
-                    var value = Math.Ceiling(height[x, z]);
-                    for (var i = minNeighbour - minVal-2; i <= value - minVal; i++)
-                    {
-                        SetVoxel(x + 1, (int) (i + 1), z + 1, DataGrid[x, z]);
-                    }
-                }
+            for (var z = 0; z < rowCount; z++)
+            for (var x = 0; x < colCount; x++)
+            {
+                var minNeighbour = getNeighbours(ref height, x, z).Min();
+                var value = Math.Ceiling(height[x, z]);
+                for (var i = minNeighbour - minVal - 2; i <= value - minVal; i++)
+                    SetVoxel(x + 1, (int) (i + 1), z + 1, DataGrid[x, z]);
             }
         }
 
         public BufferStorage[] GetBuffers()
         {
-            Dictionary<string,List<float>> data = new Dictionary<string, List<float>>();
+            var data = new Dictionary<string, List<float>>();
             var keys = DataGrid.PropertyNames;
             foreach (var propertyName in keys)
             {
-                if (propertyName == this.HeightMapping) continue;
+                if (propertyName == HeightMapping) continue;
                 data.Add(propertyName, new List<float>());
             }
-            
-            for (int i = 0; i < DataGrid.Height; i++)
-            {
-                for (int j = 0; j < DataGrid.Width; j++)
-                {            
-                    foreach (var propertyName in data.Keys)
+
+            for (var i = 0; i < DataGrid.Height; i++)
+            for (var j = 0; j < DataGrid.Width; j++)
+                foreach (var propertyName in data.Keys)
+                {
+                    if (propertyName == HeightMapping) continue;
+                    var value = DataGrid.ValueNormalized(j, i, propertyName);
+                    if (value > 0)
                     {
-                        if(propertyName == this.HeightMapping) continue;
-                        var value = (float) DataGrid.ValueNormalized(j, i,propertyName);
-                        if (value > 0)
-                        {
-                            data[propertyName].Add((float)j);
-                            data[propertyName].Add((float)i);
-                            data[propertyName].Add(value);
-                        }
+                        data[propertyName].Add(j);
+                        data[propertyName].Add(i);
+                        data[propertyName].Add(value);
                     }
                 }
-            }
 
             return data.Values.Select(x => new BufferStorage(x.ToArray())).ToArray();
-
         }
-
-        public string HeightMapping { get; set; }
 
         /*
         public override void InitBuffers()
@@ -211,88 +198,87 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             GL.BindVertexArray(0);
         }*/
 
-        private float[] getNeighbours(ref float[,] heights,int x, int z)
+        private float[] getNeighbours(ref float[,] heights, int x, int z)
         {
             float[] neighbours;
             if (x == 0 && z == 0)
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x + 1, z + 1],
-                        heights[x + 1, z]
+                    heights[x, z + 1],
+                    heights[x + 1, z + 1],
+                    heights[x + 1, z]
                 };
             else if (x == 0 && z < rowCount - 1)
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x + 1, z + 1],
-                        heights[x + 1, z],
-                        heights[x, z - 1],
-                        heights[x + 1, z - 1]
+                    heights[x, z + 1],
+                    heights[x + 1, z + 1],
+                    heights[x + 1, z],
+                    heights[x, z - 1],
+                    heights[x + 1, z - 1]
                 };
             else if (x == 0 && z == rowCount - 1)
                 neighbours = new[]
                 {
-                        heights[x + 1, z],
-                        heights[x, z - 1],
-                        heights[x + 1, z - 1]
+                    heights[x + 1, z],
+                    heights[x, z - 1],
+                    heights[x + 1, z - 1]
                 };
             else if (x < colCount - 1 && z == 0)
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x - 1, z + 1],
-                        heights[x + 1, z + 1],
-                        heights[x - 1, z],
-                        heights[x + 1, z]
+                    heights[x, z + 1],
+                    heights[x - 1, z + 1],
+                    heights[x + 1, z + 1],
+                    heights[x - 1, z],
+                    heights[x + 1, z]
                 };
             else if (x < colCount - 1 && z == rowCount - 1)
                 neighbours = new[]
                 {
-                        heights[x - 1, z],
-                        heights[x + 1, z],
-                        heights[x, z - 1],
-                        heights[x - 1, z - 1],
-                        heights[x + 1, z - 1]
+                    heights[x - 1, z],
+                    heights[x + 1, z],
+                    heights[x, z - 1],
+                    heights[x - 1, z - 1],
+                    heights[x + 1, z - 1]
                 };
             else if (x == colCount - 1 && z == 0)
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x - 1, z + 1],
-                        heights[x - 1, z]
+                    heights[x, z + 1],
+                    heights[x - 1, z + 1],
+                    heights[x - 1, z]
                 };
             else if (x == colCount - 1 && z < rowCount - 1)
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x - 1, z + 1],
-                        heights[x - 1, z],
-                        heights[x, z - 1],
-                        heights[x - 1, z - 1]
+                    heights[x, z + 1],
+                    heights[x - 1, z + 1],
+                    heights[x - 1, z],
+                    heights[x, z - 1],
+                    heights[x - 1, z - 1]
                 };
             else if (x == colCount - 1 && z == rowCount - 1)
                 neighbours = new[]
                 {
-                        heights[x - 1, z],
-                        heights[x, z - 1],
-                        heights[x - 1, z - 1]
+                    heights[x - 1, z],
+                    heights[x, z - 1],
+                    heights[x - 1, z - 1]
                 };
             else
                 neighbours = new[]
                 {
-                        heights[x, z + 1],
-                        heights[x - 1, z + 1],
-                        heights[x + 1, z + 1],
-                        heights[x - 1, z],
-                        heights[x + 1, z],
-                        heights[x, z - 1],
-                        heights[x - 1, z - 1],
-                        heights[x + 1, z - 1]
+                    heights[x, z + 1],
+                    heights[x - 1, z + 1],
+                    heights[x + 1, z + 1],
+                    heights[x - 1, z],
+                    heights[x + 1, z],
+                    heights[x, z - 1],
+                    heights[x - 1, z - 1],
+                    heights[x + 1, z - 1]
                 };
 
             return neighbours;
         }
-
     }
 }

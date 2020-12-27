@@ -7,16 +7,18 @@ using Newtonsoft.Json;
 
 namespace VisualizeScalars.DataQuery
 {
-    class AirdataReader
+    internal class AirdataReader
     {
-        private readonly string _workingDirectory;
         private readonly string _airdatapath = "luftdaten.info";
+        private readonly string _workingDirectory;
         private readonly Uri apiUri = new Uri("http://api.luftdaten.info/static/v1/data.json");
-        private string datadirectory => Path.Combine(_workingDirectory, _airdatapath);
+
         public AirdataReader(string workingDirectory)
         {
             _workingDirectory = workingDirectory;
         }
+
+        private string datadirectory => Path.Combine(_workingDirectory, _airdatapath);
 
         public void DownloadData()
         {
@@ -24,55 +26,61 @@ namespace VisualizeScalars.DataQuery
             var lastDownload = fileInfos.OrderBy(x => x.CreationTime).LastOrDefault();
             if (lastDownload == null || lastDownload.CreationTime < DateTime.Now.AddMinutes(-5))
             {
-                HttpWebResponse response = getWebResponse(apiUri);
+                var response = getWebResponse(apiUri);
                 SafeJson(response);
             }
         }
+
         private HttpWebResponse getWebResponse(Uri url)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest) WebRequest.Create(url);
             request.Method = "GET";
             request.PreAuthenticate = false;
             request.AllowAutoRedirect = true;
-            return (HttpWebResponse)request.GetResponse();
+            return (HttpWebResponse) request.GetResponse();
         }
 
         private void SafeJson(HttpWebResponse response)
         {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                {
-                    var content = reader.ReadToEnd();
-                    File.WriteAllText(Path.Combine(datadirectory,$"data{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}.json"), content);
-                    reader.Close();
-                    reader.Dispose();
-                }
+            using (var reader = new StreamReader(response.GetResponseStream()))
+            {
+                var content = reader.ReadToEnd();
+                File.WriteAllText(
+                    Path.Combine(datadirectory,
+                        $"data{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}.json"),
+                    content);
+                reader.Close();
+                reader.Dispose();
+            }
         }
+
         private List<AirSensorData> Deserialize(string content)
         {
-
-            return JsonConvert.DeserializeObject<List<AirSensorData>>(content,new JsonSerializerSettings()
+            return JsonConvert.DeserializeObject<List<AirSensorData>>(content, new JsonSerializerSettings
             {
                 FloatFormatHandling = FloatFormatHandling.DefaultValue,
                 Error = (sender, args) =>
                 {
                     if (args.CurrentObject is Sensordatavalue)
                     {
-                        Sensordatavalue value = args.CurrentObject as Sensordatavalue;
+                        var value = args.CurrentObject as Sensordatavalue;
 
                         if (value != null && args.ErrorContext.Member.ToString() == "value")
                         {
                             value.value = double.NaN;
                             args.ErrorContext.Handled = true;
                         }
-                    }else if (args.CurrentObject is Location)
+                    }
+                    else if (args.CurrentObject is Location)
                     {
-                        Location location = args.CurrentObject as Location;
+                        var location = args.CurrentObject as Location;
 
                         if (location != null && args.ErrorContext.Member.ToString() == "latitude")
                         {
                             location.latitude = double.NaN;
                             args.ErrorContext.Handled = true;
                         }
+
                         if (location != null && args.ErrorContext.Member.ToString() == "longitude")
                         {
                             location.longitude = double.NaN;
@@ -80,55 +88,57 @@ namespace VisualizeScalars.DataQuery
                         }
                     }
                 }
-
             });
         }
 
-        public AirInformation[,] BuildGrid(double latitudeSouth, double longitudeWest, double latitudeNorth, double longitudeEast, double gridUnit)
+        public AirInformation[,] BuildGrid(double latitudeSouth, double longitudeWest, double latitudeNorth,
+            double longitudeEast, double gridUnit)
         {
-            var cellCountY = (int)Math.Ceiling(Math.Abs(latitudeNorth - latitudeSouth) / gridUnit);
-            var cellCountX = (int)Math.Ceiling(Math.Abs(longitudeEast - longitudeWest) / gridUnit);
-           
-            AirInformation[,] result = new AirInformation[cellCountX,cellCountY];
-            
-            var files = Directory.EnumerateFiles(datadirectory,"*.json");
-            List<AirSensorData> temp = new List<AirSensorData>();
+            var cellCountY = (int) Math.Ceiling(Math.Abs(latitudeNorth - latitudeSouth) / gridUnit);
+            var cellCountX = (int) Math.Ceiling(Math.Abs(longitudeEast - longitudeWest) / gridUnit);
+
+            var result = new AirInformation[cellCountX, cellCountY];
+
+            var files = Directory.EnumerateFiles(datadirectory, "*.json");
+            var temp = new List<AirSensorData>();
             foreach (var file in files)
             {
                 var content = File.ReadAllText(file);
-                temp.AddRange(Deserialize(content).Where(x => 
+                temp.AddRange(Deserialize(content).Where(x =>
                     x.location.latitude <= latitudeNorth && x.location.latitude >= latitudeSouth &&
                     x.location.longitude <= longitudeEast && x.location.longitude >= longitudeWest));
             }
 
-            for (int y = 0; y < cellCountY; y++)
+            for (var y = 0; y < cellCountY; y++)
             {
                 var lat = latitudeSouth + y * gridUnit;
-                for (int x = 0; x < cellCountX; x++)
+                for (var x = 0; x < cellCountX; x++)
                 {
                     result[x, y] = new AirInformation();
                     var lng = longitudeWest + x * gridUnit;
-                    var values = temp.Where(x => Math.Abs(x.location.latitude - lat) < gridUnit && Math.Abs(x.location.longitude - lng) < gridUnit).SelectMany(d => d.sensordatavalues);
-                    
+                    var values = temp
+                        .Where(x => Math.Abs(x.location.latitude - lat) < gridUnit &&
+                                    Math.Abs(x.location.longitude - lng) < gridUnit)
+                        .SelectMany(d => d.sensordatavalues);
+
                     if (values.Any())
                     {
                         /*var particularMatterData = values.Where(v =>
                         v.sensordatavalues.All(d => d.value_type == "P1" || d.value_type == "P2"));
                         var climateData = values.Where(v =>
                         v.sensordatavalues.All(d => d.value_type == "temperature" || d.value_type == "pressure" || d.value_type == "humidity"));*/
-                        List<double> p1 = new List<double>();
-                        List<double> p2 = new List<double>();
-                        List<double> temperature = new List<double>();
-                        List<double> humidity = new List<double>();
-                        List<double> pressure = new List<double>();
+                        var p1 = new List<double>();
+                        var p2 = new List<double>();
+                        var temperature = new List<double>();
+                        var humidity = new List<double>();
+                        var pressure = new List<double>();
                         foreach (var data in values)
-                        {
                             switch (data.value_type)
                             {
-                                case "P1": 
+                                case "P1":
                                     p1.Add(data.value);
                                     break;
-                                case "P2": 
+                                case "P2":
                                     p2.Add(data.value);
                                     break;
                                 case "temperature":
@@ -140,24 +150,21 @@ namespace VisualizeScalars.DataQuery
                                 case "humidity":
                                     humidity.Add(data.value);
                                     break;
-                                default: break;
-
                             }
-                        }
 
-                        AirInformation ai = new AirInformation
+                        var ai = new AirInformation
                         {
                             P1 = p1.ToArray(),
                             P2 = p2.ToArray(),
                             Temperature = temperature.ToArray(),
                             Pressure = pressure.ToArray(),
-                            Humidity = humidity.ToArray(),
-
+                            Humidity = humidity.ToArray()
                         };
                         result[x, y] = ai;
                     }
                 }
             }
+
             return result;
         }
     }
@@ -213,7 +220,7 @@ namespace VisualizeScalars.DataQuery
         public double[] Humidity { get; set; }
         public double P1Avg => P1 != null ? P1.Sum() / P1.Length : double.NaN;
         public double P2Avg => P2 != null ? P2.Sum() / P2.Length : double.NaN;
-        public double TemperatureAvg => Temperature!=null? Temperature.Sum() / Temperature.Length : double.NaN;
+        public double TemperatureAvg => Temperature != null ? Temperature.Sum() / Temperature.Length : double.NaN;
         public double PressureAvg => Pressure != null ? Pressure.Sum() / Pressure.Length : double.NaN;
         public double HumidityAvg => Humidity != null ? Humidity.Sum() / Humidity.Length : double.NaN;
     }

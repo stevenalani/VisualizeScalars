@@ -89,8 +89,9 @@ namespace VisualizeScalars.Rendering.Models
             {
                 //modelsValue.Dispose();
             }
+
             UninitializedModels.Clear();
-            this._models.Clear();
+            _models.Clear();
         }
     }
 }

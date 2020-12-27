@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using VisualizeScalars.DataQuery;
+﻿using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace VisualizeScalars.Helpers
 {
@@ -45,6 +45,39 @@ namespace VisualizeScalars.Helpers
             return result;
         }
        */
+        /// <summary>
+        ///     Resize the image to the specified width and height.
+        /// </summary>
+        /// <param name="image">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <returns>The resized image.</returns>
+        /// https://stackoverflow.com/questions/1922040/how-to-resize-an-image-c-sharp
+        public static Image ResizeImage(this Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
         private static float Lerp(float s, float e, float t)
         {
             return s + (e - s) * t;
@@ -58,69 +91,59 @@ namespace VisualizeScalars.Helpers
 
         public static short[,] Scale(this short[,] self, float scale)
         {
-            
-            int oldWidth = self.GetLength(0);
-            int oldHeight = self.GetLength(1);
-            int newWidth = (int)(oldWidth * scale);
-            int newHeight = (int)(oldHeight * scale);
-            short[,] newData = new short[newWidth, newHeight];
+            var oldWidth = self.GetLength(0);
+            var oldHeight = self.GetLength(1);
+            var newWidth = (int) (oldWidth * scale);
+            var newHeight = (int) (oldHeight * scale);
+            var newData = new short[newWidth, newHeight];
 
-            for (int x = 0; x < newWidth; x++)
+            for (var x = 0; x < newWidth; x++)
+            for (var y = 0; y < newHeight; y++)
             {
-                for (int y = 0; y < newHeight; y++)
-                {
-                    float gx = ((float)x) / newWidth * (oldWidth - 1);
-                    float gy = ((float)y) / newHeight * (oldHeight - 1);
-                    int gxi = (int)gx;
-                    int gyi = (int)gy;
-                    short c00 = self[gxi, gyi];
-                    short c10 = self[gxi + 1, gyi];
-                    short c01 = self[gxi, gyi + 1];
-                    short c11 = self[gxi + 1, gyi + 1];
+                var gx = (float) x / newWidth * (oldWidth - 1);
+                var gy = (float) y / newHeight * (oldHeight - 1);
+                var gxi = (int) gx;
+                var gyi = (int) gy;
+                var c00 = self[gxi, gyi];
+                var c10 = self[gxi + 1, gyi];
+                var c01 = self[gxi, gyi + 1];
+                var c11 = self[gxi + 1, gyi + 1];
 
-                    short red = (short)Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
-                    newData[x, y] = red;
-                }
+                var red = (short) Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
+                newData[x, y] = red;
             }
 
             return newData;
-
         }
+
         // RosettaGit/content/drafts/bilinear_interpolation.md
         // https://github.com/ad-si/RosettaGit/blob/master/content/drafts/bilinear_interpolation.md
         public static float[,] Scale(this float[,] self, float scale)
         {
             if (scale <= 1) return self;
-            int oldWidth = self.GetLength(0);
-            int oldHeight = self.GetLength(1);
-            int newWidth = (int)(oldWidth * scale);
-            int newHeight = (int)(oldHeight * scale);
-            float[,] newData = new float[newWidth, newHeight];
+            var oldWidth = self.GetLength(0);
+            var oldHeight = self.GetLength(1);
+            var newWidth = (int) (oldWidth * scale);
+            var newHeight = (int) (oldHeight * scale);
+            var newData = new float[newWidth, newHeight];
 
-            for (int x = 0; x < newWidth; x++)
+            for (var x = 0; x < newWidth; x++)
+            for (var y = 0; y < newHeight; y++)
             {
-                for (int y = 0; y < newHeight; y++)
-                {
-                    float gx = ((float)x) / newWidth * (oldWidth - 1);
-                    float gy = ((float)y) / newHeight * (oldHeight - 1);
-                    int gxi = (int)gx;
-                    int gyi = (int)gy;
-                    float c00 = (float)self[gxi, gyi];
-                    float c10 = (float)self[gxi + 1, gyi];
-                    float c01 = (float)self[gxi, gyi + 1];
-                    float c11 = (float)self[gxi + 1, gyi + 1];
+                var gx = (float) x / newWidth * (oldWidth - 1);
+                var gy = (float) y / newHeight * (oldHeight - 1);
+                var gxi = (int) gx;
+                var gyi = (int) gy;
+                var c00 = self[gxi, gyi];
+                var c10 = self[gxi + 1, gyi];
+                var c01 = self[gxi, gyi + 1];
+                var c11 = self[gxi + 1, gyi + 1];
 
-                    float red = Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
-                    newData[x, y] = red;
-                }
+                var red = Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
+                newData[x, y] = red;
             }
 
             return newData;
-
         }
-
-        
-    }        
-
-
+    }
 }

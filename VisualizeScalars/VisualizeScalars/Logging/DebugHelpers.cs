@@ -6,9 +6,9 @@ namespace VisualizeScalars.Logging
 {
     public class Logger
     {
+        private readonly Thread LoggingTask;
         private bool _doLog;
         public ConcurrentQueue<LogMessage> loggingQueue = new ConcurrentQueue<LogMessage>();
-        private readonly Thread LoggingTask;
 
         public Logger()
         {

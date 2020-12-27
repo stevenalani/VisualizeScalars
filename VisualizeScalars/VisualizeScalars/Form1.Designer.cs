@@ -52,35 +52,15 @@ namespace VisualizeScalars
             this.tbxNorth = new System.Windows.Forms.TextBox();
             this.tbxEast = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
-            this.label8 = new System.Windows.Forms.Label();
             this.cbxMeshMode = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.mtbxInterpolation = new System.Windows.Forms.MaskedTextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.cbxSmoothing = new System.Windows.Forms.ComboBox();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.cmdLoadMap = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.glControl = new OpenTK.GLControl();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.lLightPosZ = new System.Windows.Forms.Label();
-            this.lLightPosY = new System.Windows.Forms.Label();
-            this.lLightPosX = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.tbSpecularFactor = new System.Windows.Forms.TrackBar();
-            this.label14 = new System.Windows.Forms.Label();
-            this.tbAmbientFactor = new System.Windows.Forms.TrackBar();
-            this.label15 = new System.Windows.Forms.Label();
-            this.tbDiffuseFactor = new System.Windows.Forms.TrackBar();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tbLightZ = new System.Windows.Forms.TrackBar();
-            this.label11 = new System.Windows.Forms.Label();
-            this.tbLightX = new System.Windows.Forms.TrackBar();
-            this.label10 = new System.Windows.Forms.Label();
-            this.tbLightY = new System.Windows.Forms.TrackBar();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -95,21 +75,11 @@ namespace VisualizeScalars
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbSpecularFactor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbAmbientFactor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDiffuseFactor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightZ)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightY)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -130,16 +100,12 @@ namespace VisualizeScalars
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.checkBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.label9);
-            this.splitContainer1.Panel1.Controls.Add(this.trackBar2);
-            this.splitContainer1.Panel1.Controls.Add(this.label8);
             this.splitContainer1.Panel1.Controls.Add(this.cbxMeshMode);
             this.splitContainer1.Panel1.Controls.Add(this.label7);
             this.splitContainer1.Panel1.Controls.Add(this.mtbxInterpolation);
             this.splitContainer1.Panel1.Controls.Add(this.label6);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
             this.splitContainer1.Panel1.Controls.Add(this.cbxSmoothing);
-            this.splitContainer1.Panel1.Controls.Add(this.trackBar1);
             this.splitContainer1.Panel1.Controls.Add(this.cmdLoadMap);
             // 
             // splitContainer1.Panel2
@@ -328,35 +294,6 @@ namespace VisualizeScalars
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(19, 718);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(73, 15);
-            this.label9.TabIndex = 22;
-            this.label9.Text = "CameraNear";
-            // 
-            // trackBar2
-            // 
-            this.trackBar2.Location = new System.Drawing.Point(19, 736);
-            this.trackBar2.Maximum = 10000;
-            this.trackBar2.Minimum = 1;
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(229, 45);
-            this.trackBar2.TabIndex = 21;
-            this.trackBar2.Value = 1;
-            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(19, 659);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(64, 15);
-            this.label8.TabIndex = 20;
-            this.label8.Text = "CameraFar";
-            // 
             // cbxMeshMode
             // 
             this.cbxMeshMode.FormattingEnabled = true;
@@ -424,17 +361,6 @@ namespace VisualizeScalars
             this.cbxSmoothing.TabIndex = 13;
             this.cbxSmoothing.SelectedIndexChanged += new System.EventHandler(this.cbxSmoothing_SelectedIndexChanged);
             // 
-            // trackBar1
-            // 
-            this.trackBar1.Location = new System.Drawing.Point(19, 677);
-            this.trackBar1.Maximum = 10000;
-            this.trackBar1.Minimum = 10;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(229, 45);
-            this.trackBar1.TabIndex = 2;
-            this.trackBar1.Value = 10;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
-            // 
             // cmdLoadMap
             // 
             this.cmdLoadMap.Location = new System.Drawing.Point(19, 633);
@@ -452,10 +378,6 @@ namespace VisualizeScalars
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.glControl);
-            // 
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
@@ -463,189 +385,14 @@ namespace VisualizeScalars
             this.splitContainer2.SplitterDistance = 592;
             this.splitContainer2.TabIndex = 2;
             // 
-            // glControl
-            // 
-            this.glControl.AutoSize = true;
-            this.glControl.BackColor = System.Drawing.Color.Black;
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(0, 0);
-            this.glControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(1004, 592);
-            this.glControl.TabIndex = 1;
-            this.glControl.VSync = true;
-            this.glControl.Load += new System.EventHandler(this.glControl_Load);
-            this.glControl.Scroll += new System.Windows.Forms.ScrollEventHandler(this.glControl_Scroll);
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl_KeyDown);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseWheel);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
-            // 
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitContainer3.Location = new System.Drawing.Point(0, 2);
             this.splitContainer3.Name = "splitContainer3";
-            // 
-            // splitContainer3.Panel1
-            // 
-            this.splitContainer3.Panel1.Controls.Add(this.lLightPosZ);
-            this.splitContainer3.Panel1.Controls.Add(this.lLightPosY);
-            this.splitContainer3.Panel1.Controls.Add(this.lLightPosX);
-            this.splitContainer3.Panel1.Controls.Add(this.label13);
-            this.splitContainer3.Panel1.Controls.Add(this.tbSpecularFactor);
-            this.splitContainer3.Panel1.Controls.Add(this.label14);
-            this.splitContainer3.Panel1.Controls.Add(this.tbAmbientFactor);
-            this.splitContainer3.Panel1.Controls.Add(this.label15);
-            this.splitContainer3.Panel1.Controls.Add(this.tbDiffuseFactor);
-            this.splitContainer3.Panel1.Controls.Add(this.label12);
-            this.splitContainer3.Panel1.Controls.Add(this.tbLightZ);
-            this.splitContainer3.Panel1.Controls.Add(this.label11);
-            this.splitContainer3.Panel1.Controls.Add(this.tbLightX);
-            this.splitContainer3.Panel1.Controls.Add(this.label10);
-            this.splitContainer3.Panel1.Controls.Add(this.tbLightY);
             this.splitContainer3.Size = new System.Drawing.Size(1004, 199);
             this.splitContainer3.SplitterDistance = 333;
             this.splitContainer3.TabIndex = 0;
-            // 
-            // lLightPosZ
-            // 
-            this.lLightPosZ.AutoSize = true;
-            this.lLightPosZ.Location = new System.Drawing.Point(124, 168);
-            this.lLightPosZ.Name = "lLightPosZ";
-            this.lLightPosZ.Size = new System.Drawing.Size(44, 15);
-            this.lLightPosZ.TabIndex = 59;
-            this.lLightPosZ.Text = "label19";
-            // 
-            // lLightPosY
-            // 
-            this.lLightPosY.AutoSize = true;
-            this.lLightPosY.Location = new System.Drawing.Point(123, 96);
-            this.lLightPosY.Name = "lLightPosY";
-            this.lLightPosY.Size = new System.Drawing.Size(44, 15);
-            this.lLightPosY.TabIndex = 58;
-            this.lLightPosY.Text = "label19";
-            // 
-            // lLightPosX
-            // 
-            this.lLightPosX.AutoSize = true;
-            this.lLightPosX.Location = new System.Drawing.Point(123, 35);
-            this.lLightPosX.Name = "lLightPosX";
-            this.lLightPosX.Size = new System.Drawing.Size(44, 15);
-            this.lLightPosX.TabIndex = 57;
-            this.lLightPosX.Text = "label19";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(177, 129);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(83, 15);
-            this.label13.TabIndex = 56;
-            this.label13.Text = "Specularfaktor";
-            // 
-            // tbSpecularFactor
-            // 
-            this.tbSpecularFactor.Location = new System.Drawing.Point(173, 147);
-            this.tbSpecularFactor.Maximum = 256000;
-            this.tbSpecularFactor.Name = "tbSpecularFactor";
-            this.tbSpecularFactor.Size = new System.Drawing.Size(104, 45);
-            this.tbSpecularFactor.TabIndex = 53;
-            this.tbSpecularFactor.Scroll += new System.EventHandler(this.tbSpecularFactor_Scroll);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(173, 78);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(75, 15);
-            this.label14.TabIndex = 54;
-            this.label14.Text = "Diffusefaktor";
-            // 
-            // tbAmbientFactor
-            // 
-            this.tbAmbientFactor.Location = new System.Drawing.Point(173, 30);
-            this.tbAmbientFactor.Maximum = 1000;
-            this.tbAmbientFactor.Name = "tbAmbientFactor";
-            this.tbAmbientFactor.Size = new System.Drawing.Size(104, 45);
-            this.tbAmbientFactor.TabIndex = 51;
-            this.tbAmbientFactor.Scroll += new System.EventHandler(this.trackBar7_Scroll);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(173, 12);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(84, 15);
-            this.label15.TabIndex = 55;
-            this.label15.Text = "Ambientfactor";
-            // 
-            // tbDiffuseFactor
-            // 
-            this.tbDiffuseFactor.Location = new System.Drawing.Point(173, 96);
-            this.tbDiffuseFactor.Maximum = 1000;
-            this.tbDiffuseFactor.Name = "tbDiffuseFactor";
-            this.tbDiffuseFactor.Size = new System.Drawing.Size(104, 45);
-            this.tbDiffuseFactor.TabIndex = 52;
-            this.tbDiffuseFactor.Scroll += new System.EventHandler(this.tbDiffuseFactor_Scroll);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(14, 131);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(60, 15);
-            this.label12.TabIndex = 50;
-            this.label12.Text = "LightPosZ";
-            // 
-            // tbLightZ
-            // 
-            this.tbLightZ.Location = new System.Drawing.Point(14, 147);
-            this.tbLightZ.Maximum = 5000;
-            this.tbLightZ.Minimum = -5000;
-            this.tbLightZ.Name = "tbLightZ";
-            this.tbLightZ.Size = new System.Drawing.Size(104, 45);
-            this.tbLightZ.TabIndex = 47;
-            this.tbLightZ.Scroll += new System.EventHandler(this.trackBar5_Scroll);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(13, 65);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(60, 15);
-            this.label11.TabIndex = 48;
-            this.label11.Text = "LightPosY";
-            // 
-            // tbLightX
-            // 
-            this.tbLightX.Location = new System.Drawing.Point(14, 22);
-            this.tbLightX.Maximum = 5000;
-            this.tbLightX.Minimum = -5000;
-            this.tbLightX.Name = "tbLightX";
-            this.tbLightX.Size = new System.Drawing.Size(104, 45);
-            this.tbLightX.TabIndex = 45;
-            this.tbLightX.Scroll += new System.EventHandler(this.trackBar3_Scroll);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 4);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(60, 15);
-            this.label10.TabIndex = 49;
-            this.label10.Text = "LightPosX";
-            // 
-            // tbLightY
-            // 
-            this.tbLightY.Location = new System.Drawing.Point(13, 83);
-            this.tbLightY.Maximum = 2000;
-            this.tbLightY.Minimum = -2000;
-            this.tbLightY.Name = "tbLightY";
-            this.tbLightY.Size = new System.Drawing.Size(104, 45);
-            this.tbLightY.TabIndex = 46;
-            this.tbLightY.Scroll += new System.EventHandler(this.trackBar4_Scroll);
             // 
             // tabControl1
             // 
@@ -742,23 +489,11 @@ namespace VisualizeScalars
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.splitContainer3.Panel1.ResumeLayout(false);
-            this.splitContainer3.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.tbSpecularFactor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbAmbientFactor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDiffuseFactor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightZ)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbLightY)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -771,9 +506,7 @@ namespace VisualizeScalars
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private GLControl glControl;
         private System.Windows.Forms.Button cmdLoadMap;
-        private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbxEast;
         private System.Windows.Forms.TextBox tbxNorth;
@@ -788,25 +521,10 @@ namespace VisualizeScalars
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cbxSmoothing;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnUpdateData;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TrackBar trackBar2;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TrackBar tbLightZ;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TrackBar tbLightX;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TrackBar tbLightY;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TrackBar tbSpecularFactor;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TrackBar tbAmbientFactor;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.TrackBar tbDiffuseFactor;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -822,9 +540,6 @@ namespace VisualizeScalars
         private Button button2;
         private Label label18;
         private TrackBar trackBar3;
-        private Label lLightPosZ;
-        private Label lLightPosY;
-        private Label lLightPosX;
         private TabPage tabPage3;
     }
 }

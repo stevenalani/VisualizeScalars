@@ -54,6 +54,7 @@ namespace VisualizeScalars.Rendering.ShaderImporter
 
             LinkShadersToProgram(vertexShader, fragmentShader);
         }
+
         private object CompileGeometryShader(string geoPath)
         {
             var shader = GL.CreateShader(ShaderType.GeometryShader);
@@ -173,7 +174,7 @@ namespace VisualizeScalars.Rendering.ShaderImporter
         {
             if (!IsCompiled) return;
             var location = GL.GetUniformLocation(ID, name);
-            GL.Uniform3(location, vec3.X,vec3.Y,vec3.Z);
+            GL.Uniform3(location, vec3.X, vec3.Y, vec3.Z);
         }
 
         public void SetUniformVector4(string name, Vector4 vec4)
