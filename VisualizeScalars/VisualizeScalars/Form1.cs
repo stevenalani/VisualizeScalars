@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using VisualizeScalars.DataQuery;
+using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models;
 using VisualizeScalars.Rendering.Models.Voxel;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace VisualizeScalars
 {
@@ -23,7 +20,7 @@ namespace VisualizeScalars
         private readonly DataFileQuerent Querernt;
         private RenderingForm renderingForm;
         private RegionSelectionForm selectionForm;
-
+        private DataGrid<GridCell> BaseDataGrid { get; set; }
 
         private readonly string workdir = "D:\\earthdata";
 
@@ -33,22 +30,16 @@ namespace VisualizeScalars
             downloader = new EarthdataDownloader(workdir, "alani", "Ibm4037!ajs");
             Reader = new HgtFileReader("D:\\earthdata");
             Querernt = new DataFileQuerent(workdir, downloader, Reader);
-
-
             InitializeComponent();
-        }
 
-        private DataGrid<GridCell> BaseDataGrid { get; set; }
+        }
 
 
         private void Form1_Load_1(object sender, EventArgs e)
         {
             selectionForm = new RegionSelectionForm(Querernt);
             renderingForm = new RenderingForm();
-            tbxSouth.Text = "48.75";
-            tbxWest.Text = "9.1566";
-            tbxNorth.Text = "48.8"; //"48.7853";
-            tbxEast.Text = "9.2"; //"9.179";//"6,4";//"9.18";
+           
             mtbxInterpolation.Text = "1";
             cbxSmoothing.SelectedIndex = 2;
             cbxMeshMode.SelectedIndex = 0;
@@ -58,47 +49,81 @@ namespace VisualizeScalars
 
         private void btnUpdateData_Click(object sender, EventArgs e)
         {
-            var inputS = tbxSouth.Text.Trim().Replace('.', ',');
-            var inputW = tbxWest.Text.Trim().Replace('.', ',');
-            
-            var inputN = tbxNorth.Text.Trim().Replace('.', ',');
-            
-            var inputE = tbxEast.Text.Trim().Replace('.', ',');
-            
-            var tstS = Convert.ToDouble(inputS);
-            var tstW = Convert.ToDouble(inputW);
-            var tstN = Convert.ToDouble(inputN);
-            var tstE = Convert.ToDouble(inputE);
-            var latSouth = tstS;
-            var lngWest = tstW;
-            var latNorth = tstN;
-            var lngEast = tstE;
-            /*
-            var dataSet = Querernt.GetDataForArea(latSouth, lngWest, latNorth, lngEast);
-            var gridsize = Querernt.GetGridUnitStep();
-            BaseDataGrid = new DataGrid<GridCell>(dataSet, gridsize, latSouth, lngWest);
-            */
-
             clbScalarselection.Items.Clear();
             BaseDataGrid = selectionForm.GetDataGrid();
-            if(BaseDataGrid == null) return;
+            if (BaseDataGrid == null) return;
+            tbxSouth.Text = BaseDataGrid.South.ToString(CultureInfo.InvariantCulture);
+            tbxWest.Text = BaseDataGrid.West.ToString(CultureInfo.InvariantCulture);
+            tbxNorth.Text = BaseDataGrid.North.ToString(CultureInfo.InvariantCulture);
+            tbxEast.Text = BaseDataGrid.East.ToString(CultureInfo.InvariantCulture);
+           
             
             clbScalarselection.Items.AddRange(BaseDataGrid.PropertyNames);
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (BaseDataGrid == null) return;
+            var items = clbScalarselection.CheckedItems.Cast<string>().ToList();
+            Model = new VisualizationModel<BaseGridCell>(BaseDataGrid.Select<BaseGridCell>(items.ToArray()));
+            populateTextures();
+        }
+
+        private void populateTextures()
+        {
+            var properties = Model.DataGrid.PropertyNames;
+            cbxScalarYMapping.Items.Clear();
+            cbxScalarYMapping.Items.AddRange(properties);
+            cbxScalarYMapping.SelectedIndex = 0;
+            gbColorSelection.Controls.Clear();
+            int top = 15;
+            foreach (var property in properties)
+            {
+                var control = new ColorSelection(property, Model.DataGrid.GetDataGrid(property));
+                control.Top = top;
+
+                top += control.Height + 1;
+                gbColorSelection.Controls.Add(control);
+            }
         }
 
         private void cmdLoadMap_Click(object sender, EventArgs e)
         {
+            if (Model == null) return;
+            var interpol = Convert.ToSingle(mtbxInterpolation.Text);
+            if (Math.Abs(interpol - 1.0f) > 0.01)
+            {
+                Model.DataGrid.Scale(interpol, false, true);
+                populateTextures();
+            }
+
             var renderobj =
                 new RenderObject<PositionNormalVertex>("model", true, Model.DataGrid.PropertyNames.Length);
+            foreach (var control in gbColorSelection.Controls)
+            {
+                if (control is CustomTextureUC)
+                {
+                    var ctuc = control as CustomTextureUC;
+                    renderobj.Images.Add(ctuc.Grid.CreateBitmap(ctuc.Color,ctuc.Radius));
+                }
+
+                if (control is ColorSelection)
+                {
+                    var cs = control as ColorSelection;
+                    renderobj.Images.Add(cs.Grid.CreateBitmap(cs.Color, cs.Radius,true));
+                }
+
+                renderobj.Instances = renderobj.Images.Count + 1;
+            }
             UpdateMesh(renderobj);
 
-            renderobj.PivotPoint = new Vector3(Model.DataGrid.Width, 0, Model.DataGrid.Height);
+            renderobj.PivotPoint = new Vector3(Model.DataGrid.Width/2.0f, 0, Model.DataGrid.Height / 2.0f);
             selectionForm.Invoke(selectionForm.getImageDelegate, 1);
             //renderobj.Images.Add(selectionForm.TargetBitmap);
             var map = new ImagePlane(selectionForm.TargetBitmap);
-
-            var coord = new ColorVolume<Material>(5, 5, 5);
-            for (var i = 0; i < 5; i++)
+            
+            
+            var coord = new ColorVolume<Material>(100,100,100);
+            for (var i = 0; i < 100; i++)
             {
                 coord.SetVoxel(i, 0, 0, new Material {Color = new Vector4(1, 0, 0, 1)});
                 coord.SetVoxel(0, i, 0, new Material {Color = new Vector4(0, 1, 0, 1)});
@@ -107,12 +132,17 @@ namespace VisualizeScalars
 
             var mesh2 = MeshExtractor.ComputeCubicMesh(coord);
             var renderobj2 = new RenderObject<PositionColorNormalVertex>(mesh2, "coordinates");
-            renderobj2.Scales = Vector3.One * 10;
+            
 
             renderingForm.ClearModels();
+            var interpolation = Convert.ToSingle(mtbxInterpolation.Text);
+            renderobj.Scales = new Vector3(30f / interpolation, 1f, 30f / interpolation);
+            map.Position.Y = -0.01f;
+            map.Scales = new Vector3(Model.DataGrid.Width * renderobj.Scales.X / map.Width,1, Model.DataGrid.Height * renderobj.Scales.Z / map.Height);
+            
             renderingForm.AddModel(renderobj);
             renderingForm.AddModel(renderobj2);
-
+            renderingForm.AddModel(map);
             renderingForm.Camera.ViewDirection = (renderobj.Position - renderingForm.Camera.Position).Normalized();
             mtbxInterpolation.Text = "1.0";
             renderingForm.Render();
@@ -125,6 +155,13 @@ namespace VisualizeScalars
             if (cbxScalarYMapping.SelectedIndex != -1)
                 prop = cbxScalarYMapping.Text;
             Model.HeightMapping = prop;
+            var interpol = Convert.ToSingle(mtbxInterpolation.Text);
+            if (Math.Abs(interpol - 1.0f) > 0.01)
+            {
+                Model.DataGrid.Scale(interpol, false, false);
+                mtbxInterpolation.Text = "1.0";
+            }
+
             var meshMode = getMeshMode();
 
             if (meshMode == MeshMode.MarchingCubes)
@@ -224,7 +261,7 @@ namespace VisualizeScalars
 
             var width = grid.GetLength(0);
             var height = grid.GetLength(1);
-            dgvScalarTable.ColumnCount = height;
+            dgvScalarTable.ColumnCount = width;
 
             for (var y = 0; y < height; y++)
             {
@@ -294,23 +331,16 @@ namespace VisualizeScalars
             if (Model == null) return;
             try
             {
-                var mapping = ((ComboBox) sender).Text;
-
                 var renderObject =
-                    (RenderObject<PositionNormalTexcoordVertex>) renderingForm.GetModel("model").FirstOrDefault();
+                    (RenderObject<PositionNormalVertex>) renderingForm.GetModel("model").FirstOrDefault();
                 if (renderObject == null)
                 {
-                    renderObject = new RenderObject<PositionNormalTexcoordVertex>("model");
+                    renderObject = new RenderObject<PositionNormalVertex>("model");
                     renderingForm.AddModel(renderObject);
                 }
 
                 renderObject.PivotPoint = -new Vector3(Model.DataGrid.Width / 2f, 0, Model.DataGrid.Height / 2f);
                 UpdateMesh(renderObject);
-                var buffers = Model.GetBuffers();
-                renderObject.DrawInstanced = buffers.Length > 0;
-                renderObject.Instances = buffers.Length + 1;
-                renderObject.Buffers.Clear();
-                renderObject.Buffers.AddRange(buffers);
             }
             catch (Exception exception)
             {
@@ -327,14 +357,7 @@ namespace VisualizeScalars
             cbxViewScalar.Items.AddRange(Model.DataGrid.PropertyNames);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (BaseDataGrid == null) return;
-            var items = clbScalarselection.CheckedItems.Cast<string>().ToList();
-            Model = new VisualizationModel<BaseGridCell>(BaseDataGrid.Select<BaseGridCell>(items.ToArray()));
-            cbxScalarYMapping.Items.Clear();
-            cbxScalarYMapping.Items.AddRange(Model.DataGrid.PropertyNames);
-        }
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -353,89 +376,22 @@ namespace VisualizeScalars
 
         private void trackBar3_Scroll_1(object sender, EventArgs e)
         {
-            renderingForm.scalarRadius = trackBar3.Value;
+            renderingForm.scalarRadius = tbTextureOffset.Value;
         }
 
 
         private void tabPage3_Click(object sender, EventArgs e)
         {
         }
-    }
 
-    internal class ImagePlane : RenderObject<PositionNormalTexcoordVertex>
-    {
-        private readonly int height;
-        private readonly byte[] ImageData;
-        private int TexID;
-        private readonly int width;
-
-        public ImagePlane(Bitmap bitmap) : base("map")
+        private void cmdCreateTexture_Click(object sender, EventArgs e)
         {
-            width = bitmap.Width;
-            height = bitmap.Height;
-            Vertices = new[]
-            {
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(0.0f, 0.0f, 0.0f),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(0.0f, 0.0f)
-                },
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(bitmap.Width, 0.0f, 0.0f),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(1.0f, 0.0f)
-                },
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(bitmap.Width, 0.0f, bitmap.Height),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(1.0f, 1.0f)
-                },
-
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(0.0f),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(0.0f, 0.0f)
-                },
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(bitmap.Width, 0.0f, bitmap.Height),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(1.0f, 1.0f)
-                },
-                new PositionNormalTexcoordVertex
-                {
-                    Position = new Vector3(0.0f, 0.0f, bitmap.Height),
-                    Normal = Vector3.UnitY,
-                    TexCoord = new Vector2(0.0f, 1.0f)
-                }
-            };
-            Indices = new[] {1,2,3,4,5,6};
-            using var stream = new MemoryStream();
-            bitmap.Save(stream, ImageFormat.Png);
-            ImageData = stream.ToArray();
-        }
-
-        public override void InitBuffers()
-        {
-            base.InitBuffers();
-            TexID = GL.GenTexture();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, TexID);
-            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba32f, width, height);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int) TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                (int) TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                (int) TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR,
-                (int) TextureWrapMode.ClampToEdge);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba,
-                PixelType.UnsignedByte, ImageData);
+            if(Model?.DataGrid == null) return;
+            var lastControl = this.gbColorSelection.Controls[this.gbColorSelection.Controls.Count - 1];
+            var top = lastControl.Top + lastControl.Height + 5;
+            var newCtrl = new CustomTextureUC(Model.DataGrid) {Top = top};
+            this.gbColorSelection.Controls.Add(newCtrl);
+            
         }
     }
 }

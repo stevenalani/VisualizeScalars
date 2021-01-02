@@ -79,5 +79,10 @@ namespace VisualizeScalars.Helpers
             var intersection = rayPoint - rayDirection * length;
             return intersection;
         }
+
+        public static float ToRad(this float self)
+        {
+            return (float)(System.Math.PI / 180) * self;
+        }
     }
 }

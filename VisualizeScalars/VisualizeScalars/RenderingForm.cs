@@ -7,22 +7,28 @@ using VisualizeScalars.Rendering;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models;
 using VisualizeScalars.Rendering.Models.Voxel;
+using VisualizeScalars.Rendering.ShaderImporter;
 
 namespace VisualizeScalars
 {
     public partial class RenderingForm : Form
     {
+        const int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+        private ShaderProgram ShadowShader;
+
         public Camera Camera = new Camera();
         private bool firstMouseMove = true;
         private bool IsWireframe;
 
         private DateTime nextWireframeSwitch = DateTime.Now;
-
+        private int depthMapFBO;
+        private int depthMap;
         public RenderingForm()
         {
             modelManager = new ModelManager();
             shaderManager = new ShaderManager();
-
+            ShadowShader = new ShaderProgram(".\\Rendering\\Shaders\\shadowShader.vert",
+                ".\\Rendering\\Shaders\\shadowShader.frag");
             shaderManager.AddShader(
                 new[] {typeof(ColorVolume<Material>), typeof(RenderObject<PositionColorNormalVertex>)},
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
@@ -31,8 +37,11 @@ namespace VisualizeScalars
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");
 
-            shaderManager.AddShader(typeof(TextureVolume), ".\\Rendering\\Shaders\\VolumetricRenderingShader.vert",
-                ".\\Rendering\\Shaders\\VolumetricRenderingShader.frag");
+            shaderManager.AddShader(typeof(ImagePlane), ".\\Rendering\\Shaders\\ImageShader.vert",
+                ".\\Rendering\\Shaders\\ImageShader.frag");
+           /* shaderManager.AddShader(typeof(TextureVolume), ".\\Rendering\\Shaders\\VolumetricRenderingShader.vert",
+                ".\\Rendering\\Shaders\\ImageShader.frag");*/
+
             InitializeComponent();
         }
 
@@ -72,43 +81,82 @@ namespace VisualizeScalars
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
             shaderManager.InitPrograms();
+            ShadowShader.SetupShader();
+            loadDepthMap();
             glControl.Invalidate();
         }
 
+        private void loadDepthMap()
+        {
+            
+
+            depthMapFBO = GL.GenFramebuffer();
+            depthMap = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, depthMap);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, SHADOW_WIDTH, SHADOW_HEIGHT, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+            float[] borderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
+            // attach depth texture as FBO's depth buffer
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,FramebufferAttachment.DepthAttachment,TextureTarget.Texture2D, depthMap, 0);
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+
+        }
         private void glControl_Paint(object sender, PaintEventArgs e)
         {
             var projection = Camera.GetProjection();
             var view = Camera.GetView();
+            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             if (modelManager.HasModelUpdates) modelManager.InitModels();
-
-
-            foreach (var model in modelManager.GetModels())
+            
+            GL.Viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            ShadowShader.Use();
+            ShadowShader.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
+            foreach (var model in modelManager.GetModelsOrdered(Camera.Position))
+            {
+                if (!model.IsReady) model.InitBuffers();
+                
+                model.Draw(ShadowShader);
+            }
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(0, 0, glControl.Width,glControl.Height);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, depthMap);
+            foreach (var model in modelManager.GetModelsOrdered(Camera.Position))
             {
                 if (!model.IsReady) model.InitBuffers();
                 var shader = shaderManager.GetShader(model.GetType());
                 shader.Use();
+
                 shader.SetUniformMatrix4X4("projection", projection);
                 shader.SetUniformMatrix4X4("view", view);
+                shader.SetUniformMatrix4X4("lightSpaceMatrix",Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
                 shader.SetUniformVector3("lightPos", Light.Position);
                 shader.SetUniformVector3("lightColor", Light.Color);
                 shader.SetUniformVector3("viewpos", Camera.Position);
                 shader.SetUniformFloat("ambientStrength", AmbientStrength);
                 shader.SetUniformFloat("diffuseStrength", DiffuseStrength);
                 shader.SetUniformFloat("specularStrength", SpecularStrength);
-                shader.SetUniformFloat("radius", scalarRadius);
-
-                shader.SetUniformVector4("LayerColor[0]", new Vector4(0.5f, 0.5f, 0.5f, 1f));
-                shader.SetUniformVector4("LayerColor[1]", new Vector4(1f, 0f, 0f, .3f));
-                shader.SetUniformVector4("LayerColor[2]", new Vector4(0f, 1f, 0f, .3f));
-                shader.SetUniformVector4("LayerColor[3]", new Vector4(0f, 0f, 1f, .3f));
-                shader.SetUniformVector4("LayerColor[4]", new Vector4(1f, 0f, 0f, .3f));
-                shader.SetUniformVector4("LayerColor[5]", new Vector4(0f, 1f, 0f, .3f));
+                shader.SetUniformVector4("layer0Color", new Vector4(0.5f, 0.5f, 0.5f, 0.6f));
+                shader.SetUniformFloat("yOffset", tbTextureOffset.Value / 10f);
                 model.Draw(shader);
             }
 
             glControl.SwapBuffers();
         }
+
 
         private void glControl_MouseMove(object sender, MouseEventArgs e)
         {
@@ -173,7 +221,7 @@ namespace VisualizeScalars
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             Camera.ClippingPlaneFar = trackBar1.Value;
-            trackBar2.Maximum = (int) Camera.ClippingPlaneFar;
+            trackBar2.Maximum = (int) Camera.ClippingPlaneFar-1;
             glControl.Invalidate();
         }
 
@@ -242,6 +290,11 @@ namespace VisualizeScalars
         {
             AmbientStrength = tbAmbientFactor.Value / 1000f;
             glControl.Invalidate();
+        }
+
+        private void tbTextureOffset_Scroll(object sender, EventArgs e)
+        {
+            lbTextureOffset.Text = (tbTextureOffset.Value/10f).ToString();
         }
     }
 }

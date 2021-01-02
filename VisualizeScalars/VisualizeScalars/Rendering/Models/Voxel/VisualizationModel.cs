@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using OpenTK;
 using VisualizeScalars.DataQuery;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
@@ -19,7 +21,6 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         }
 
         public DataGrid<T> DataGrid { get; set; }
-        public byte[] ImageBuffer { get; set; }
 
         public string HeightMapping { get; set; }
 
@@ -56,6 +57,18 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             }
         }
 
+        public Bitmap[] GetScalarImages(Vector3[] colors, float radius)
+        {
+            foreach (var propertyName in DataGrid.PropertyNames)
+            {
+                if (propertyName ==HeightMapping ) continue;
+                var grid = DataGrid.GetDataGrid(propertyName, true);
+
+
+            }
+
+            return null;
+        }
         public BufferStorage[] GetBuffers()
         {
             var data = new Dictionary<string, List<float>>();
@@ -83,121 +96,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             return data.Values.Select(x => new BufferStorage(x.ToArray())).ToArray();
         }
 
-        /*
-        public override void InitBuffers()
-        {
-            if (MeshMode == MeshMode.MarchingCubes)
-            {
-                ComputeMarchingCubesMesh();
-            }
-            else if (MeshMode == MeshMode.Cubes)
-            {
-                ComputeCubicMesh();
-            }
-            else if (MeshMode == MeshMode.GreedyCubes)
-            {
-                ComputeCubicMeshGreedy();
-            }
-            if (this.Smoothing == Smoothing.Laplacian1 ||
-                this.Smoothing == Smoothing.Laplacian2 ||
-                this.Smoothing == Smoothing.Laplacian5 ||
-                this.Smoothing == Smoothing.Laplacian10 ||
-                this.Smoothing == Smoothing.LaplacianHc1 ||
-                this.Smoothing == Smoothing.LaplacianHc2 ||
-                this.Smoothing == Smoothing.LaplacianHc5 ||
-                this.Smoothing == Smoothing.LaplacianHc10)
-            {
-                if (this.Smoothing == Smoothing.Laplacian1 ||
-                    this.Smoothing == Smoothing.Laplacian2 ||
-                    this.Smoothing == Smoothing.Laplacian5 ||
-                    this.Smoothing == Smoothing.Laplacian10)
-                {
-                    mesh = MeshSmoother.LaplacianFilter(mesh, (int)this.Smoothing);
-                }
-                else
-                {
-                    mesh = MeshSmoother.HCFilter(mesh, (int)this.Smoothing);
-                }
-            }
-            mesh = MeshExtractor.ComputeMesh(this);
-            //Buffers.ForEach(b => b.Dispose());
-            //Buffers = new List<BufferStorage>();
-            var linear = Data.Grid.Cast<GridCell>();
-            List<float> data1 = new List<float>();
-            List<float> data2 = new List<float>();
-            List<float> data3 = new List<float>();
-            for (int i = 0; i < DataGrid.Height; i++)
-            {
-                for (int j = 0; j < DataGrid.Width; j++)
-                {
-                    var value = (float)DataGrid[j, i].Humidity;
-                    if (value > 0)
-                    {
-                        data1.Add((float) j);
-                        data1.Add((float) i);
-                        data1.Add(value);
-                    }
-                    value = (float)DataGrid[j, i].ParticulateMatter10;
-                    if (value > 0)
-                    {
-                        data2.Add((float) j);
-                        data2.Add((float) i);
-                        data2.Add(value);
-                    }
-                    value = (float)DataGrid[j, i].ParticulateMatter2_5;
-                    if (value > 0)
-                    {
-                        data3.Add((float) j);
-                        data3.Add((float) i);
-                        data3.Add(value);
-                    }
-                }
-            }
-            
-            Buffers.Add(new BufferStorage(data1.ToArray()));
-            Buffers.Add(new BufferStorage(data2.ToArray()));
-            Buffers.Add(new BufferStorage(data3.ToArray()));
-
-            var stream = File.OpenWrite("d:\\data.dat");
-            BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(data1.SelectMany(x => BitConverter.GetBytes(x)).ToArray());
-            writer.Close();
-            stream.Close();
-            stream = File.OpenWrite("d:\\data2.dat");
-            writer = new BinaryWriter(stream);
-            writer.Write(data2.SelectMany(x => BitConverter.GetBytes(x)).ToArray());
-            writer.Close();
-            stream.Close();
-            stream = File.OpenWrite("d:\\data3.dat");
-            writer = new BinaryWriter(stream);
-            writer.Write(data3.SelectMany(x => BitConverter.GetBytes(x)).ToArray());
-            writer.Close();
-            stream.Close();
-            
-            base.InitBuffers();
-            
-        }
-
-        public override void Draw(ShaderProgram shader)
-        {
-            if (!IsReady) InitBuffers();
-            shader.SetUniformVector4("LayerColor[0]", new Vector4(0.5f, 0.5f, 0.5f,1f));
-            shader.SetUniformVector4("LayerColor[1]", new Vector4(1f, 0f, 0f,.3f));
-            shader.SetUniformVector4("LayerColor[2]", new Vector4(0f, 1f, 0f,.3f));
-            shader.SetUniformVector4("LayerColor[3]", new Vector4(0f, 0f, 1f,.3f));
-            shader.SetUniformVector4("LayerColor[4]", new Vector4(1f, 0f, 0f,.3f));
-            shader.SetUniformVector4("LayerColor[5]", new Vector4(0f, 1f, 0f,.3f));
-            var idx = 0;
-            foreach (var buffer in Buffers)
-            {
-                shader.SetUniformFloat($"BufferCnt[{idx++}]", buffer.ValueCount);
-                buffer.Activate();
-            }
-            GL.BindVertexArray(Vao);
-            GL.DrawElementsInstanced(PrimitiveType.Triangles,Indices.Length,DrawElementsType.UnsignedInt,IntPtr.Zero,  4);
-            GL.BindVertexArray(0);
-        }*/
-
+       
         private float[] getNeighbours(ref float[,] heights, int x, int z)
         {
             float[] neighbours;

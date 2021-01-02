@@ -173,7 +173,7 @@ namespace VisualizeScalars.DataQuery
             var airdata = GetAirDataGrid(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             var Height =
                 hgtFileReader.GetElevationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            /*double[,] ProfileAvailableWaterCapacity = _igbpInformationProviders[_pawcFile]
+            double[,] ProfileAvailableWaterCapacity = _igbpInformationProviders[_pawcFile]
                 .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             double[,] BulkDensity = _igbpInformationProviders[_bdFile]
                 .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
@@ -186,7 +186,7 @@ namespace VisualizeScalars.DataQuery
             double[,] TotalNitrogenDensity = _igbpInformationProviders[_tnFile]
                 .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             double[,] WiltingPoint = _igbpInformationProviders[_wpFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);*/
+                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             var results = new GridCell[cellCountX, cellCountY];
 
             for (var j = 0; j < cellCountY; j++)
@@ -194,13 +194,13 @@ namespace VisualizeScalars.DataQuery
                 results[i, j] = new GridCell
                 {
                     Height = Height[i, j],
-                    /*ProfileAvailableWaterCapacity = ProfileAvailableWaterCapacity[i, j],
-                        BulkDensity = BulkDensity[i, j],
-                        SoilCarbonDensity = SoilCarbonDensity[i, j],
-                        FieldCapacity = FieldCapacity[i, j],
-                        ThermalCapacity =  ThermalCapacityData[i, j],
-                        TotalNitrogenDensity = TotalNitrogenDensity[i, j],
-                        WiltingPoint = WiltingPoint[i, j],*/
+                    ProfileAvailableWaterCapacity = ProfileAvailableWaterCapacity[i, j],
+                    BulkDensity = BulkDensity[i, j],
+                    SoilCarbonDensity = SoilCarbonDensity[i, j],
+                    FieldCapacity = FieldCapacity[i, j],
+                    ThermalCapacity =  ThermalCapacityData[i, j],
+                    TotalNitrogenDensity = TotalNitrogenDensity[i, j],
+                    WiltingPoint = WiltingPoint[i, j],
                     Temperature = airdata[i, j].TemperatureAvg,
                     Pressure = airdata[i, j].PressureAvg,
                     Humidity = airdata[i, j].HumidityAvg,

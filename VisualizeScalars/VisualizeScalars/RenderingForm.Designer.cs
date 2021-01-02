@@ -1,4 +1,6 @@
 ﻿
+using System.Windows.Forms;
+
 namespace VisualizeScalars
 {
     partial class RenderingForm
@@ -31,8 +33,11 @@ namespace VisualizeScalars
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.glControl = new OpenTK.GLControl();
+            this.lbTextureOffset = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
             this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.tbTextureOffset = new System.Windows.Forms.TrackBar();
             this.label8 = new System.Windows.Forms.Label();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.lLightPosZ = new System.Windows.Forms.Label();
@@ -55,6 +60,7 @@ namespace VisualizeScalars
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbSpecularFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbAmbientFactor)).BeginInit();
@@ -77,8 +83,11 @@ namespace VisualizeScalars
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.lbTextureOffset);
             this.splitContainer1.Panel2.Controls.Add(this.label9);
+            this.splitContainer1.Panel2.Controls.Add(this.label18);
             this.splitContainer1.Panel2.Controls.Add(this.trackBar2);
+            this.splitContainer1.Panel2.Controls.Add(this.tbTextureOffset);
             this.splitContainer1.Panel2.Controls.Add(this.label8);
             this.splitContainer1.Panel2.Controls.Add(this.trackBar1);
             this.splitContainer1.Panel2.Controls.Add(this.lLightPosZ);
@@ -113,9 +122,19 @@ namespace VisualizeScalars
             this.glControl.VSync = true;
             this.glControl.Load += new System.EventHandler(this.glControl_Load);
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl_KeyDown);
             this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
             this.glControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseWheel);
             this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
+            // 
+            // lbTextureOffset
+            // 
+            this.lbTextureOffset.AutoSize = true;
+            this.lbTextureOffset.Location = new System.Drawing.Point(751, 40);
+            this.lbTextureOffset.Name = "lbTextureOffset";
+            this.lbTextureOffset.Size = new System.Drawing.Size(13, 15);
+            this.lbTextureOffset.TabIndex = 32;
+            this.lbTextureOffset.Text = "1";
             // 
             // label9
             // 
@@ -126,6 +145,15 @@ namespace VisualizeScalars
             this.label9.TabIndex = 78;
             this.label9.Text = "CameraNear";
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(546, 9);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(89, 15);
+            this.label18.TabIndex = 31;
+            this.label18.Text = "Textur Y- Offset";
+            // 
             // trackBar2
             // 
             this.trackBar2.Location = new System.Drawing.Point(305, 86);
@@ -134,8 +162,18 @@ namespace VisualizeScalars
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(229, 45);
             this.trackBar2.TabIndex = 77;
-            this.trackBar2.Value = 1;
+            this.trackBar2.Value = 9999;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            // 
+            // tbTextureOffset
+            // 
+            this.tbTextureOffset.Location = new System.Drawing.Point(546, 27);
+            this.tbTextureOffset.Maximum = 1000;
+            this.tbTextureOffset.Name = "tbTextureOffset";
+            this.tbTextureOffset.Size = new System.Drawing.Size(199, 45);
+            this.tbTextureOffset.TabIndex = 30;
+            this.tbTextureOffset.Value = 1;
+            this.tbTextureOffset.Scroll += new System.EventHandler(this.tbTextureOffset_Scroll);
             // 
             // label8
             // 
@@ -154,7 +192,7 @@ namespace VisualizeScalars
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(229, 45);
             this.trackBar1.TabIndex = 75;
-            this.trackBar1.Value = 10;
+            this.trackBar1.Value = 10000;
             this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // lLightPosZ
@@ -187,7 +225,7 @@ namespace VisualizeScalars
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(176, 134);
+            this.label13.Location = new System.Drawing.Point(180, 136);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(83, 15);
             this.label13.TabIndex = 71;
@@ -195,17 +233,19 @@ namespace VisualizeScalars
             // 
             // tbSpecularFactor
             // 
-            this.tbSpecularFactor.Location = new System.Drawing.Point(172, 152);
+            this.tbSpecularFactor.Location = new System.Drawing.Point(180, 154);
             this.tbSpecularFactor.Maximum = 256000;
+            this.tbSpecularFactor.Minimum = 32;
             this.tbSpecularFactor.Name = "tbSpecularFactor";
             this.tbSpecularFactor.Size = new System.Drawing.Size(104, 45);
             this.tbSpecularFactor.TabIndex = 68;
+            this.tbSpecularFactor.Value = 32;
             this.tbSpecularFactor.Scroll += new System.EventHandler(this.tbSpecularFactor_Scroll);
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(172, 83);
+            this.label14.Location = new System.Drawing.Point(180, 70);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(75, 15);
             this.label14.TabIndex = 69;
@@ -213,7 +253,7 @@ namespace VisualizeScalars
             // 
             // tbAmbientFactor
             // 
-            this.tbAmbientFactor.Location = new System.Drawing.Point(172, 35);
+            this.tbAmbientFactor.Location = new System.Drawing.Point(180, 27);
             this.tbAmbientFactor.Maximum = 1000;
             this.tbAmbientFactor.Name = "tbAmbientFactor";
             this.tbAmbientFactor.Size = new System.Drawing.Size(104, 45);
@@ -223,7 +263,7 @@ namespace VisualizeScalars
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(172, 17);
+            this.label15.Location = new System.Drawing.Point(180, 9);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(84, 15);
             this.label15.TabIndex = 70;
@@ -231,11 +271,12 @@ namespace VisualizeScalars
             // 
             // tbDiffuseFactor
             // 
-            this.tbDiffuseFactor.Location = new System.Drawing.Point(172, 101);
+            this.tbDiffuseFactor.Location = new System.Drawing.Point(180, 88);
             this.tbDiffuseFactor.Maximum = 1000;
             this.tbDiffuseFactor.Name = "tbDiffuseFactor";
             this.tbDiffuseFactor.Size = new System.Drawing.Size(104, 45);
             this.tbDiffuseFactor.TabIndex = 67;
+            this.tbDiffuseFactor.Value = 500;
             this.tbDiffuseFactor.Scroll += new System.EventHandler(this.tbDiffuseFactor_Scroll);
             // 
             // label12
@@ -311,6 +352,7 @@ namespace VisualizeScalars
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbSpecularFactor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbAmbientFactor)).EndInit();
@@ -345,5 +387,8 @@ namespace VisualizeScalars
         private System.Windows.Forms.TrackBar trackBar2;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TrackBar trackBar1;
+        private Label lbTextureOffset;
+        private Label label18;
+        private TrackBar tbTextureOffset;
     }
 }

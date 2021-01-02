@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.ShaderImporter;
+using Image = System.Drawing.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
 
 namespace VisualizeScalars.Rendering.Models
@@ -59,15 +64,30 @@ namespace VisualizeScalars.Rendering.Models
             Images = Images.Select(image => image.ResizeImage(newWidth, newHeight)).ToList();
             foreach (var image in Images)
             {
-                byte[] data;
                 using (var stream = new MemoryStream())
                 {
                     image.Save(stream, ImageFormat.Png);
-                    data = stream.ToArray();
-                    dataList.AddRange(data);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    Image<Rgba32> tex = SixLabors.ImageSharp.Image.Load<Rgba32>(stream, new PngDecoder());
+                    //tex.Mutate(x => x.Flip(FlipMode.Vertical));
+
+                    var pixels = new List<byte>(4 * image.Width * image.Height);
+
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        var row = tex.GetPixelRowSpan(y);
+
+                        for (int x = 0; x < image.Width; x++)
+                        {
+                            pixels.Add(row[x].R);
+                            pixels.Add(row[x].G);
+                            pixels.Add(row[x].B);
+                            pixels.Add(row[x].A);
+                        }
+                    }
+                    dataList.AddRange(pixels);
                 }
             }
-
             var imageBuffer = dataList.ToArray();
             TextureID = GL.GenTexture();
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -90,7 +110,7 @@ namespace VisualizeScalars.Rendering.Models
         public override void Draw(ShaderProgram shaderProgram, Action<ShaderProgram> setUniforms)
         {
             if (!IsReady) InitBuffers();
-            if (Mesh.Indices.Count == 0)
+            if ( (Indices == null && Mesh == null) || (Mesh != null && Mesh.Indices.Count == 0))
                 return;
             setUniforms?.Invoke(shaderProgram);
             shaderProgram.SetUniformMatrix4X4("model", Modelmatrix);
@@ -99,13 +119,17 @@ namespace VisualizeScalars.Rendering.Models
             {
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture3D, TextureID);
+                var img = Images.FirstOrDefault();
+                var width = img.Width;
+                var height = img.Height;
+                shaderProgram.SetUniformVector3("texDimensions",new Vector3(width,height,Images.Count));
             }
-
+            
             // as set in the shadercode
             var binding = 0;
             foreach (var buffer in Buffers)
             {
-                shaderProgram.SetUniformFloat($"BufferCnt[{binding - 2}]", buffer.ValueCount);
+                shaderProgram.SetUniformFloat($"BufferCnt[{binding}]", buffer.ValueCount);
                 buffer.Activate(binding++);
             }
 

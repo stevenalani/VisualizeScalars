@@ -7,8 +7,8 @@ namespace VisualizeScalars.Rendering.Models.Voxel
     public class Volume<T> where T : IVolumeData, new()
     {
         public float CubeScale = 1f;
-        public List<T> Data = new List<T> {new T()};
-        public int[][,] DataPointers;
+        protected internal List<T> Data = new List<T> {new T()};
+        protected internal int[][,] DataPointers;
         public Vector3Int Dimensions;
 
         public Volume()

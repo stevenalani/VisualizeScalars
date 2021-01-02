@@ -1,6 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using OpenTK;
 using VisualizeScalars.Rendering.ShaderImporter;
 
 namespace VisualizeScalars.Rendering.Models
@@ -13,6 +15,11 @@ namespace VisualizeScalars.Rendering.Models
 
         public bool HasModelUpdates { get; set; }
 
+        public List<Model> GetModelsOrdered(Vector3 position, bool joined = true)
+        {
+            var models = GetModels(joined);
+            return models.OrderByDescending(m => (m.Position - position).Length).ToList();
+        }
         public List<Model> GetModels(bool joined = true)
         {
             if (!joined)

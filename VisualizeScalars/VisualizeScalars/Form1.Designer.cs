@@ -32,15 +32,13 @@ namespace VisualizeScalars
         /// </summary>
         private void InitializeComponent()
         {
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.label18 = new System.Windows.Forms.Label();
-            this.trackBar3 = new System.Windows.Forms.TrackBar();
-            this.button2 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label17 = new System.Windows.Forms.Label();
             this.cbxScalarYMapping = new System.Windows.Forms.ComboBox();
             this.clbScalarselection = new System.Windows.Forms.CheckedListBox();
+            this.mtbxInterpolation = new System.Windows.Forms.MaskedTextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tbxSouth = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -51,106 +49,47 @@ namespace VisualizeScalars
             this.label2 = new System.Windows.Forms.Label();
             this.tbxNorth = new System.Windows.Forms.TextBox();
             this.tbxEast = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.cbxMeshMode = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.mtbxInterpolation = new System.Windows.Forms.MaskedTextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.cbxSmoothing = new System.Windows.Forms.ComboBox();
             this.cmdLoadMap = new System.Windows.Forms.Button();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.gbColorSelection = new System.Windows.Forms.GroupBox();
+            this.cmdCreateTexture = new System.Windows.Forms.Button();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dgvScalarTable = new System.Windows.Forms.DataGridView();
             this.label16 = new System.Windows.Forms.Label();
             this.cbxViewScalar = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tbTextureOffset = new System.Windows.Forms.TrackBar();
+            this.label18 = new System.Windows.Forms.Label();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScalarTable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).BeginInit();
             this.SuspendLayout();
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 3);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.label18);
-            this.splitContainer1.Panel1.Controls.Add(this.trackBar3);
-            this.splitContainer1.Panel1.Controls.Add(this.button2);
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.checkBox1);
-            this.splitContainer1.Panel1.Controls.Add(this.cbxMeshMode);
-            this.splitContainer1.Panel1.Controls.Add(this.label7);
-            this.splitContainer1.Panel1.Controls.Add(this.mtbxInterpolation);
-            this.splitContainer1.Panel1.Controls.Add(this.label6);
-            this.splitContainer1.Panel1.Controls.Add(this.label5);
-            this.splitContainer1.Panel1.Controls.Add(this.cbxSmoothing);
-            this.splitContainer1.Panel1.Controls.Add(this.cmdLoadMap);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1308, 797);
-            this.splitContainer1.SplitterDistance = 300;
-            this.splitContainer1.TabIndex = 1;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(22, 394);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(123, 15);
-            this.label18.TabIndex = 28;
-            this.label18.Text = "Visualisierungs Radius";
-            // 
-            // trackBar3
-            // 
-            this.trackBar3.Location = new System.Drawing.Point(19, 418);
-            this.trackBar3.Name = "trackBar3";
-            this.trackBar3.Size = new System.Drawing.Size(104, 45);
-            this.trackBar3.TabIndex = 27;
-            this.trackBar3.Scroll += new System.EventHandler(this.trackBar3_Scroll_1);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(220, 515);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(77, 23);
-            this.button2.TabIndex = 26;
-            this.button2.Text = "ausführen";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.label17);
             this.groupBox2.Controls.Add(this.cbxScalarYMapping);
+            this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.clbScalarselection);
-            this.groupBox2.Location = new System.Drawing.Point(3, 164);
+            this.groupBox2.Controls.Add(this.tbTextureOffset);
+            this.groupBox2.Controls.Add(this.mtbxInterpolation);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Location = new System.Drawing.Point(8, 156);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(294, 221);
+            this.groupBox2.Size = new System.Drawing.Size(294, 284);
             this.groupBox2.TabIndex = 25;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Skalarauswahl";
@@ -168,7 +107,7 @@ namespace VisualizeScalars
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(2, 152);
+            this.label17.Location = new System.Drawing.Point(6, 188);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(107, 15);
             this.label17.TabIndex = 27;
@@ -177,7 +116,7 @@ namespace VisualizeScalars
             // cbxScalarYMapping
             // 
             this.cbxScalarYMapping.FormattingEnabled = true;
-            this.cbxScalarYMapping.Location = new System.Drawing.Point(2, 170);
+            this.cbxScalarYMapping.Location = new System.Drawing.Point(6, 206);
             this.cbxScalarYMapping.Name = "cbxScalarYMapping";
             this.cbxScalarYMapping.Size = new System.Drawing.Size(286, 23);
             this.cbxScalarYMapping.TabIndex = 26;
@@ -191,6 +130,23 @@ namespace VisualizeScalars
             this.clbScalarselection.Size = new System.Drawing.Size(280, 94);
             this.clbScalarselection.TabIndex = 0;
             // 
+            // mtbxInterpolation
+            // 
+            this.mtbxInterpolation.Location = new System.Drawing.Point(91, 152);
+            this.mtbxInterpolation.Mask = "0.9";
+            this.mtbxInterpolation.Name = "mtbxInterpolation";
+            this.mtbxInterpolation.Size = new System.Drawing.Size(28, 23);
+            this.mtbxInterpolation.TabIndex = 16;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(10, 155);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(75, 15);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Interpolation";
+            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tbxSouth);
@@ -202,7 +158,7 @@ namespace VisualizeScalars
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.tbxNorth);
             this.groupBox1.Controls.Add(this.tbxEast);
-            this.groupBox1.Location = new System.Drawing.Point(5, 13);
+            this.groupBox1.Location = new System.Drawing.Point(8, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(292, 147);
             this.groupBox1.TabIndex = 24;
@@ -283,17 +239,6 @@ namespace VisualizeScalars
             this.tbxEast.Size = new System.Drawing.Size(125, 23);
             this.tbxEast.TabIndex = 12;
             // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(125, 519);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(99, 19);
-            this.checkBox1.TabIndex = 23;
-            this.checkBox1.Text = "YZ- Anpassen";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
             // cbxMeshMode
             // 
             this.cbxMeshMode.FormattingEnabled = true;
@@ -302,7 +247,7 @@ namespace VisualizeScalars
             "Marching Cubes",
             "Cubes",
             "Cubes Greedy"});
-            this.cbxMeshMode.Location = new System.Drawing.Point(19, 604);
+            this.cbxMeshMode.Location = new System.Drawing.Point(15, 693);
             this.cbxMeshMode.Name = "cbxMeshMode";
             this.cbxMeshMode.Size = new System.Drawing.Size(121, 23);
             this.cbxMeshMode.TabIndex = 18;
@@ -310,33 +255,16 @@ namespace VisualizeScalars
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(19, 586);
+            this.label7.Location = new System.Drawing.Point(15, 675);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(76, 15);
             this.label7.TabIndex = 17;
             this.label7.Text = "Mesh Modus";
             // 
-            // mtbxInterpolation
-            // 
-            this.mtbxInterpolation.Location = new System.Drawing.Point(19, 516);
-            this.mtbxInterpolation.Mask = "0.9";
-            this.mtbxInterpolation.Name = "mtbxInterpolation";
-            this.mtbxInterpolation.Size = new System.Drawing.Size(100, 23);
-            this.mtbxInterpolation.TabIndex = 16;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(19, 498);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(75, 15);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Interpolation";
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 542);
+            this.label5.Location = new System.Drawing.Point(15, 631);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(53, 15);
             this.label5.TabIndex = 14;
@@ -355,7 +283,7 @@ namespace VisualizeScalars
             "Laplacian Filter HC 2x",
             "Laplacian Filter HC 5x",
             "Laplacian Filter HC 10x"});
-            this.cbxSmoothing.Location = new System.Drawing.Point(19, 560);
+            this.cbxSmoothing.Location = new System.Drawing.Point(15, 649);
             this.cbxSmoothing.Name = "cbxSmoothing";
             this.cbxSmoothing.Size = new System.Drawing.Size(121, 23);
             this.cbxSmoothing.TabIndex = 13;
@@ -363,36 +291,13 @@ namespace VisualizeScalars
             // 
             // cmdLoadMap
             // 
-            this.cmdLoadMap.Location = new System.Drawing.Point(19, 633);
+            this.cmdLoadMap.Location = new System.Drawing.Point(15, 722);
             this.cmdLoadMap.Name = "cmdLoadMap";
             this.cmdLoadMap.Size = new System.Drawing.Size(157, 23);
             this.cmdLoadMap.TabIndex = 0;
             this.cmdLoadMap.Text = "Model aktualisieren";
             this.cmdLoadMap.UseVisualStyleBackColor = true;
             this.cmdLoadMap.Click += new System.EventHandler(this.cmdLoadMap_Click);
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(1004, 797);
-            this.splitContainer2.SplitterDistance = 592;
-            this.splitContainer2.TabIndex = 2;
-            // 
-            // splitContainer3
-            // 
-            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 2);
-            this.splitContainer3.Name = "splitContainer3";
-            this.splitContainer3.Size = new System.Drawing.Size(1004, 199);
-            this.splitContainer3.SplitterDistance = 333;
-            this.splitContainer3.TabIndex = 0;
             // 
             // tabControl1
             // 
@@ -403,19 +308,58 @@ namespace VisualizeScalars
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1322, 831);
+            this.tabControl1.Size = new System.Drawing.Size(1026, 831);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.splitContainer1);
+            this.tabPage1.Controls.Add(this.gbColorSelection);
+            this.tabPage1.Controls.Add(this.cmdCreateTexture);
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Controls.Add(this.cmdLoadMap);
+            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.cbxSmoothing);
+            this.tabPage1.Controls.Add(this.label5);
+            this.tabPage1.Controls.Add(this.checkBox1);
+            this.tabPage1.Controls.Add(this.cbxMeshMode);
+            this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1314, 803);
+            this.tabPage1.Size = new System.Drawing.Size(1018, 803);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // gbColorSelection
+            // 
+            this.gbColorSelection.Location = new System.Drawing.Point(308, 3);
+            this.gbColorSelection.Name = "gbColorSelection";
+            this.gbColorSelection.Size = new System.Drawing.Size(702, 768);
+            this.gbColorSelection.TabIndex = 29;
+            this.gbColorSelection.TabStop = false;
+            this.gbColorSelection.Text = "Texturen";
+            // 
+            // cmdCreateTexture
+            // 
+            this.cmdCreateTexture.Location = new System.Drawing.Point(907, 777);
+            this.cmdCreateTexture.Name = "cmdCreateTexture";
+            this.cmdCreateTexture.Size = new System.Drawing.Size(103, 23);
+            this.cmdCreateTexture.TabIndex = 0;
+            this.cmdCreateTexture.Text = "Textur erstellen";
+            this.cmdCreateTexture.UseVisualStyleBackColor = true;
+            this.cmdCreateTexture.Click += new System.EventHandler(this.cmdCreateTexture_Click);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(121, 608);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(99, 19);
+            this.checkBox1.TabIndex = 23;
+            this.checkBox1.Text = "YZ- Anpassen";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // tabPage2
             // 
@@ -425,7 +369,7 @@ namespace VisualizeScalars
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1314, 803);
+            this.tabPage2.Size = new System.Drawing.Size(1018, 803);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -467,45 +411,62 @@ namespace VisualizeScalars
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1314, 803);
+            this.tabPage3.Size = new System.Drawing.Size(1018, 803);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(211, 250);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(13, 15);
+            this.label8.TabIndex = 29;
+            this.label8.Text = "1";
+            // 
+            // tbTextureOffset
+            // 
+            this.tbTextureOffset.Location = new System.Drawing.Point(101, 235);
+            this.tbTextureOffset.Maximum = 100;
+            this.tbTextureOffset.Name = "tbTextureOffset";
+            this.tbTextureOffset.Size = new System.Drawing.Size(104, 45);
+            this.tbTextureOffset.TabIndex = 27;
+            this.tbTextureOffset.Value = 1;
+            this.tbTextureOffset.Scroll += new System.EventHandler(this.trackBar3_Scroll_1);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 250);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(89, 15);
+            this.label18.TabIndex = 28;
+            this.label18.Text = "Textur Y- Offset";
+            // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(1322, 831);
+            this.ClientSize = new System.Drawing.Size(1026, 831);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load_1);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
-            this.splitContainer3.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScalarTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Button cmdLoadMap;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbxEast;
@@ -522,9 +483,6 @@ namespace VisualizeScalars
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cbxSmoothing;
         private System.Windows.Forms.Button btnUpdateData;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -537,9 +495,12 @@ namespace VisualizeScalars
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.ComboBox cbxScalarYMapping;
         private Button button1;
-        private Button button2;
-        private Label label18;
-        private TrackBar trackBar3;
         private TabPage tabPage3;
+        private GroupBox gbColorSelection;
+        private Button cmdCreateTexture;
+        private CheckBox checkBox1;
+        private Label label8;
+        private Label label18;
+        private TrackBar tbTextureOffset;
     }
 }

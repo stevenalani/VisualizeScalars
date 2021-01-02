@@ -162,6 +162,12 @@ namespace VisualizeScalars.Rendering.ShaderImporter
             var location = GL.GetUniformLocation(ID, name);
             GL.Uniform1(location, _float);
         }
+        public void SetUniformInt(string name, int _int)
+        {
+            if (!IsCompiled) return;
+            var location = GL.GetUniformLocation(ID, name);
+            GL.Uniform1(location, _int);
+        }
 
         public void SetUniformVector2(string name, Vector2 vec2)
         {

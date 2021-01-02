@@ -117,16 +117,12 @@ namespace VisualizeScalars.DataQuery
                     result[x, y] = new AirInformation();
                     var lng = longitudeWest + x * gridUnit;
                     var values = temp
-                        .Where(x => Math.Abs(x.location.latitude - lat) < gridUnit &&
+                        .Where(x => x.location.indoor != 1 && Math.Abs(x.location.latitude - lat) < gridUnit &&
                                     Math.Abs(x.location.longitude - lng) < gridUnit)
                         .SelectMany(d => d.sensordatavalues);
 
                     if (values.Any())
                     {
-                        /*var particularMatterData = values.Where(v =>
-                        v.sensordatavalues.All(d => d.value_type == "P1" || d.value_type == "P2"));
-                        var climateData = values.Where(v =>
-                        v.sensordatavalues.All(d => d.value_type == "temperature" || d.value_type == "pressure" || d.value_type == "humidity"));*/
                         var p1 = new List<double>();
                         var p2 = new List<double>();
                         var temperature = new List<double>();

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
@@ -46,11 +47,11 @@ namespace VisualizeScalars.Helpers
         }
        */
         /// <summary>
-        ///     Resize the image to the specified width and height.
+        ///     Resize the image to the specified Width and Height.
         /// </summary>
         /// <param name="image">The image to resize.</param>
-        /// <param name="width">The width to resize to.</param>
-        /// <param name="height">The height to resize to.</param>
+        /// <param name="width">The Width to resize to.</param>
+        /// <param name="height">The Height to resize to.</param>
         /// <returns>The resized image.</returns>
         /// https://stackoverflow.com/questions/1922040/how-to-resize-an-image-c-sharp
         public static Image ResizeImage(this Image image, int width, int height)
@@ -145,5 +146,45 @@ namespace VisualizeScalars.Helpers
 
             return newData;
         }
+
+        public static MinMaxPair GetMinAndMax(this float[,] grid)
+        {
+            MinMaxPair minmax = new MinMaxPair();
+            for (int j = 0; j < grid.GetLength(1); j++)
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                if (minmax.Min > grid[i, j]) minmax.Min = grid[i, j];
+                if (minmax.Max < grid[i, j]) minmax.Max = grid[i, j];
+            }
+            return minmax;
+        } 
+        public static Bitmap CreateBitmap(this float[,] grid, Color color, int radius,bool isFixedColor = false)
+        {
+            var height = grid.GetLength(1);
+            var width = grid.GetLength(0);
+            MinMaxPair minMax = grid.GetMinAndMax();
+            Bitmap img = new Bitmap(width, height);
+            using Graphics newGraphics = Graphics.FromImage(img);
+            newGraphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, width, height);
+            for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
+            {
+                var value = (int) ((grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min) * 255);
+                if (value > 0.0f)
+                {
+                    if(!isFixedColor)
+                    color = Color.FromArgb(value, color.R, color.G, color.B);
+                    newGraphics.FillEllipse(new SolidBrush(color), x - radius, y - radius, 2 * radius, 2 * radius);
+                }
+            }
+
+            return img;
+        }
+    }
+
+    public struct MinMaxPair
+    {
+        public float Min;
+        public float Max;
     }
 }
