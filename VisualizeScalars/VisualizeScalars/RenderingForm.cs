@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using VisualizeScalars.Helpers;
 using VisualizeScalars.Rendering;
 using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models;
 using VisualizeScalars.Rendering.Models.Voxel;
 using VisualizeScalars.Rendering.ShaderImporter;
+using Vector2 = OpenTK.Vector2;
+using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace VisualizeScalars
 {
@@ -23,6 +29,9 @@ namespace VisualizeScalars
         private DateTime nextWireframeSwitch = DateTime.Now;
         private int depthMapFBO;
         private int depthMap;
+        public Vector3 MouseRayDir;
+
+        public Model Pin;
         public RenderingForm()
         {
             modelManager = new ModelManager();
@@ -43,6 +52,7 @@ namespace VisualizeScalars
                 ".\\Rendering\\Shaders\\ImageShader.frag");*/
 
             InitializeComponent();
+
         }
 
         private ModelManager modelManager { get; }
@@ -52,7 +62,6 @@ namespace VisualizeScalars
         public float AmbientStrength { get; set; } = 0.2f;
         public float DiffuseStrength { get; set; } = 0.5f;
         public float SpecularStrength { get; set; } = 1f;
-        public float scalarRadius { get; set; } = 2.5f;
 
 
         private void glControl_Resize(object sender, EventArgs e)
@@ -134,7 +143,23 @@ namespace VisualizeScalars
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthMap);
-            foreach (var model in modelManager.GetModelsOrdered(Camera.Position))
+            if (Pin != null)
+            {
+                if(!Pin.IsReady) Pin.InitBuffers();
+                var shader = shaderManager.GetShader(Pin.GetType());
+                shader.Use();
+                shader.SetUniformMatrix4X4("projection", projection);
+                shader.SetUniformMatrix4X4("view", view);
+                shader.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
+                shader.SetUniformVector3("lightPos", Light.Position);
+                shader.SetUniformVector3("lightColor", Light.Color);
+                shader.SetUniformVector3("viewpos", Camera.Position);
+                shader.SetUniformFloat("ambientStrength", AmbientStrength);
+                shader.SetUniformFloat("diffuseStrength", DiffuseStrength);
+                shader.SetUniformFloat("specularStrength", SpecularStrength);
+                Pin.Draw(shader);
+            }
+            foreach (var model in modelManager.GetModels())
             {
                 if (!model.IsReady) model.InitBuffers();
                 var shader = shaderManager.GetShader(model.GetType());
@@ -190,6 +215,19 @@ namespace VisualizeScalars
             }
 
             LastMousePosition = currentPosition;
+
+            var mousepos = LastMousePosition;
+            var ndc = new Vector4(2f * mousepos.X / glControl.Width - 1.0f,
+                1f - 2f * ((float) mousepos.Y / glControl.Height), 1, 1);
+            var clip = new Vector4(ndc.X, ndc.Y, 1, 1);
+            var mat = Camera.GetProjection().Inverted();
+            var unproj = Vector4.Transform(clip, mat);
+            unproj /= unproj.W;
+            mat = Camera.GetView().Inverted();
+            var world = Vector4.Transform(unproj, mat);
+            var direction = (world.Xyz - Camera.Position).Normalized();
+            MouseRayDir = direction;
+            
         }
 
         private void glControl_KeyDown(object sender, KeyEventArgs e)
@@ -292,9 +330,32 @@ namespace VisualizeScalars
             glControl.Invalidate();
         }
 
+        private void tbMapPosY_Scroll(object sender, EventArgs e)
+        {
+            var mapmodel = modelManager.GetModel("map").FirstOrDefault();
+            if(mapmodel == null) return;
+            
+            mapmodel.Position.Y = tbMapPosY.Value/10.0f;
+            lbMapPosY.Text = (tbMapPosY.Value/10f).ToString();
+            if (this.Pin != null)
+            {
+                Pin.Position.Y = mapmodel.Position.Y;
+            }
+            glControl.Invalidate();
+        }
+
+        public Action<Vector3> OnClickAction { get; set; }
+
+        private void glControl_Click(object sender, EventArgs e)
+        {
+            if(((MouseEventArgs)e).Button != MouseButtons.Left ) return;
+            OnClickAction.Invoke(MouseRayDir);
+        }
+
         private void tbTextureOffset_Scroll(object sender, EventArgs e)
         {
             lbTextureOffset.Text = (tbTextureOffset.Value/10f).ToString();
+            glControl.Invalidate();
         }
     }
 }

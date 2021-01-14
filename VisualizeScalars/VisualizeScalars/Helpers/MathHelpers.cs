@@ -56,8 +56,8 @@ namespace VisualizeScalars.Helpers
         public static Vector3 GetIntersection(Vector3 rayDirection, Vector3 rayPoint, Vector3 planePoint,
             Vector3 planeNormal)
         {
-            var difference = rayDirection - planePoint;
-            var dot1 = Vector3.Dot(difference, planeNormal);
+            var distance = rayDirection - planePoint;
+            var dot1 = Vector3.Dot(distance, planeNormal);
             var dot2 = Vector3.Dot(rayDirection, planeNormal);
             var length = dot1 / dot2;
             var intersection = rayPoint - rayDirection * length;

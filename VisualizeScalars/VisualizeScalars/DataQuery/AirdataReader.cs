@@ -111,7 +111,7 @@ namespace VisualizeScalars.DataQuery
 
             for (var y = 0; y < cellCountY; y++)
             {
-                var lat = latitudeSouth + y * gridUnit;
+                var lat = latitudeNorth - y * gridUnit;
                 for (var x = 0; x < cellCountX; x++)
                 {
                     result[x, y] = new AirInformation();

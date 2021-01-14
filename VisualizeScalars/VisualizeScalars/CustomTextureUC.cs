@@ -84,6 +84,20 @@ namespace VisualizeScalars
                         }
                     }
                     break;
+                case 5:
+                    resultGrid1 = CalculateGrid(tbxLeftHand.Text);
+                    resultGrid2 = CalculateGrid(tbxRightHand.Text);
+                    var resultGrid3 = CalculateGrid(tbxBetween.Text);
+                    Grid = new float[resultGrid1.GetLength(0), resultGrid1.GetLength(1)];
+                    for (int j = 0; j < resultGrid1.GetLength(1); j++)
+                    for (int i = 0; i < resultGrid1.GetLength(0); i++)
+                    {
+                        if (resultGrid1[i, j] >= resultGrid2[i, j] && resultGrid1[i, j] <= resultGrid3[i, j])
+                        {
+                            Grid[i, j] = 1;
+                        }
+                    }
+                    break;
             }
 
             this.colorSelection1.Text = "Calculated Texture";
@@ -122,7 +136,7 @@ namespace VisualizeScalars
                 }
             }
             float[,] grid = new float[DataGrid.Width, DataGrid.Height];
-            Regex regex = new Regex("(?<=(\\w+\\.?\\d*))\\s?([\\+\\-\\*\\/]{1})\\s?(?=(\\w+\\.?\\d*))");
+            Regex regex = new Regex("(?<=(?<lefthand>\\w+\\.?\\d*))\\s?(?<operator>[\\+\\-\\*\\/]{1})\\s?(?=(?<righthand>\\w+\\.?\\d*))");
             float fvalue;
             bool isFloat = float.TryParse(mathExpression,out fvalue);
             var lhValues = regex.Matches(mathExpression);
@@ -155,7 +169,6 @@ namespace VisualizeScalars
         } 
         private void Add(IEnumerable<Group[]> additions, ref float[,] grid, ref string expression)
         {
-            float[,] resultGrid = new float[DataGrid.Width, DataGrid.Height];
             foreach (var addition in additions)
             {
 
@@ -358,10 +371,8 @@ namespace VisualizeScalars
 
         private void Multiply(IEnumerable<Group[]> multiplications,ref float[,] grid, ref string expression)
         {
-            float[,] resultGrid = new float[DataGrid.Width,DataGrid.Height];
             foreach (var multiplication in multiplications)
             {
-
                 float valLh;
                 var isFloatLH = float.TryParse(multiplication[0].Value,NumberStyles.AllowDecimalPoint,CultureInfo.InvariantCulture, out valLh);
                 float valRh;
@@ -436,6 +447,29 @@ namespace VisualizeScalars
                 top += control.Height + 10;
             }
             this.Parent.Controls.Remove(this);
+        }
+
+        private void cbxComparer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tbxBetween.Visible = (cbxComparer.SelectedIndex == 5);
+        }
+
+        private void CustomTextureUC_Load(object sender, EventArgs e)
+        {
+            var source = new AutoCompleteStringCollection();
+            
+            source.AddRange(
+                DataGrid.PropertyNames.Select(x => x).ToArray()
+            );
+            tbxRightHand.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            tbxLeftHand.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            tbxBetween.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            tbxRightHand.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            tbxLeftHand.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            tbxBetween.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            tbxRightHand.AutoCompleteCustomSource = source;
+            tbxLeftHand.AutoCompleteCustomSource = source;
+            tbxBetween.AutoCompleteCustomSource = source;
         }
     }
 }

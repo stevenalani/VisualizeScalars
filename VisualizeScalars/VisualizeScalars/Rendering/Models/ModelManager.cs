@@ -52,36 +52,6 @@ namespace VisualizeScalars.Rendering.Models
             HasModelUpdates = false;
         }
 
-        public void DrawModels(ShaderProgram shader, int[] modelIDs = null)
-        {
-            if (modelIDs == null)
-                foreach (var model in _models.Values)
-                {
-                    if (!model.IsReady) model.InitBuffers();
-
-                    shader.SetUniformMatrix4X4("model", model.Modelmatrix);
-                    model.Draw(shader);
-                }
-            else
-                foreach (var modelID in modelIDs)
-                    if (_models.ContainsKey(modelID))
-                    {
-                        if (_models[modelID].IsReady)
-                            _models[modelID].InitBuffers();
-                        shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
-                        //shader.SetUniformMatrix4X4("model", _models[modelID].Modelmatrix);
-                        _models[modelID].Draw(shader);
-                    }
-        }
-
-
-        public void OnUpdate()
-        {
-            if (HasModelUpdates)
-                InitModels();
-        }
-
-
         public List<Model> GetModel(string name)
         {
             var l1 = _models.Values.Where(x => x.name == name).ToList();
@@ -92,11 +62,6 @@ namespace VisualizeScalars.Rendering.Models
 
         public void ClearModels()
         {
-            foreach (var modelsValue in _models.Values)
-            {
-                //modelsValue.Dispose();
-            }
-
             UninitializedModels.Clear();
             _models.Clear();
         }

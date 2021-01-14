@@ -158,7 +158,7 @@ namespace VisualizeScalars.Rendering.Models
         {
             if (IsReady)
                 return;
-            if (Vertices == null && Mesh != null)
+            if (Mesh != null)
             {
                 Vertices = Mesh.GetVertices<T>();
                 Indices = Mesh.GetIndices();

@@ -63,9 +63,9 @@ namespace VisualizeScalars.Rendering
 
         private Matrix4d pProjection { get; }
 
-        public Vector3 Position { get; set; } = new Vector3(0, 0, -1);
+        public Vector3 Position { get; set; } = new Vector3(0, 400, -1);
 
-        public Vector3 ViewDirection { get; set; } = Vector3.UnitZ;
+        public Vector3 ViewDirection { get; set; } = -Vector3.UnitZ;
         public static Vector3 Up { get; } = Vector3.UnitY;
         public Vector3 Right => Vector3.Normalize(Vector3.Cross(ViewDirection, Up));
 

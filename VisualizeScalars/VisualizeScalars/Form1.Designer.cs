@@ -56,7 +56,6 @@ namespace VisualizeScalars
             this.cmdLoadMap = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.gbColorSelection = new System.Windows.Forms.GroupBox();
             this.cmdCreateTexture = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -64,30 +63,24 @@ namespace VisualizeScalars
             this.label16 = new System.Windows.Forms.Label();
             this.cbxViewScalar = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label8 = new System.Windows.Forms.Label();
-            this.tbTextureOffset = new System.Windows.Forms.TrackBar();
-            this.label18 = new System.Windows.Forms.Label();
+            this.flpTextures = new System.Windows.Forms.FlowLayoutPanel();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScalarTable)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.label17);
             this.groupBox2.Controls.Add(this.cbxScalarYMapping);
-            this.groupBox2.Controls.Add(this.label18);
             this.groupBox2.Controls.Add(this.clbScalarselection);
-            this.groupBox2.Controls.Add(this.tbTextureOffset);
             this.groupBox2.Controls.Add(this.mtbxInterpolation);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(8, 156);
+            this.groupBox2.Location = new System.Drawing.Point(3, 155);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(294, 284);
             this.groupBox2.TabIndex = 25;
@@ -158,9 +151,9 @@ namespace VisualizeScalars
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.tbxNorth);
             this.groupBox1.Controls.Add(this.tbxEast);
-            this.groupBox1.Location = new System.Drawing.Point(8, 3);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(292, 147);
+            this.groupBox1.Size = new System.Drawing.Size(292, 146);
             this.groupBox1.TabIndex = 24;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Datenset laden";
@@ -308,16 +301,16 @@ namespace VisualizeScalars
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1026, 831);
+            this.tabControl1.Size = new System.Drawing.Size(1293, 788);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.gbColorSelection);
-            this.tabPage1.Controls.Add(this.cmdCreateTexture);
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Controls.Add(this.cmdLoadMap);
+            this.tabPage1.Controls.Add(this.flpTextures);
             this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Controls.Add(this.cmdCreateTexture);
+            this.tabPage1.Controls.Add(this.cmdLoadMap);
             this.tabPage1.Controls.Add(this.cbxSmoothing);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.checkBox1);
@@ -326,23 +319,14 @@ namespace VisualizeScalars
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1018, 803);
+            this.tabPage1.Size = new System.Drawing.Size(1285, 760);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // gbColorSelection
-            // 
-            this.gbColorSelection.Location = new System.Drawing.Point(308, 3);
-            this.gbColorSelection.Name = "gbColorSelection";
-            this.gbColorSelection.Size = new System.Drawing.Size(702, 768);
-            this.gbColorSelection.TabIndex = 29;
-            this.gbColorSelection.TabStop = false;
-            this.gbColorSelection.Text = "Texturen";
-            // 
             // cmdCreateTexture
             // 
-            this.cmdCreateTexture.Location = new System.Drawing.Point(907, 777);
+            this.cmdCreateTexture.Location = new System.Drawing.Point(199, 722);
             this.cmdCreateTexture.Name = "cmdCreateTexture";
             this.cmdCreateTexture.Size = new System.Drawing.Size(103, 23);
             this.cmdCreateTexture.TabIndex = 0;
@@ -353,7 +337,7 @@ namespace VisualizeScalars
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(121, 608);
+            this.checkBox1.Location = new System.Drawing.Point(166, 560);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(99, 19);
             this.checkBox1.TabIndex = 23;
@@ -417,37 +401,19 @@ namespace VisualizeScalars
             this.tabPage3.UseVisualStyleBackColor = true;
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
-            // label8
+            // flpTextures
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(211, 250);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(13, 15);
-            this.label8.TabIndex = 29;
-            this.label8.Text = "1";
-            // 
-            // tbTextureOffset
-            // 
-            this.tbTextureOffset.Location = new System.Drawing.Point(101, 235);
-            this.tbTextureOffset.Maximum = 100;
-            this.tbTextureOffset.Name = "tbTextureOffset";
-            this.tbTextureOffset.Size = new System.Drawing.Size(104, 45);
-            this.tbTextureOffset.TabIndex = 27;
-            this.tbTextureOffset.Value = 1;
-            this.tbTextureOffset.Scroll += new System.EventHandler(this.trackBar3_Scroll_1);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 250);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(89, 15);
-            this.label18.TabIndex = 28;
-            this.label18.Text = "Textur Y- Offset";
+            this.flpTextures.AutoScroll = true;
+            this.flpTextures.Dock = System.Windows.Forms.DockStyle.Right;
+            this.flpTextures.Location = new System.Drawing.Point(308, 3);
+            this.flpTextures.Name = "flpTextures";
+            this.flpTextures.Size = new System.Drawing.Size(974, 754);
+            this.flpTextures.TabIndex = 30;
             // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(1026, 831);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(1293, 788);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load_1);
@@ -461,7 +427,6 @@ namespace VisualizeScalars
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvScalarTable)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -496,11 +461,8 @@ namespace VisualizeScalars
         private System.Windows.Forms.ComboBox cbxScalarYMapping;
         private Button button1;
         private TabPage tabPage3;
-        private GroupBox gbColorSelection;
         private Button cmdCreateTexture;
         private CheckBox checkBox1;
-        private Label label8;
-        private Label label18;
-        private TrackBar tbTextureOffset;
+        private FlowLayoutPanel flpTextures;
     }
 }

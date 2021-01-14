@@ -24,7 +24,6 @@ namespace VisualizeScalars.Rendering.Models
 
         public Dictionary<Vector3, int> Vertices { get; set; } = new Dictionary<Vector3, int>();
 
-        //public List<Vector3> PrimitiveNormals { get; set; } = new List<Vector3>();
         public List<int> ColorIndices { get; set; } = new List<int>();
         public List<int> Indices { get; set; } = new List<int>();
 
@@ -94,35 +93,5 @@ namespace VisualizeScalars.Rendering.Models
         {
             return Enumerable.Range(0, Indices.Count).ToArray();
         }
-    }
-
-    public class GridSurface : Mesh
-    {
-        public GridSurface(float[,] heights, int width, int depth)
-        {
-            Depth = depth;
-            Width = width;
-            var min = float.MaxValue;
-
-            for (var z = 0; z < Depth; z++)
-            for (var x = 0; x < Width; x++)
-            {
-                var value = heights[x, z];
-                if (value < min) min = value;
-            }
-
-            for (var z = 0; z < Depth; z++)
-            for (var x = 0; x < Width; x++)
-                Vertices.Add(new Vector3(x, heights[x, z] - min, z), Vertices.Count);
-            for (var i = 0; i < Vertices.Count - width - 1; i++)
-            {
-                if ((i + 1) % width == 0)
-                    continue;
-                Indices.AddRange(new[] {i, i + 1, i + 1 + width, i + 1 + width, i + width, i});
-            }
-        }
-
-        public int Width { get; set; }
-        public int Depth { get; set; }
     }
 }

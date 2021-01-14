@@ -169,7 +169,7 @@ namespace VisualizeScalars
         private System.Windows.Forms.Label lbOpacity;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TrackBar tbAlpha;
-        private System.Windows.Forms.CheckBox cbUseScalarValues;
         internal System.Windows.Forms.GroupBox groupBox1;
+        internal System.Windows.Forms.CheckBox cbUseScalarValues;
     }
 }

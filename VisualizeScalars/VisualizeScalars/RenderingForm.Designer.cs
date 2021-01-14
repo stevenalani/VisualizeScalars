@@ -33,6 +33,9 @@ namespace VisualizeScalars
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.glControl = new OpenTK.GLControl();
+            this.lbMapPosY = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbMapPosY = new System.Windows.Forms.TrackBar();
             this.lbTextureOffset = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
@@ -59,6 +62,7 @@ namespace VisualizeScalars
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbMapPosY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -83,6 +87,9 @@ namespace VisualizeScalars
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.lbMapPosY);
+            this.splitContainer1.Panel2.Controls.Add(this.label1);
+            this.splitContainer1.Panel2.Controls.Add(this.tbMapPosY);
             this.splitContainer1.Panel2.Controls.Add(this.lbTextureOffset);
             this.splitContainer1.Panel2.Controls.Add(this.label9);
             this.splitContainer1.Panel2.Controls.Add(this.label18);
@@ -121,16 +128,45 @@ namespace VisualizeScalars
             this.glControl.TabIndex = 2;
             this.glControl.VSync = true;
             this.glControl.Load += new System.EventHandler(this.glControl_Load);
+            this.glControl.Click += new System.EventHandler(this.glControl_Click);
+            this.glControl.MouseMove += new MouseEventHandler(this.glControl_MouseMove);
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
             this.glControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl_KeyDown);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
             this.glControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseWheel);
             this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
+            // 
+            // lbMapPosY
+            // 
+            this.lbMapPosY.AutoSize = true;
+            this.lbMapPosY.Location = new System.Drawing.Point(751, 88);
+            this.lbMapPosY.Name = "lbMapPosY";
+            this.lbMapPosY.Size = new System.Drawing.Size(13, 15);
+            this.lbMapPosY.TabIndex = 81;
+            this.lbMapPosY.Text = "0";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(546, 68);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(81, 15);
+            this.label1.TabIndex = 80;
+            this.label1.Text = "Karten- Offset";
+            // 
+            // tbMapPosY
+            // 
+            this.tbMapPosY.Location = new System.Drawing.Point(546, 88);
+            this.tbMapPosY.Maximum = 20000;
+            this.tbMapPosY.Minimum = -20000;
+            this.tbMapPosY.Name = "tbMapPosY";
+            this.tbMapPosY.Size = new System.Drawing.Size(199, 45);
+            this.tbMapPosY.TabIndex = 79;
+            this.tbMapPosY.Scroll += new System.EventHandler(this.tbMapPosY_Scroll);
             // 
             // lbTextureOffset
             // 
             this.lbTextureOffset.AutoSize = true;
-            this.lbTextureOffset.Location = new System.Drawing.Point(751, 40);
+            this.lbTextureOffset.Location = new System.Drawing.Point(751, 27);
             this.lbTextureOffset.Name = "lbTextureOffset";
             this.lbTextureOffset.Size = new System.Drawing.Size(13, 15);
             this.lbTextureOffset.TabIndex = 32;
@@ -351,6 +387,7 @@ namespace VisualizeScalars
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.tbMapPosY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
@@ -390,5 +427,8 @@ namespace VisualizeScalars
         private Label lbTextureOffset;
         private Label label18;
         private TrackBar tbTextureOffset;
+        private Label lbMapPosY;
+        private Label label1;
+        private TrackBar tbMapPosY;
     }
 }

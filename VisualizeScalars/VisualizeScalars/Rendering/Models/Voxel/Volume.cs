@@ -181,6 +181,9 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         public bool IsSameMaterialUp(int x, int y, int z)
         {
+            if (Dimensions.X < x || Dimensions.Y-1 < y+1 || Dimensions.Z < z)
+                return false;
+            
             return DataPointers[y][x, z] == DataPointers[y + 1][x, z];
         }
 
@@ -201,6 +204,8 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         public bool IsSameMaterialRight(int x, int y, int z)
         {
+            if (Dimensions.X-1 < x+1 || Dimensions.Y < y || Dimensions.Z < z)
+                return false;
             return DataPointers[y][x, z] == DataPointers[y][x + 1, z];
         }
 

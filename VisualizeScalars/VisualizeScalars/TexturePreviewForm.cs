@@ -14,6 +14,7 @@ namespace VisualizeScalars
         {
             InitializeComponent();
             this.pictureBox1.Image = bitmap;
+            this.pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             this.pictureBox1.Update();
         }
 

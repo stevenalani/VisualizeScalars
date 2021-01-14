@@ -169,11 +169,11 @@ namespace VisualizeScalars.Helpers
             for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
             {
-                var value = (int) ((grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min) * 255);
+                var value = (int) ((grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min));
                 if (value > 0.0f)
                 {
                     if(!isFixedColor)
-                    color = Color.FromArgb(value, color.R, color.G, color.B);
+                    color = Color.FromArgb(value *255, color.R, color.G, color.B);
                     newGraphics.FillEllipse(new SolidBrush(color), x - radius, y - radius, 2 * radius, 2 * radius);
                 }
             }

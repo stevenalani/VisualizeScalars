@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using OpenTK;
 using VisualizeScalars.Helpers;
 
 namespace VisualizeScalars
@@ -41,7 +36,7 @@ namespace VisualizeScalars
         private void button1_Click(object sender, EventArgs e)
         {
             if (Grid == null) return;
-            var bmp = Grid.CreateBitmap(colorDialog1.Color, Radius,cbUseScalarValues.Checked);
+            var bmp = Grid.CreateBitmap(colorDialog1.Color, Radius,!cbUseScalarValues.Checked);
             TexturePreviewForm previewForm = new TexturePreviewForm(bmp); 
             previewForm.ShowDialog(this);
         }
