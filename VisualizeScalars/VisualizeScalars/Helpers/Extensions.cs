@@ -150,6 +150,7 @@ namespace VisualizeScalars.Helpers
         public static MinMaxPair GetMinAndMax(this float[,] grid)
         {
             MinMaxPair minmax = new MinMaxPair();
+            minmax.Min = Single.MaxValue;
             for (int j = 0; j < grid.GetLength(1); j++)
             for (int i = 0; i < grid.GetLength(0); i++)
             {
@@ -158,33 +159,54 @@ namespace VisualizeScalars.Helpers
             }
             return minmax;
         } 
-        public static Bitmap CreateBitmap(this float[,] grid, Color color, int radius,bool isFixedColor = false)
+	
+        public static Color LerpRGB(Color colorMin, Color colorMax, float t)
         {
+            var cr = colorMin.R + (colorMax.R - colorMin.R) * t;
+            var cg = colorMin.G + (colorMax.G - colorMin.G) * t;
+            var cb = colorMin.B + (colorMax.B - colorMin.B) * t;
+            var ca = colorMin.A + (colorMax.A - colorMin.A) * t;
+            return Color.FromArgb((int) (ca), (int) (cr), (int) (cg), (int) (cb));
+        }
+        public static Bitmap CreateBitmap(this float[,] grid, Color[] colors, int markwidth,bool isFixedColor = false)
+        {
+
             var height = grid.GetLength(1);
             var width = grid.GetLength(0);
             MinMaxPair minMax = grid.GetMinAndMax();
-            Bitmap img = new Bitmap(width, height);
+            Bitmap img = new Bitmap((int) width, (int)height);
+            img.SetResolution(150.0f,150.0f);
             using Graphics newGraphics = Graphics.FromImage(img);
             newGraphics.FillRectangle(new SolidBrush(Color.Transparent), 0, 0, width, height);
+            
             for (int y = 0; y < height; y++)
             for (int x = 0; x < width; x++)
             {
-                var value = (int) ((grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min));
+                var value =(grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min);
                 if (value > 0.0f)
                 {
-                    if(!isFixedColor)
-                    color = Color.FromArgb(value *255, color.R, color.G, color.B);
-                    newGraphics.FillEllipse(new SolidBrush(color), x - radius, y - radius, 2 * radius, 2 * radius);
+                    Color color = LerpRGB(colors[0], colors[1], value);
+
+                    if (!isFixedColor)
+                    {
+                        color = Color.FromArgb((int) (value * 255), color.R, color.G, color.B);
+                        
+                    }
+                    if (markwidth > 1)
+                    {
+                        
+                        newGraphics.FillEllipse(new SolidBrush(color), x - markwidth, y - markwidth, markwidth, markwidth);
+
+                    }
+                    else
+                    {
+                        newGraphics.FillRectangle(new SolidBrush(color), x, y, 1, 1);
+                    }
+                        
                 }
             }
 
             return img;
         }
-    }
-
-    public struct MinMaxPair
-    {
-        public float Min;
-        public float Max;
     }
 }

@@ -199,7 +199,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 var materialColor = GetMaterial(x, y, z).Color;
                 var colVec = new Vector4(materialColor.X, materialColor.Y, materialColor.Z, materialColor.W);
                 var color = BitConverter.GetBytes(new Rgba32(colVec.X, colVec.Y, colVec.Z, colVec.W).PackedValue);
-                //var Color = ((int)materialColor.W << 24) | ((int)materialColor.Z << 16) | ((int)materialColor.Y << 8) | ((int)materialColor.Z);
+                //var Colors = ((int)materialColor.W << 24) | ((int)materialColor.Z << 16) | ((int)materialColor.Y << 8) | ((int)materialColor.Z);
                 data.AddRange(color);
             }
 

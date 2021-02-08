@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,22 +17,32 @@ namespace VisualizeScalars
         public delegate void GetImageDelegate(long time);
 
         public GetImageDelegate getImageDelegate;
-#if DEBUG
-        private Bitmap Image;
-#endif
+
         public GMapOverlay OverlayMarkers = new GMapOverlay("Markers");
         public Bitmap TargetBitmap;
 
         public RegionSelectionForm(DataFileQuerent querent)
         {
+            GoogleMapProvider.Instance.Version = "m,traffic@336000000";
             DataQuerernt = querent;
+
             InitializeComponent();
+            gMapControl1.GrayScaleMode = true;
+            gMapControl1.ColorMatrix = new ColorMatrix(new[]
+            {
+                new[] {.3f, .3f, .3f, 0, 0},
+                new[] {.59f, .59f, .59f, 0, 0},
+                new[] {.11f, .11f, .11f, 0, 0},
+                new[] {0, 0, 0, 1.0f, 0},
+                new[] {0, 0, 0, 0, 1.0f}
+            });
         }
 
         private DataFileQuerent DataQuerernt { get; }
 
         private void Regions__Auswahl_Load(object sender, EventArgs e)
         {
+            
             GMaps.Instance.Mode = AccessMode.ServerAndCache;
             gMapControl1.RoutesEnabled = true;
             gMapControl1.PolygonsEnabled = true;
@@ -47,7 +58,8 @@ namespace VisualizeScalars
             gMapControl1.MaxZoom = 24;
             gMapControl1.Zoom = 15;
             gMapControl1.Position = new PointLatLng(48.75 + (48.8 - 48.75) / 2, 9.1566 + (9.2 - 9.1566) / 2);
-            gMapControl1.MapProvider = GMapProviders.BingMap;
+
+            gMapControl1.MapProvider = GMapProviders.GoogleMap;
             gMapControl1.Overlays.Add(OverlayMarkers);
             gMapControl1.OnMapClick += GMapControl1_OnMapClick;
             gMapControl1.OnMarkerClick += (item, args) =>
@@ -109,11 +121,6 @@ namespace VisualizeScalars
                         cropRectangle,
                         GraphicsUnit.Pixel);
                 }
-
-#if DEBUG
-                image.Save("D:\\inputimage.png");
-                TargetBitmap.Save("D:\\outputimage.png");
-#endif
             }
         }
 
@@ -126,6 +133,11 @@ namespace VisualizeScalars
         {
             gMapControl1.OnTileLoadComplete += GetBitmapOnTileLoad;
             gMapControl1.OnTileLoadStart -= TileLoadStart;
+        }
+
+        private void gMapControl1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

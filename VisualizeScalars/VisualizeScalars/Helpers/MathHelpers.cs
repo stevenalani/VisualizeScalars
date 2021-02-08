@@ -16,22 +16,6 @@ namespace VisualizeScalars.Helpers
             return rotate;
         }
 
-        public static Vector3 GetSurfaceNormalNewell(PositionColorVertex[] orderedVertices)
-        {
-            var normal = Vector3.Zero;
-            for (var i = 0; i < orderedVertices.Length - 1; i++)
-            {
-                var CurrentVertex = orderedVertices[i].Position;
-                var NextVertex = orderedVertices[i + 1].Position;
-
-                normal.X += (CurrentVertex.Y - NextVertex.Y) * (CurrentVertex.Z + NextVertex.Z);
-                normal.Y += (CurrentVertex.Z - NextVertex.Z) * (CurrentVertex.X + NextVertex.X);
-                normal.X += (CurrentVertex.X - NextVertex.X) * (CurrentVertex.Y + NextVertex.Y);
-            }
-
-            return normal.Normalized();
-        }
-
         public static Vector3 GetSurfaceNormal(Vector3 p1, Vector3 p2, Vector3 p3)
         {
             var u = p2 - p1;

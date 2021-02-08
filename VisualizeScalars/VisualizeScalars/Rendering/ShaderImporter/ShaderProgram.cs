@@ -122,15 +122,6 @@ namespace VisualizeScalars.Rendering.ShaderImporter
             GL.LinkProgram(ID);
             int linkSucceed;
             GL.GetProgram(ID, GetProgramParameterName.LinkStatus, out linkSucceed);
-#if DEBUG
-            var vertexsource = string.Empty;
-            var fragmentsource = string.Empty;
-
-            GL.ShaderSource(vertexShader, vertexsource);
-            GL.ShaderSource(fragmentShader, fragmentsource);
-            DebugHelpers.Log("Vertex Source:", vertexsource);
-            DebugHelpers.Log("Fragment Source:", fragmentsource);
-#endif
             if (linkSucceed == 1)
             {
                 HasErrors = false;

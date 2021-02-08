@@ -11,7 +11,7 @@ namespace VisualizeScalars.DataQuery
     {
         private readonly string _airdatapath = "luftdaten.info";
         private readonly string _workingDirectory;
-        private readonly Uri apiUri = new Uri("http://api.luftdaten.info/static/v1/data.json");
+        private readonly Uri apiUri = new Uri("http://api.luftdaten.info/static/v2/data.24h.json");
 
         public AirdataReader(string workingDirectory)
         {
@@ -45,6 +45,7 @@ namespace VisualizeScalars.DataQuery
             using (var reader = new StreamReader(response.GetResponseStream()))
             {
                 var content = reader.ReadToEnd();
+                
                 File.WriteAllText(
                     Path.Combine(datadirectory,
                         $"data{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}_{DateTime.Now.Minute}.json"),

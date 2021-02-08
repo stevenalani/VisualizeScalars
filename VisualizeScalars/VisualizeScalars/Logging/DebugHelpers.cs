@@ -54,7 +54,7 @@ namespace VisualizeScalars.Logging
         {
             if (title.Contains("<clear>")) Console.Clear();
             Console.WriteLine("\n" + title.Replace("<clear>", ""));
-            Console.WriteLine(string.Empty.PadLeft(Console.BufferWidth - 1, '-'));
+            //Console.WriteLine(string.Empty.PadLeft(Console.BufferWidth - 1, '-'));
             Console.Write(message);
             Console.WriteLine(Environment.NewLine + string.Empty.PadLeft(Console.BufferWidth - 1, '=') +
                               Environment.NewLine);

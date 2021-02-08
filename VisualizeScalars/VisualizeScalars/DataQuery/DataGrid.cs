@@ -46,7 +46,7 @@ namespace VisualizeScalars.DataQuery
 
         public T this[int x, int y]
         {
-            get => Grid[x, y];
+            get => x >= 0 && x < Width && y >= 0 && y < Height? Grid[x,y] : null;
             set => Grid[x, y] = value;
         }
 

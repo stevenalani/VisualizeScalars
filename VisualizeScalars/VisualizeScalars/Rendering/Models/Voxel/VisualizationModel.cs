@@ -7,7 +7,7 @@ using VisualizeScalars.DataQuery;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
-    internal class VisualizationModel<T> : ColorVolume<T> where T : BaseGridCell, new()
+    public class VisualizationModel<T> : ColorVolume<T> where T : BaseGridCell, new()
     {
         public delegate float DensityFunction();
 

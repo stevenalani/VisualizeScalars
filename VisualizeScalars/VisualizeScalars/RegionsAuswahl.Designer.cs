@@ -38,7 +38,7 @@ namespace VisualizeScalars
             this.gMapControl1.CanDragMap = true;
             this.gMapControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.gMapControl1.EmptyTileColor = System.Drawing.Color.Navy;
-            this.gMapControl1.GrayScaleMode = false;
+            this.gMapControl1.GrayScaleMode = true;
             this.gMapControl1.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.gMapControl1.LevelsKeepInMemory = 5;
             this.gMapControl1.Location = new System.Drawing.Point(0, 0);
@@ -58,6 +58,7 @@ namespace VisualizeScalars
             this.gMapControl1.Size = new System.Drawing.Size(800, 450);
             this.gMapControl1.TabIndex = 1;
             this.gMapControl1.Zoom = 0D;
+            this.gMapControl1.Load += new System.EventHandler(this.gMapControl1_Load);
             // 
             // RegionSelectionForm
             // 

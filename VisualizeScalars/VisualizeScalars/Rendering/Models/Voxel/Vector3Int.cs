@@ -27,7 +27,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         public override string ToString()
         {
-            return $"{X}x{Y}x{Z}";
+            return $"X: {X} Y: {Y} Z: {Z}";
         }
 
         public static Vector3 operator /(Vector3Int a, int b)

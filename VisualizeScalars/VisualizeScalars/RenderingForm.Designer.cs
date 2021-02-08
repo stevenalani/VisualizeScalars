@@ -31,9 +31,12 @@ namespace VisualizeScalars
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.glControl = new OpenTK.GLControl();
+            this.tbTAlpha = new System.Windows.Forms.TrackBar();
             this.lbMapPosY = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tbMapPosY = new System.Windows.Forms.TrackBar();
             this.lbTextureOffset = new System.Windows.Forms.Label();
@@ -58,10 +61,12 @@ namespace VisualizeScalars
             this.tbLightX = new System.Windows.Forms.TrackBar();
             this.label10 = new System.Windows.Forms.Label();
             this.tbLightY = new System.Windows.Forms.TrackBar();
+            this.ttpPosDetail = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMapPosY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).BeginInit();
@@ -87,7 +92,9 @@ namespace VisualizeScalars
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.tbTAlpha);
             this.splitContainer1.Panel2.Controls.Add(this.lbMapPosY);
+            this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.tbMapPosY);
             this.splitContainer1.Panel2.Controls.Add(this.lbTextureOffset);
@@ -129,11 +136,23 @@ namespace VisualizeScalars
             this.glControl.VSync = true;
             this.glControl.Load += new System.EventHandler(this.glControl_Load);
             this.glControl.Click += new System.EventHandler(this.glControl_Click);
-            this.glControl.MouseMove += new MouseEventHandler(this.glControl_MouseMove);
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
+            this.glControl.DoubleClick += new System.EventHandler(this.glControl_DoubleClick_1);
             this.glControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl_KeyDown);
+            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
             this.glControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseWheel);
             this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
+            // 
+            // tbTAlpha
+            // 
+            this.tbTAlpha.Location = new System.Drawing.Point(546, 152);
+            this.tbTAlpha.Maximum = 100;
+            this.tbTAlpha.Minimum = 1;
+            this.tbTAlpha.Name = "tbTAlpha";
+            this.tbTAlpha.Size = new System.Drawing.Size(218, 45);
+            this.tbTAlpha.TabIndex = 82;
+            this.tbTAlpha.Value = 75;
+            this.tbTAlpha.Scroll += new System.EventHandler(this.tbTAlpha_Scroll);
             // 
             // lbMapPosY
             // 
@@ -143,6 +162,15 @@ namespace VisualizeScalars
             this.lbMapPosY.Size = new System.Drawing.Size(13, 15);
             this.lbMapPosY.TabIndex = 81;
             this.lbMapPosY.Text = "0";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(546, 134);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(81, 15);
+            this.label2.TabIndex = 80;
+            this.label2.Text = "Terrain- Alpha";
             // 
             // label1
             // 
@@ -155,7 +183,7 @@ namespace VisualizeScalars
             // 
             // tbMapPosY
             // 
-            this.tbMapPosY.Location = new System.Drawing.Point(546, 88);
+            this.tbMapPosY.Location = new System.Drawing.Point(546, 86);
             this.tbMapPosY.Maximum = 20000;
             this.tbMapPosY.Minimum = -20000;
             this.tbMapPosY.Name = "tbMapPosY";
@@ -204,7 +232,8 @@ namespace VisualizeScalars
             // tbTextureOffset
             // 
             this.tbTextureOffset.Location = new System.Drawing.Point(546, 27);
-            this.tbTextureOffset.Maximum = 1000;
+            this.tbTextureOffset.Maximum = 100000;
+            this.tbTextureOffset.Minimum = -1000;
             this.tbTextureOffset.Name = "tbTextureOffset";
             this.tbTextureOffset.Size = new System.Drawing.Size(199, 45);
             this.tbTextureOffset.TabIndex = 30;
@@ -387,6 +416,7 @@ namespace VisualizeScalars
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.tbTAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbMapPosY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbTextureOffset)).EndInit();
@@ -404,7 +434,7 @@ namespace VisualizeScalars
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private OpenTK.GLControl glControl;
+        internal OpenTK.GLControl glControl;
         private System.Windows.Forms.Label lLightPosZ;
         private System.Windows.Forms.Label lLightPosY;
         private System.Windows.Forms.Label lLightPosX;
@@ -430,5 +460,8 @@ namespace VisualizeScalars
         private Label lbMapPosY;
         private Label label1;
         private TrackBar tbMapPosY;
+        internal ToolTip ttpPosDetail;
+        private TrackBar tbTAlpha;
+        private Label label2;
     }
 }

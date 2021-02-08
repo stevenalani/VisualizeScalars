@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using OpenTK;
+using VisualizeScalars.DataQuery;
 
 namespace VisualizeScalars.Rendering.Models.Voxel
 {
@@ -16,15 +20,29 @@ namespace VisualizeScalars.Rendering.Models.Voxel
         public static Mesh ComputeMarchingCubesMesh<T>(Volume<T> volume, Func<T, float> densityFunc,
             float isolevel = 0.1f) where T : IVolumeData, new()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var results = MarchingCubes.run(volume, densityFunc, isolevel);
             var mesh = new Mesh();
-            foreach (var result in results) mesh.AppendTriangle(result.p);
+            
 
+            foreach (var result in results) mesh.AppendTriangle(result.p);
+            if (typeof(T) == typeof(Material))
+            {
+                var materials = volume.Data.Select(x => x.ColorMapping);
+                mesh.Colors.AddRange(materials);
+                mesh.ColorIndices = Enumerable.Repeat(1, mesh.Indices.Count).ToList();
+            }
+            sw.Stop();
+            
+            Console.WriteLine($"MarchingCubes -> Dimensionen:{volume.Dimensions.ToString() + Environment.NewLine } Voxel count: {volume.DataPointers.SelectMany(x => x.Cast<int>()).Count(i => i != 0) + Environment.NewLine}{Environment.NewLine} Vertices: {mesh.Vertices.Count}{Environment.NewLine} Triangles:{mesh.Indices.Count / 3}Elapsed Time: {sw.Elapsed.ToString("g")}");
             return mesh;
         }
 
         public static Mesh ComputeCubicMesh<T>(Volume<T> volume) where T : IVolumeData, new()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var mesh = new Mesh();
             for (var currentZ = 0; currentZ < volume.Dimensions.Z; currentZ++)
             for (var currentY = 0; currentY < volume.Dimensions.Y; currentY++)
@@ -82,12 +100,15 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                     mesh.AppendTriangle(verts[3], verts[4], verts[5]);
                 }
             }
-
+            sw.Stop();
+            Console.WriteLine($"Cubic Mesh -> Dimensionen:{volume.Dimensions.ToString() + Environment.NewLine } Voxel count: {volume.DataPointers.SelectMany(x => x.Cast<int>()).Count(i => i != 0) + Environment.NewLine}{Environment.NewLine} Vertices: {mesh.Vertices.Count}{Environment.NewLine} Triangles:{mesh.Indices.Count / 3}Elapsed Time: {sw.Elapsed.ToString("g")}");
             return mesh;
         }
 
         public static Mesh ComputeCubicMeshGreedy<T>(Volume<T> volume) where T : IVolumeData, new()
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var mesh = new Mesh();
             int countX, countY, countZ;
             var _checked = 0;
@@ -181,7 +202,8 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 mesh.AppendTriangle(cube[0], cube[1], cube[5]);
                 mesh.AppendTriangle(cube[5], cube[4], cube[0]);
             }
-
+            sw.Stop();
+            Console.WriteLine($"Cubes Greedy -> Dimensionen:{volume.Dimensions.ToString() + Environment.NewLine } Voxel count: {volume.DataPointers.SelectMany(x => x.Cast<int>()).Count(i => i != 0) + Environment.NewLine}{Environment.NewLine} Vertices: {mesh.Vertices.Count}{Environment.NewLine} Triangles:{mesh.Indices.Count / 3}Elapsed Time: {sw.Elapsed.ToString("g")}");
             return mesh;
         }
 
@@ -204,6 +226,16 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             for (var y = start.Y; y < end.Y; y++)
             for (var z = start.Z; z < end.Z; z++)
                 checkedin[y][x, z] = false;
+        }
+        public static Mesh ComputeTRN(VisualizationModel<BaseGridCell> model)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var heights = model.DataGrid.GetDataGrid(model.HeightMapping);
+            var mesh = new GridSurface(heights, model.DataGrid.Width, model.DataGrid.Height);
+            sw.Stop();
+            Console.WriteLine($@"TRN Dimensionen: X:{heights.GetLength(0)} Z:{heights.GetLength(1)} {Environment.NewLine} Vertices: {mesh.Vertices.Count}{Environment.NewLine} Triangles:{mesh.Indices.Count/3} Elapsed Time: {sw.Elapsed.ToString("g")}");
+            return mesh;
         }
     }
 }

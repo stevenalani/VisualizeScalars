@@ -5,12 +5,10 @@ namespace VisualizeScalars.Rendering
 {
     public partial class Camera
     {
-        public const float YAW = 0f;
-        public const float PITCH = 0f;
-        public double Pitch = PITCH;
+        public double Pitch = 0f;
         public double Sensitivity = SENSITIVITY;
 
-        public double Yaw = YAW;
+        public double Yaw = 0f;
 
         internal Vector3 Target => Position + ViewDirection;
 

@@ -114,14 +114,7 @@ namespace VisualizeScalars.DataQuery
             var si = new GridCell
             {
                 Height = hgtFileReader.GetElevationAtCoordinate(latitude, longitude),
-                ProfileAvailableWaterCapacity =
-                    _igbpInformationProviders[_pawcFile].InformationForCoordinate(latitude, longitude),
-                BulkDensity = _igbpInformationProviders[_bdFile].InformationForCoordinate(latitude, longitude),
-                SoilCarbonDensity = _igbpInformationProviders[_scFile].InformationForCoordinate(latitude, longitude),
-                FieldCapacity = _igbpInformationProviders[_fcFile].InformationForCoordinate(latitude, longitude),
-                ThermalCapacity = _igbpInformationProviders[_tcFile].InformationForCoordinate(latitude, longitude),
-                TotalNitrogenDensity = _igbpInformationProviders[_tnFile].InformationForCoordinate(latitude, longitude),
-                WiltingPoint = _igbpInformationProviders[_wpFile].InformationForCoordinate(latitude, longitude)
+                
             };
             return si;
         }
@@ -144,7 +137,7 @@ namespace VisualizeScalars.DataQuery
         public AirInformation[,] GetAirDataGrid(double latitudeSouth, double longitudeWest, double latitudeNorth,
             double longitudeEast, double gridUnit)
         {
-            //airdataReader.DownloadData();
+            airdataReader.DownloadData();
             return airdataReader.BuildGrid(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
         }
 
@@ -173,20 +166,7 @@ namespace VisualizeScalars.DataQuery
             var airdata = GetAirDataGrid(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
             var Height =
                 hgtFileReader.GetElevationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] ProfileAvailableWaterCapacity = _igbpInformationProviders[_pawcFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] BulkDensity = _igbpInformationProviders[_bdFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] SoilCarbonDensity = _igbpInformationProviders[_scFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] FieldCapacity = _igbpInformationProviders[_fcFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] ThermalCapacityData = _igbpInformationProviders[_tcFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] TotalNitrogenDensity = _igbpInformationProviders[_tnFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
-            double[,] WiltingPoint = _igbpInformationProviders[_wpFile]
-                .InformationForArea(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
+
             var results = new GridCell[cellCountX, cellCountY];
 
             for (var j = 0; j < cellCountY; j++)
@@ -194,13 +174,6 @@ namespace VisualizeScalars.DataQuery
                 results[i, j] = new GridCell
                 {
                     Height = Height[i, j],
-                    ProfileAvailableWaterCapacity = ProfileAvailableWaterCapacity[i, j],
-                    BulkDensity = BulkDensity[i, j],
-                    SoilCarbonDensity = SoilCarbonDensity[i, j],
-                    FieldCapacity = FieldCapacity[i, j],
-                    ThermalCapacity =  ThermalCapacityData[i, j],
-                    TotalNitrogenDensity = TotalNitrogenDensity[i, j],
-                    WiltingPoint = WiltingPoint[i, j],
                     Temperature = airdata[i, j].TemperatureAvg,
                     Pressure = airdata[i, j].PressureAvg,
                     Humidity = airdata[i, j].HumidityAvg,

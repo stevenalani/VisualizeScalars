@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <StartupObject>VisualizeScalars.VisualizeScalars</StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Thesis\**" />
+    <EmbeddedResource Remove="Thesis\**" />
+    <None Remove="Thesis\**" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GMap.NET.Core" Version="2.0.1" />
     <PackageReference Include="GMap.NET.WinForms" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Toolkit.Forms.UI.Controls" Version="6.1.2" />
+    <PackageReference Include="LiveCharts.WinForms.NetCore3" Version="0.9.7" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="OpenTK" Version="3.3.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
@@ -38,6 +46,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Rendering\Shaders\ImageShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Rendering\Shaders\InstancedYRayShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Rendering\Shaders\InstancedYRayShader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Rendering\Shaders\InstancedVoxelShader.frag">

@@ -65,7 +65,7 @@ namespace VisualizeScalars.Rendering.Models
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, Ssbo);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 
-            // Color attribute
+            // Colors attribute
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float) * 10, 3 * sizeof(float));
 
@@ -156,7 +156,7 @@ namespace VisualizeScalars.Rendering.Models
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, Ssbo);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 
-            // Color attribute
+            // Colors attribute
             GL.EnableVertexAttribArray(1);
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float) * 10, 3 * sizeof(float));
 

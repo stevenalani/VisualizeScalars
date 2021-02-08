@@ -23,7 +23,8 @@ namespace VisualizeScalars.Rendering
         LaplacianHc1 = 1,
         LaplacianHc2 = 2,
         LaplacianHc5 = 5,
-        LaplacianHc10 = 10
+        LaplacianHc10 = 10,
+        RecalculateNormals
     }
 
     public static class MeshSmoother
@@ -84,10 +85,8 @@ namespace VisualizeScalars.Rendering
         public static Mesh HCFilter(Mesh mesh, int times = 5, float alpha = 0.5f, float beta = 0.75f)
         {
             var ordered = mesh.Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
-            // var vertices = HCFilter(mesh.Vertices.ToArray(), mesh.Indices.ToArray(), times, alpha, beta);
             var vertices = HCFilter(ordered, mesh.Indices.ToArray(), times, alpha, beta);
             mesh.Vertices = new Dictionary<Vector3, int>();
-            //mesh.Vertices = new List<Vector3>(vertices);
             for (var i = 0; i < vertices.Length; i++) mesh.Vertices.Add(vertices[i], i);
             //mesh.RecalculateNormals();
             //mesh.RecalculateBounds();
@@ -127,7 +126,9 @@ namespace VisualizeScalars.Rendering
 
             return p;
         }
+
     }
+
 
     public class VertexConnection
     {

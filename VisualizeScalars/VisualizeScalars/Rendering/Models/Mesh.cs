@@ -8,8 +8,8 @@ namespace VisualizeScalars.Rendering.Models
 {
     public class Mesh
     {
-        private readonly List<Vector4> Colors = new List<Vector4>();
-
+        internal readonly List<Vector4> Colors = new List<Vector4>();
+        internal Dictionary<int, Vector3> Normals = new Dictionary<int, Vector3>();
         public Mesh()
         {
         }
@@ -29,12 +29,33 @@ namespace VisualizeScalars.Rendering.Models
 
         public void AppendTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3)
         {
+
             Vertices.TryAdd(pos1, Vertices.Count);
             Vertices.TryAdd(pos2, Vertices.Count);
             Vertices.TryAdd(pos3, Vertices.Count);
+
             Indices.Add(Vertices[pos1]);
             Indices.Add(Vertices[pos2]);
             Indices.Add(Vertices[pos3]);
+           
+            var vertexNormal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
+            
+
+            if (!Normals.TryAdd(Vertices[pos1], vertexNormal))
+            {
+                var oldnormal = Normals[Vertices[pos1]];
+                Normals[Vertices[pos1]] = ((vertexNormal + oldnormal) / 2).Normalized();
+            }
+            if (!Normals.TryAdd(Vertices[pos2], vertexNormal))
+            {
+                var oldnormal = Normals[Vertices[pos2]];
+                Normals[Vertices[pos2]] = ((vertexNormal + oldnormal) / 2).Normalized();
+            }
+            if (!Normals.TryAdd(Vertices[pos3], MathHelpers.GetSurfaceNormal(pos1, pos2, pos3)))
+            {
+                var oldnormal = Normals[Vertices[pos3]];
+                Normals[Vertices[pos3]] = ((vertexNormal + oldnormal) / 2).Normalized();
+            }
         }
 
         public void AppendTriangle(Vector3[] pos)
@@ -44,12 +65,7 @@ namespace VisualizeScalars.Rendering.Models
 
         public void AppendTriangle(IVertex v1, IVertex v2, IVertex v3)
         {
-            Vertices.TryAdd(v1.Position, Vertices.Count);
-            Vertices.TryAdd(v2.Position, Vertices.Count);
-            Vertices.TryAdd(v3.Position, Vertices.Count);
-            Indices.Add(Vertices[v1.Position]);
-            Indices.Add(Vertices[v2.Position]);
-            Indices.Add(Vertices[v3.Position]);
+            AppendTriangle(v1.Position,v2.Position,v3.Position);
             if (!Colors.Contains(v1.Color))
                 Colors.Add(v1.Color);
             if (!Colors.Contains(v2.Color))
@@ -69,7 +85,7 @@ namespace VisualizeScalars.Rendering.Models
             AppendTriangle(v1, v2, v3);
         }
 
-        public T[] GetVertices<T>() where T : IVertex, new()
+        public T[] GetVertices<T>(bool avgerageNormals = true) where T : IVertex, new()
         {
             var positions = new List<T>();
             var ordered = Vertices.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
@@ -79,11 +95,32 @@ namespace VisualizeScalars.Rendering.Models
                 var pos1 = ordered[Indices[i]];
                 var pos2 = ordered[Indices[i + 1]];
                 var pos3 = ordered[Indices[i + 2]];
-                var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
-                var color = Colors.Count > 0 ? Colors[ColorIndices[i]] : new Vector4(0.5f, 0.5f, 0.5f, 1);
-                positions.Add(new T {Position = pos1, Normal = normal, Color = color});
-                positions.Add(new T {Position = pos2, Normal = normal, Color = color});
-                positions.Add(new T {Position = pos3, Normal = normal, Color = color});
+                var defaultColor = new Vector4(0.5f, 0.5f, 0.5f, 1);
+                var color1 = Colors.Count > 0 ? Colors[ColorIndices[i]] : defaultColor;
+                var color2 = Colors.Count > 0 ? Colors[ColorIndices[i+1]] : defaultColor;
+                var color3 = Colors.Count > 0 ? Colors[ColorIndices[i+2]] : defaultColor;
+                /* 
+                 var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
+                 positions.Add(new T {Position = pos1, Normal = normal, Color = color});
+                 positions.Add(new T {Position = pos2, Normal = normal, Color = color});
+                 positions.Add(new T {Position = pos3, Normal = normal, Color = color});
+                */
+                if (Normals.Count == 0 || avgerageNormals == false)
+                {
+                    var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
+                    positions.Add(new T { Position = pos1, Normal = normal, Color = color1 });
+                    positions.Add(new T { Position = pos2, Normal = normal, Color = color2 });
+                    positions.Add(new T { Position = pos3, Normal = normal, Color = color3 });
+                }
+                else
+                {
+                    var normal1 = Normals[Vertices[pos1]];
+                    var normal2 = Normals[Vertices[pos2]];
+                    var normal3 = Normals[Vertices[pos3]];
+                    positions.Add(new T { Position = pos1, Normal = normal1, Color = color1 });
+                    positions.Add(new T { Position = pos2, Normal = normal2, Color = color2 });
+                    positions.Add(new T { Position = pos3, Normal = normal3, Color = color3 });
+                }
             }
 
             return positions.ToArray();

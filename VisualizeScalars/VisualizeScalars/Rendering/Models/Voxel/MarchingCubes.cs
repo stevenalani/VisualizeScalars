@@ -452,12 +452,6 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             return new Vector3((float) (p1.X + mu * (p2.X - p1.X)),
                 (float) (p1.Y + mu * (p2.Y - p1.Y)),
                 (float) (p1.Z + mu * (p2.Z - p1.Z)));
-            /*p = pos;
-            p.X = (float)(p1.X + mu * (p2.X - p1.X));
-            p.Y = (float)(p1.Y + mu * (p2.Y - p1.Y));
-            p.Z = (float)(p1.Z + mu * (p2.Z - p1.Z));*/
-
-            return p;
         }
     }
 }

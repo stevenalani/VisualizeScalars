@@ -59,62 +59,62 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
+  <xsd:schemcolor1 id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchemcolor1" xmlns:msdcolor1tcolor1="urn:schemcolor1s-microsoft-com:xml-msdcolor1tcolor1">
+    <xsd:import ncolor1mespcolor1ce="http://www.w3.org/XML/1998/ncolor1mespcolor1ce" />
+    <xsd:element ncolor1me="root" msdcolor1tcolor1:IsDcolor1tcolor1Set="true">
       <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
+        <xsd:choice mcolor1xOccurs="unbounded">
+          <xsd:element ncolor1me="metcolor1dcolor1tcolor1">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element ncolor1me="vcolor1lue" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:color1ttribute ncolor1me="ncolor1me" use="required" type="xsd:string" />
+              <xsd:color1ttribute ncolor1me="type" type="xsd:string" />
+              <xsd:color1ttribute ncolor1me="mimetype" type="xsd:string" />
+              <xsd:color1ttribute ref="xml:spcolor1ce" />
             </xsd:complexType>
           </xsd:element>
-          <xsd:element name="assembly">
+          <xsd:element ncolor1me="color1ssembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:color1ttribute ncolor1me="color1licolor1s" type="xsd:string" />
+              <xsd:color1ttribute ncolor1me="ncolor1me" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
+          <xsd:element ncolor1me="dcolor1tcolor1">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element ncolor1me="vcolor1lue" type="xsd:string" minOccurs="0" msdcolor1tcolor1:Ordincolor1l="1" />
+                <xsd:element ncolor1me="comment" type="xsd:string" minOccurs="0" msdcolor1tcolor1:Ordincolor1l="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:color1ttribute ncolor1me="ncolor1me" type="xsd:string" use="required" msdcolor1tcolor1:Ordincolor1l="1" />
+              <xsd:color1ttribute ncolor1me="type" type="xsd:string" msdcolor1tcolor1:Ordincolor1l="3" />
+              <xsd:color1ttribute ncolor1me="mimetype" type="xsd:string" msdcolor1tcolor1:Ordincolor1l="4" />
+              <xsd:color1ttribute ref="xml:spcolor1ce" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element ncolor1me="reshecolor1der">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element ncolor1me="vcolor1lue" type="xsd:string" minOccurs="0" msdcolor1tcolor1:Ordincolor1l="1" />
+              </xsd:sequence>
+              <xsd:color1ttribute ncolor1me="ncolor1me" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
       </xsd:complexType>
     </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+  </xsd:schemcolor1>
+  <reshecolor1der ncolor1me="resmimetype">
+    <vcolor1lue>text/microsoft-resx</vcolor1lue>
+  </reshecolor1der>
+  <reshecolor1der ncolor1me="version">
+    <vcolor1lue>2.0</vcolor1lue>
+  </reshecolor1der>
+  <reshecolor1der ncolor1me="recolorMinder">
+    <vcolor1lue>System.Resources.ResXResourceRecolorMinder, System.Windows.Forms, Version=4.0.0.0, Culture=neutrcolor1l, PublicKeyToken=b77color15c561934e089</vcolor1lue>
+  </reshecolor1der>
+  <reshecolor1der ncolor1me="writer">
+    <vcolor1lue>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutrcolor1l, PublicKeyToken=b77color15c561934e089</vcolor1lue>
+  </reshecolor1der>
 </root>

@@ -37,9 +37,12 @@ namespace VisualizeScalars
             this.lbOpacity = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tbAlpha = new System.Windows.Forms.TrackBar();
+            this.panelColorPreview2 = new System.Windows.Forms.Panel();
             this.panelColorPreview = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.cmdPickColor = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.colorDialog2 = new System.Windows.Forms.ColorDialog();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).BeginInit();
             this.SuspendLayout();
@@ -66,7 +69,9 @@ namespace VisualizeScalars
             this.groupBox1.Controls.Add(this.lbOpacity);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.tbAlpha);
+            this.groupBox1.Controls.Add(this.panelColorPreview2);
             this.groupBox1.Controls.Add(this.panelColorPreview);
+            this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.cmdPickColor);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.tbxRadius);
@@ -74,7 +79,7 @@ namespace VisualizeScalars
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(695, 59);
+            this.groupBox1.Size = new System.Drawing.Size(695, 86);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "groupBox1";
@@ -92,7 +97,7 @@ namespace VisualizeScalars
             // lbOpacity
             // 
             this.lbOpacity.AutoSize = true;
-            this.lbOpacity.Location = new System.Drawing.Point(444, 21);
+            this.lbOpacity.Location = new System.Drawing.Point(591, 48);
             this.lbOpacity.Name = "lbOpacity";
             this.lbOpacity.Size = new System.Drawing.Size(13, 15);
             this.lbOpacity.TabIndex = 8;
@@ -101,7 +106,7 @@ namespace VisualizeScalars
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(277, 21);
+            this.label1.Location = new System.Drawing.Point(424, 21);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 15);
             this.label1.TabIndex = 7;
@@ -109,12 +114,21 @@ namespace VisualizeScalars
             // 
             // tbAlpha
             // 
-            this.tbAlpha.Location = new System.Drawing.Point(334, 14);
+            this.tbAlpha.Location = new System.Drawing.Point(481, 41);
             this.tbAlpha.Maximum = 100;
             this.tbAlpha.Name = "tbAlpha";
             this.tbAlpha.Size = new System.Drawing.Size(104, 45);
             this.tbAlpha.TabIndex = 6;
             this.tbAlpha.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // panelColorPreview2
+            // 
+            this.panelColorPreview2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelColorPreview2.Location = new System.Drawing.Point(374, 18);
+            this.panelColorPreview2.Name = "panelColorPreview2";
+            this.panelColorPreview2.Size = new System.Drawing.Size(44, 23);
+            this.panelColorPreview2.TabIndex = 5;
+            this.panelColorPreview2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // panelColorPreview
             // 
@@ -123,6 +137,16 @@ namespace VisualizeScalars
             this.panelColorPreview.Name = "panelColorPreview";
             this.panelColorPreview.Size = new System.Drawing.Size(44, 23);
             this.panelColorPreview.TabIndex = 5;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(279, 17);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(89, 23);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "Farbauswahl";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // cmdPickColor
             // 
@@ -150,7 +174,7 @@ namespace VisualizeScalars
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox1);
             this.Name = "ColorSelection";
-            this.Size = new System.Drawing.Size(695, 59);
+            this.Size = new System.Drawing.Size(695, 86);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbAlpha)).EndInit();
@@ -171,5 +195,8 @@ namespace VisualizeScalars
         private System.Windows.Forms.TrackBar tbAlpha;
         internal System.Windows.Forms.GroupBox groupBox1;
         internal System.Windows.Forms.CheckBox cbUseScalarValues;
+        private System.Windows.Forms.Panel panelColorPreview2;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ColorDialog colorDialog2;
     }
 }

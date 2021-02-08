@@ -29,7 +29,7 @@ namespace VisualizeScalars.Rendering.VoxelImporter
 
             foreach (var voxel in voxelInformation.Voxels)
                 vol.SetVoxel(new Vector3(dimensions.X - voxel.Item1 - 1, voxel.Item3, voxel.Item2),
-                    new Material {Color = colorsList[voxel.Item4]});
+                    new Material {Color = colorsList[voxel.Item4]/255});
             return vol;
         }
     }

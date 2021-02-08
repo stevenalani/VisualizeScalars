@@ -16,7 +16,7 @@ namespace VisualizeScalars.DataQuery
 
         public float Value(string property)
         {
-            return Scalars.ContainsKey(property) ? Scalars[property] : 0.0f;
+            return Scalars.ContainsKey(property) ? Scalars[property] : Single.MinValue;
         }
 
         public void Value(string property, float value)
@@ -52,69 +52,6 @@ namespace VisualizeScalars.DataQuery
         {
             get => Value("Height");
             set => Value("Height", (float) value);
-        }
-
-        /// <summary>
-        ///     Schüttdichte - wie Kompakt ist ein Boden
-        /// </summary>
-        public double BulkDensity
-        {
-            get => Value("BulkDensity");
-            set => Value("BulkDensity", (float) value);
-        }
-
-        /// <summary>
-        ///     Wassermänge die der durchtränkte Boden halten kann (2-3 Tage)
-        /// </summary>
-        public double FieldCapacity
-        {
-            get => Value("FieldCapacity");
-            set => Value("FieldCapacity", (float) (double.IsNaN(value) ? 0.0 : value));
-        }
-
-        /// <summary>
-        ///     Wassermänge welche für Pflanzen zur Verfügung steht
-        /// </summary>
-        public double ProfileAvailableWaterCapacity
-        {
-            get => Value("ProfileAvailableWaterCapacity");
-            set => Value("ProfileAvailableWaterCapacity", (float) value);
-        }
-
-        /// <summary>
-        ///     Bodenkohlenstoff Dichte - bestimmt die Fruchtbarkeit maßgeblich
-        /// </summary>
-        public double SoilCarbonDensity
-        {
-            get => Value("SoilCarbonDensity");
-            set => Value("SoilCarbonDensity", (float) (double.IsNaN(value) ? 0.0 : value));
-        }
-
-        /// <summary>
-        ///     Wärmespeicherzahl
-        /// </summary>
-        public double ThermalCapacity
-        {
-            get => Value("ThermalCapacity");
-            set => Value("ThermalCapacity", (float) (double.IsNaN(value) ? 0.0 : value));
-        }
-
-        /// <summary>
-        ///     Stickstoffgehalt
-        /// </summary>
-        public double TotalNitrogenDensity
-        {
-            get => Value("TotalNitrogenDensity");
-            set => Value("TotalNitrogenDensity", (float) (double.IsNaN(value) ? 0.0 : value));
-        }
-
-        /// <summary>
-        ///     Welkepunkt
-        /// </summary>
-        public double WiltingPoint
-        {
-            get => Value("WiltingPoint");
-            set => Value("WiltingPoint", (float) (double.IsNaN(value) ? 0.0 : value));
         }
 
         public double Temperature

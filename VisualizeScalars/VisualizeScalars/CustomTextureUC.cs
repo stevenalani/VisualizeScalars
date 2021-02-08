@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using VisualizeScalars.DataQuery;
 using VisualizeScalars.Helpers;
+using VisualizeScalars.DataQuery;
 
 namespace VisualizeScalars
 {
@@ -19,7 +19,9 @@ namespace VisualizeScalars
         private DataGrid<BaseGridCell> DataGrid;
         public float[,] Grid;
         public int Radius => this.colorSelection1.Radius;
-        public Color Color => this.colorSelection1.Color;
+        public Color[] Colors => colorSelection1.Colors;
+
+
         public CustomTextureUC(DataGrid<BaseGridCell> dataGrid)
         {
             this.DataGrid = dataGrid;
@@ -53,7 +55,7 @@ namespace VisualizeScalars
                         {
                             if (resultGrid1[i, j] > resultGrid2[i, j])
                             {
-                                Grid[i, j] = 1;
+                                Grid[i, j] = resultGrid1[i, j];
                             }
                         }
                     break;
@@ -66,7 +68,7 @@ namespace VisualizeScalars
                     {
                         if (resultGrid1[i, j] < resultGrid2[i, j])
                         {
-                            Grid[i, j] = 1;
+                            Grid[i, j] = resultGrid1[i, j];
                         }
                     }
                    
@@ -80,7 +82,7 @@ namespace VisualizeScalars
                     {
                         if (resultGrid1[i, j] == resultGrid2[i, j])
                         {
-                            Grid[i, j] = 1;
+                            Grid[i, j] = resultGrid1[i, j];
                         }
                     }
                     break;
@@ -94,7 +96,7 @@ namespace VisualizeScalars
                     {
                         if (resultGrid1[i, j] >= resultGrid2[i, j] && resultGrid1[i, j] <= resultGrid3[i, j])
                         {
-                            Grid[i, j] = 1;
+                            Grid[i, j] = resultGrid1[i, j];
                         }
                     }
                     break;
@@ -471,5 +473,6 @@ namespace VisualizeScalars
             tbxLeftHand.AutoCompleteCustomSource = source;
             tbxBetween.AutoCompleteCustomSource = source;
         }
+
     }
 }

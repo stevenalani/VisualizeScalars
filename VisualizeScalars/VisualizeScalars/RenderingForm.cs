@@ -11,6 +11,7 @@ using VisualizeScalars.Rendering.DataStructures;
 using VisualizeScalars.Rendering.Models;
 using VisualizeScalars.Rendering.Models.Voxel;
 using VisualizeScalars.Rendering.ShaderImporter;
+using VisualizeScalars.Rendering.VoxelImporter;
 using Vector2 = OpenTK.Vector2;
 using Vector3 = OpenTK.Vector3;
 using Vector4 = OpenTK.Vector4;
@@ -30,10 +31,18 @@ namespace VisualizeScalars
         private int depthMapFBO;
         private int depthMap;
         public Vector3 MouseRayDir;
-
+        private bool isInstanced = false;
         public Model Pin;
+        private ShaderProgram instancedShader;
+        // Todo: löschen!
+        private ColorVolume<Material> voxTerrain;
+        private RenderObject<PositionColorNormalVertex> voxRO = new RenderObject<PositionColorNormalVertex>("mcDemo");
         public RenderingForm()
         {
+            voxTerrain = VoxelImporter.LoadVoxelModelFromVox(
+                "C:\\Users\\Steven\\Documents\\Eigene Dokumente\\Studium\\Softwaretechnik\\Thesis\\Artikel\\Bilder\\volland.vox");
+            instancedShader = new ShaderProgram(".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
+                ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");
             modelManager = new ModelManager();
             shaderManager = new ShaderManager();
             ShadowShader = new ShaderProgram(".\\Rendering\\Shaders\\shadowShader.vert",
@@ -42,9 +51,12 @@ namespace VisualizeScalars
                 new[] {typeof(ColorVolume<Material>), typeof(RenderObject<PositionColorNormalVertex>)},
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.frag");
-            shaderManager.AddShader(new[] {typeof(RenderObject<PositionNormalVertex>)},
+            /*shaderManager.AddShader(new[] {typeof(RenderObject<PositionNormalVertex>)},
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
-                ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");
+                ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");*/
+            shaderManager.AddShader(new[] { typeof(RenderObject<PositionNormalVertex>) },
+                ".\\Rendering\\Shaders\\InstancedYRayShader.vert",
+                ".\\Rendering\\Shaders\\InstancedYRayShader.frag");
 
             shaderManager.AddShader(typeof(ImagePlane), ".\\Rendering\\Shaders\\ImageShader.vert",
                 ".\\Rendering\\Shaders\\ImageShader.frag");
@@ -62,6 +74,7 @@ namespace VisualizeScalars
         public float AmbientStrength { get; set; } = 0.2f;
         public float DiffuseStrength { get; set; } = 0.5f;
         public float SpecularStrength { get; set; } = 1f;
+        float layer0Alpha { get; set; } = 0.75f;
 
 
         private void glControl_Resize(object sender, EventArgs e)
@@ -73,10 +86,13 @@ namespace VisualizeScalars
 
         private void RenderingView_Load(object sender, EventArgs e)
         {
+            tbTAlpha.Value = (int)(layer0Alpha * 100f);
         }
 
         private void glControl_Load(object sender, EventArgs e)
         {
+            //voxRO.Mesh = MeshExtractor.ComputeMarchingCubesMesh(voxTerrain, material => material.IsSet ? 1f : 0f,1f);
+            //.Scales = new Vector3(30);
             Camera.AspectRatio = glControl.AspectRatio;
             GL.ClearColor(0.1f, 0.1f, 0.2f, 1.0f);
             GL.Enable(EnableCap.Multisample);
@@ -87,10 +103,12 @@ namespace VisualizeScalars
             GL.CullFace(CullFaceMode.Front);
             GL.FrontFace(FrontFaceDirection.Ccw);
             GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
             shaderManager.InitPrograms();
             ShadowShader.SetupShader();
+            instancedShader.SetupShader();
             loadDepthMap();
             glControl.Invalidate();
         }
@@ -109,7 +127,7 @@ namespace VisualizeScalars
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
             float[] borderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
-            // attach depth texture as FBO's depth buffer
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer,FramebufferAttachment.DepthAttachment,TextureTarget.Texture2D, depthMap, 0);
             GL.DrawBuffer(DrawBufferMode.None);
@@ -124,14 +142,23 @@ namespace VisualizeScalars
             var view = Camera.GetView();
             
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
             if (modelManager.HasModelUpdates) modelManager.InitModels();
             
             GL.Viewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.ActiveTexture(TextureUnit.Texture1);
             ShadowShader.Use();
             ShadowShader.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
+            //voxRO.Draw(ShadowShader, null);
+            if (Pin != null)
+            {
+                if (!Pin.IsReady) Pin.InitBuffers();
+                var shader = shaderManager.GetShader(Pin.GetType());
+                shader.Use();
+                Pin.Draw(shader);
+            }
             foreach (var model in modelManager.GetModelsOrdered(Camera.Position))
             {
                 if (!model.IsReady) model.InitBuffers();
@@ -143,6 +170,18 @@ namespace VisualizeScalars
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthMap);
+            var shaderVox = shaderManager.GetShader(voxRO.GetType());
+            shaderVox.Use();
+            shaderVox.SetUniformMatrix4X4("projection", projection);
+            shaderVox.SetUniformMatrix4X4("view", view);
+            shaderVox.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
+            shaderVox.SetUniformVector3("lightPos", Light.Position);
+            shaderVox.SetUniformVector3("lightColor", Light.Color);
+            shaderVox.SetUniformVector3("viewpos", Camera.Position);
+            shaderVox.SetUniformFloat("ambientStrength", AmbientStrength);
+            shaderVox.SetUniformFloat("diffuseStrength", DiffuseStrength);
+            shaderVox.SetUniformFloat("specularStrength", SpecularStrength);
+            //voxRO.Draw(shaderVox,null);
             if (Pin != null)
             {
                 if(!Pin.IsReady) Pin.InitBuffers();
@@ -163,6 +202,10 @@ namespace VisualizeScalars
             {
                 if (!model.IsReady) model.InitBuffers();
                 var shader = shaderManager.GetShader(model.GetType());
+                if (model.name == "model" && isInstanced)
+                {
+                    shader = instancedShader;
+                } 
                 shader.Use();
 
                 shader.SetUniformMatrix4X4("projection", projection);
@@ -174,11 +217,19 @@ namespace VisualizeScalars
                 shader.SetUniformFloat("ambientStrength", AmbientStrength);
                 shader.SetUniformFloat("diffuseStrength", DiffuseStrength);
                 shader.SetUniformFloat("specularStrength", SpecularStrength);
-                shader.SetUniformVector4("layer0Color", new Vector4(0.5f, 0.5f, 0.5f, 0.6f));
+                
+                shader.SetUniformVector4("layer0Color", new Vector4(0.5f, 0.5f, 0.5f, layer0Alpha));
                 shader.SetUniformFloat("yOffset", tbTextureOffset.Value / 10f);
+                if (IsWireframe && model.name == "model")
+                {
+                    GL.PolygonMode(MaterialFace.Back, PolygonMode.Line);
+                    model.Draw(shader);
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                }
+
                 model.Draw(shader);
             }
-
+            
             glControl.SwapBuffers();
         }
 
@@ -227,13 +278,13 @@ namespace VisualizeScalars
             var world = Vector4.Transform(unproj, mat);
             var direction = (world.Xyz - Camera.Position).Normalized();
             MouseRayDir = direction;
-            
         }
 
         private void glControl_KeyDown(object sender, KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
             if (e.KeyCode == Keys.G) SwitchWireFrame();
+            if (e.KeyCode == Keys.I) isInstanced = !isInstanced;
         }
 
         private void SwitchWireFrame()
@@ -241,10 +292,7 @@ namespace VisualizeScalars
             if (nextWireframeSwitch < DateTime.Now)
             {
                 IsWireframe = !IsWireframe;
-                if (IsWireframe)
-                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                else
-                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+               
                 nextWireframeSwitch = DateTime.Now.AddSeconds(0.5);
             }
         }
@@ -345,11 +393,31 @@ namespace VisualizeScalars
         }
 
         public Action<Vector3> OnClickAction { get; set; }
+        public Action<Vector3> OnDoubleClickAction { get; set; }
 
         private void glControl_Click(object sender, EventArgs e)
         {
             if(((MouseEventArgs)e).Button != MouseButtons.Left ) return;
             OnClickAction.Invoke(MouseRayDir);
+            glControl.Invalidate();
+        }
+
+        private void glControl_DoubleClick(object sender, EventArgs e)
+        {
+            if (((MouseEventArgs)e).Button != MouseButtons.Left) return;
+            OnDoubleClickAction.Invoke(MouseRayDir);
+            glControl.Invalidate();
+        }
+        
+        private void tbTAlpha_Scroll(object sender, EventArgs e)
+        {
+            layer0Alpha = (tbTAlpha.Value / 100f);
+            glControl.Invalidate();
+        }
+
+        private void glControl_DoubleClick_1(object sender, EventArgs e)
+        {
+
         }
 
         private void tbTextureOffset_Scroll(object sender, EventArgs e)

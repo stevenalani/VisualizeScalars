@@ -37,31 +37,31 @@ namespace VisualizeScalars.Rendering.Models
             var vertices = new List<PositionColorNormalVertex>();
             var normals = new List<Vector3>();
             var indices = new List<int>();
-            /* var data = FrontFace(offset, Color);
+            /* var data = FrontFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BackFace(offset, Color);
+             data = BackFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = LeftFace(offset, Color);
+             data = LeftFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = RightFace(offset, Color);
+             data = RightFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BottomFace(offset, Color);
+             data = BottomFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = TopFace(offset, Color);
+             data = TopFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BackFace(offset, Color);
+             data = BackFace(offset, Colors);
              vertices.AddRange(data.Select(d => d.Position));
              normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
              normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
@@ -355,16 +355,16 @@ namespace VisualizeScalars.Rendering.Models
         /*public CubeWithNormals() :
             base(null, null, "cube")
         {
-            var Color = new Vector4(10, 150, 255, 255) / 255;
+            var Colors = new Vector4(10, 150, 255, 255) / 255;
             var offset = Vector3.Zero;
             var vertices = new List<PositionColorNormalVertex>();
             var indices = new List<int>();
-            vertices.AddRange(FrontFace(offset, Color));
-            vertices.AddRange(BackFace(offset, Color));
-            vertices.AddRange(LeftFace(offset, Color));
-            vertices.AddRange(RightFace(offset, Color));
-            vertices.AddRange(BottomFace(offset, Color));
-            vertices.AddRange(TopFace(offset, Color));
+            vertices.AddRange(FrontFace(offset, Colors));
+            vertices.AddRange(BackFace(offset, Colors));
+            vertices.AddRange(LeftFace(offset, Colors));
+            vertices.AddRange(RightFace(offset, Colors));
+            vertices.AddRange(BottomFace(offset, Colors));
+            vertices.AddRange(TopFace(offset, Colors));
             Vertices = vertices.ToArray();
             /*for (uint i = 0; i < 6; i++)
             {

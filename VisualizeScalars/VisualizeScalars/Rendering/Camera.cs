@@ -16,7 +16,6 @@ namespace VisualizeScalars.Rendering
         public const float ZOOM = 45.0f;
 
         private readonly float fov = 45;
-        private PROJECTIONTYPE _projectionType;
 
         public EventHandler<CameraMovedEventArgs> CameraMoved = (param1, param2) => { };
 
@@ -32,10 +31,7 @@ namespace VisualizeScalars.Rendering
             AspectRatio = aspectRatio;
             ClippingPlaneNear = 0.1f;
             ClippingPlaneFar = 100f;
-            _projectionType = projection;
             Update();
-            pProjection = Matrix4d.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), aspectRatio,
-                ClippingPlaneNear, ClippingPlaneFar);
         }
 
         public Camera(int width, int height, PROJECTIONTYPE projection = PROJECTIONTYPE.Perspective)
@@ -43,10 +39,7 @@ namespace VisualizeScalars.Rendering
             AspectRatio = width / height;
             ClippingPlaneNear = 0.1f;
             ClippingPlaneFar = 100f;
-            _projectionType = projection;
             Update();
-            pProjection = Matrix4d.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), AspectRatio,
-                ClippingPlaneNear, ClippingPlaneFar);
         }
 
         public Camera(int width, int height, float clippingPlaneNear, float clippingPlaneFar,
@@ -55,13 +48,9 @@ namespace VisualizeScalars.Rendering
             AspectRatio = width / height;
             ClippingPlaneNear = clippingPlaneNear;
             ClippingPlaneFar = clippingPlaneFar;
-            _projectionType = projection;
             Update();
-            pProjection = Matrix4d.CreatePerspectiveFieldOfView((float) (fov * (Math.PI / 180)), AspectRatio,
-                clippingPlaneNear, clippingPlaneFar);
         }
 
-        private Matrix4d pProjection { get; }
 
         public Vector3 Position { get; set; } = new Vector3(0, 400, -1);
 
@@ -88,7 +77,7 @@ namespace VisualizeScalars.Rendering
                 ClippingPlaneNear, ClippingPlaneFar);
         }
 
-        private void Update()
+        internal void Update()
         {
             var rotate = GetRotationMatrix();
             ViewDirection = Vector3.Normalize(Vector3.TransformNormal(ViewDirection, rotate));

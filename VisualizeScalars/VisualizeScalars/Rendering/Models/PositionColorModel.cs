@@ -44,7 +44,7 @@ namespace VisualizeScalars.Rendering.Models
             // Vertices positions
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 7, 0);
             GL.EnableVertexAttribArray(0);
-            // Color attribute
+            // Colors attribute
 
             GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, sizeof(float) * 7, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);

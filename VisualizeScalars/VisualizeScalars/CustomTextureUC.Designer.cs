@@ -97,7 +97,7 @@ namespace VisualizeScalars
             this.colorSelection1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.colorSelection1.Location = new System.Drawing.Point(0, 158);
             this.colorSelection1.Name = "colorSelection1";
-            this.colorSelection1.Size = new System.Drawing.Size(716, 54);
+            this.colorSelection1.Size = new System.Drawing.Size(716, 85);
             this.colorSelection1.TabIndex = 5;
             // 
             // cmdDelete
@@ -137,7 +137,7 @@ namespace VisualizeScalars
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbxLeftHand);
             this.Name = "CustomTextureUC";
-            this.Size = new System.Drawing.Size(716, 212);
+            this.Size = new System.Drawing.Size(716, 243);
             this.Load += new System.EventHandler(this.CustomTextureUC_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -16,10 +16,11 @@ namespace VisualizeScalars
     {
         private readonly HgtFileReader Reader;
         private readonly EarthdataDownloader downloader;
-        private VisualizationModel<BaseGridCell> Model;
+        internal static VisualizationModel<BaseGridCell> Model;
         private readonly DataFileQuerent Querernt;
         private RenderingForm renderingForm;
         private RegionSelectionForm selectionForm;
+        private DetailForm detailForm;
         private DataGrid<GridCell> BaseDataGrid { get; set; }
 
         private readonly string workdir = "D:\\earthdata";
@@ -43,13 +44,12 @@ namespace VisualizeScalars
                 var map = renderingForm.GetModel("map").FirstOrDefault();
                 var intersection =
                     MathHelpers.GetIntersection2(direction, renderingForm.Camera.Position, map.Position, Vector3.UnitY);
-                var mat = map.Modelmatrix.Inverted();
                 var gridModel = renderingForm.GetModel("model").First();
-                mat = gridModel.Modelmatrix.Inverted();
+                var mat = gridModel.Modelmatrix.Inverted();
                 var model2 = Vector3.TransformPosition(intersection, mat);
                 var x = (int)model2.X;
                 var y = (int)model2.Z;
-                var values = this.Model.DataGrid[x, y];
+                var values = Model.DataGrid[x, y];
 
                 if (renderingForm.Pin == null)
                 {
@@ -74,14 +74,46 @@ namespace VisualizeScalars
                     renderingForm.Pin = new RenderObject<PositionColorNormalVertex>(mesh2, "Pin");
                     renderingForm.Pin.PivotPoint = (volume.Dimensions.Vector3 * volume.CubeScale) / 2f;
                     renderingForm.Pin.PivotPoint.Y = 0;
+
                 }
 
                 renderingForm.Pin.Position = intersection;
-                
+                var details = $"Latitude: {Form1.Model.DataGrid.North - y * Form1.Model.DataGrid.GridCellsize}"+ Environment.NewLine +
+                              $"Longitude: {Form1.Model.DataGrid.East + x * Form1.Model.DataGrid.GridCellsize}" +
+                              Environment.NewLine;
+
+                if (values != null)
+                    foreach (var propertyName in values.Scalars)
+                    {
+                        details += $"{propertyName.Key,-20}:{propertyName.Value,5}" + Environment.NewLine;
+                    }
+
+                renderingForm.ttpPosDetail.SetToolTip(renderingForm.glControl, details);
+                detailForm?.Close();
+                detailForm = new DetailForm(values);
+                detailForm.Show();
             };
-            
+            renderingForm.OnDoubleClickAction = (direction) =>
+            {
+                var map = renderingForm.GetModel("map").FirstOrDefault();
+                var intersection =
+                    MathHelpers.GetIntersection2(direction, renderingForm.Camera.Position, map.Position, Vector3.UnitY);
+                var gridModel = renderingForm.GetModel("model").First();
+                var mat = gridModel.Modelmatrix.Inverted();
+                var model2 = Vector3.TransformPosition(intersection, mat);
+                var x = (int)model2.X;
+                var y = (int)model2.Z;
+                var values = Model.DataGrid[x, y];
+                if(values == null) return;
+                renderingForm.Camera.Position = new Vector3(model2.X, values.Value(Model.HeightMapping),model2.Z);
+                renderingForm.Camera.ViewDirection = -Vector3.UnitY;
+                renderingForm.Camera.Yaw = 0.0;
+                renderingForm.Camera.Pitch = 0.0;
+                renderingForm.Camera.Update();
+            };
+
             mtbxInterpolation.Text = "1";
-            cbxSmoothing.SelectedIndex = 2;
+            cbxSmoothing.SelectedIndex = 5;
             cbxMeshMode.SelectedIndex = 0;
             selectionForm.Show(this);
             renderingForm.Show(this);
@@ -115,15 +147,6 @@ namespace VisualizeScalars
             cbxScalarYMapping.Items.AddRange(properties);
             cbxScalarYMapping.SelectedIndex = 0;
             flpTextures.Controls.Clear();
-            int top = 15;
-            foreach (var property in properties)
-            {
-                var control = new ColorSelection(property, Model.DataGrid.GetDataGrid(property));
-                control.Top = top;
-
-                top += control.Height + 1;
-                flpTextures.Controls.Add(control);
-            }
         }
 
         private void cmdLoadMap_Click(object sender, EventArgs e)
@@ -143,17 +166,13 @@ namespace VisualizeScalars
                 if (control is CustomTextureUC)
                 {
                     var ctuc = control as CustomTextureUC;
-                    renderobj.Images.Add(ctuc.Grid.CreateBitmap(ctuc.Color,ctuc.Radius, ctuc.colorSelection1.cbUseScalarValues.Checked));
+                    if(ctuc.Grid == null)
+                        continue;
+                    renderobj.Images.Add(ctuc.Grid.CreateBitmap(ctuc.Colors,ctuc.Radius, !ctuc.colorSelection1.cbUseScalarValues.Checked));
                 }
-
-                if (control is ColorSelection)
-                {
-                    var cs = control as ColorSelection;
-                    renderobj.Images.Add(cs.Grid.CreateBitmap(cs.Color, cs.Radius,!cs.cbUseScalarValues.Checked));
-                }
-
-                renderobj.Instances = renderobj.Images.Count + 1;
+                
             }
+            renderobj.Instances = renderobj.Images.Count + 1;
             UpdateMesh(renderobj);
 
             renderobj.PivotPoint = new Vector3(Model.DataGrid.Width/2.0f, 0, Model.DataGrid.Height / 2.0f);
@@ -222,16 +241,17 @@ namespace VisualizeScalars
             }
             else if (meshMode == MeshMode.Cubes)
             {
+                Model.GenerateVolume(prop);
                 mesh = MeshExtractor.ComputeCubicMesh(Model);
             }
             else if (meshMode == MeshMode.GreedyCubes)
             {
+                Model.GenerateVolume(prop);
                 mesh = MeshExtractor.ComputeCubicMeshGreedy(Model);
             }
             else
             {
-                var heights = Model.DataGrid.GetDataGrid(Model.HeightMapping);
-                mesh = new GridSurface(heights, Model.DataGrid.Width, Model.DataGrid.Height);
+                mesh = MeshExtractor.ComputeTRN(Model);
             }
 
             
@@ -329,6 +349,7 @@ namespace VisualizeScalars
         private void cbxSmoothing_SelectedIndexChanged(object sender, EventArgs e)
         {
             SmoothMesh();
+            renderingForm.Render();
         }
 
         private void SmoothMesh(Model model = null)
@@ -360,6 +381,7 @@ namespace VisualizeScalars
                     model.IsReady = false;
                 }
             }
+            
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -418,8 +440,12 @@ namespace VisualizeScalars
         private void cmdCreateTexture_Click(object sender, EventArgs e)
         {
             if(Model?.DataGrid == null) return;
-            var lastControl = this.flpTextures.Controls[^1];
-            var top = lastControl.Top + lastControl.Height + 5;
+            var top = 15;
+            if (flpTextures.Controls.Count > 0)
+            {
+                var lastControl = this.flpTextures.Controls[^1];
+                top = lastControl.Top + lastControl.Height + 5;
+            }
             var newCtrl = new CustomTextureUC(Model.DataGrid) {Top = top};
             this.flpTextures.Controls.Add(newCtrl);
         }

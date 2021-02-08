@@ -9,7 +9,10 @@ flat in int instanceID;
 uniform highp sampler3D textures;
 uniform highp sampler2D shadowMap;
 uniform vec3 texDimensions;
-
+layout(std430, binding = 0) buffer layer0
+{
+    vec3 data1[];
+};
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
@@ -78,9 +81,20 @@ void main()
     vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * layerColor.xyz;
     if(instanceID == 0){
         FragColor = vec4(result, layerColor.w );
-    }else{
-        FragColor = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(instanceID-1))/(2*texDimensions.z)));
+    }else if(instanceID == 1){
+        vec4 col = vec4(0.0,0.0,0.0,0.0);
+        int texPos = 0;
+        for(int i = 0 ; i < texDimensions.z;i++){
+            vec4 texColor = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(i))/(2*texDimensions.z)));
+            float alpha = texColor.w;
+            vec3 resultColor = col.rgb + (1 - col.w) * texColor.xyz * alpha;
+            float resultAlpha = col.w + (1 - col.w)*alpha;
+            col = vec4(resultColor,resultAlpha);
+        }
+        FragColor = col;
+    }else
+    {
+        FragColor = vec4(0.0,0.0,0.0,0.0);
     }
-    
 }
 
