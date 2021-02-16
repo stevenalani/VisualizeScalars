@@ -9,7 +9,6 @@ namespace VisualizeScalars.DataQuery
     public class BaseGridCell : IVolumeData
     {
         public readonly Dictionary<string, float> Scalars = new Dictionary<string, float>();
-        private bool _isSet;
 
         public virtual Vector4 ColorMapping => new Vector4(0.5f, 0.5f, 0.5f, 1);
         public bool IsSet => Scalars.Count > 0;

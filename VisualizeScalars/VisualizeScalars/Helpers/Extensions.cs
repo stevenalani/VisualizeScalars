@@ -140,8 +140,8 @@ namespace VisualizeScalars.Helpers
                 var c01 = self[gxi, gyi + 1];
                 var c11 = self[gxi + 1, gyi + 1];
 
-                var red = Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
-                newData[x, y] = red;
+                var val = Blerp(c00, c10, c01, c11, gx - gxi, gy - gyi);
+                newData[x, y] = val;
             }
 
             return newData;
@@ -160,7 +160,7 @@ namespace VisualizeScalars.Helpers
             return minmax;
         } 
 	
-        public static Color LerpRGB(Color colorMin, Color colorMax, float t)
+        public static Color LerpRgba(Color colorMin, Color colorMax, float t)
         {
             var cr = colorMin.R + (colorMax.R - colorMin.R) * t;
             var cg = colorMin.G + (colorMax.G - colorMin.G) * t;
@@ -185,7 +185,7 @@ namespace VisualizeScalars.Helpers
                 var value =(grid[x, y] - minMax.Min) / (minMax.Max - minMax.Min);
                 if (value > 0.0f)
                 {
-                    Color color = LerpRGB(colors[0], colors[1], value);
+                    Color color = LerpRgba(colors[0], colors[1], value);
 
                     if (!isFixedColor)
                     {

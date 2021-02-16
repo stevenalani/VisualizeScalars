@@ -139,7 +139,6 @@ namespace VisualizeScalars.DataQuery
         public int ReadAt(int row, int col)
         {
             long bytepos = (Samples * row + col) * 2;
-            var pos = ((row - 1) * Samples + (col - 1)) * 2;
             _fileStream.Position = bytepos;
             return ReadHeight();
         }
@@ -154,14 +153,12 @@ namespace VisualizeScalars.DataQuery
         public int LatToRow(double lat)
         {
             var frac = lat - (int) lat;
-            var i = Samples - (int) Math.Round(frac / (int) _samplingRate, 0);
             return Samples - 1 - (int) (frac / (1.0 / Samples));
         }
 
         public int LngToCol(double lng)
         {
             var frac = lng - (int) lng;
-            var j = (int) Math.Round(frac / (int) _samplingRate, 0);
             return (int) (frac / (1.0 / Samples));
         }
 

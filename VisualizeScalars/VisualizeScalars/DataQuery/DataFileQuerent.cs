@@ -137,7 +137,7 @@ namespace VisualizeScalars.DataQuery
         public AirInformation[,] GetAirDataGrid(double latitudeSouth, double longitudeWest, double latitudeNorth,
             double longitudeEast, double gridUnit)
         {
-            airdataReader.DownloadData();
+            //airdataReader.DownloadData();
             return airdataReader.BuildGrid(latitudeSouth, longitudeWest, latitudeNorth, longitudeEast, gridUnit);
         }
 

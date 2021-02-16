@@ -147,20 +147,13 @@ namespace VisualizeScalars.Rendering.Models
             GL.BindVertexArray(0);
         }
 
-        public void SetMesh(Mesh mesh)
-        {
-            Mesh = mesh;
-            Vertices = Mesh.GetVertices<T>();
-            Indices = Mesh.GetIndices();
-        }
-
         public override void InitBuffers()
         {
             if (IsReady)
                 return;
             if (Mesh != null)
             {
-                Vertices = Mesh.GetVertices<T>();
+                Vertices = Mesh.GetVertices<T>(this.AverageNormals);
                 Indices = Mesh.GetIndices();
             }
             Vao = GL.GenVertexArray();
@@ -193,6 +186,8 @@ namespace VisualizeScalars.Rendering.Models
 
             IsReady = true;
         }
+
+        public bool AverageNormals { get; set; } = true;
 
         public override void Dispose()
         {

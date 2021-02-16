@@ -6,29 +6,20 @@ using VisualizeScalars.Rendering.Models.Voxel;
 
 namespace VisualizeScalars.Rendering.Models
 {
-    public enum FaceOrientation
-    {
-        Front,
-        Back,
-        Left,
-        Right,
-        Bottom,
-        Top
-    }
 
     public class CubeWithNormals : PositionColorNormalModel
     {
         public static readonly Vector3[] CubeVertices =
         {
-            new Vector3(-0.5f, -0.5f, -0.5f),
-            new Vector3(0.5f, -0.5f, -0.5f),
-            new Vector3(0.5f, 0.5f, -0.5f),
-            new Vector3(-0.5f, 0.5f, -0.5f),
-
             new Vector3(-0.5f, -0.5f, 0.5f),
             new Vector3(0.5f, -0.5f, 0.5f),
             new Vector3(0.5f, 0.5f, 0.5f),
-            new Vector3(-0.5f, 0.5f, 0.5f)
+            new Vector3(-0.5f, 0.5f, 0.5f),
+
+            new Vector3(-0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, -0.5f, -0.5f),
+            new Vector3(0.5f, 0.5f, -0.5f),
+            new Vector3(-0.5f, 0.5f, -0.5f)
         };
 
         public CubeWithNormals(Vector3 offset, Vector4 color) :
@@ -37,35 +28,7 @@ namespace VisualizeScalars.Rendering.Models
             var vertices = new List<PositionColorNormalVertex>();
             var normals = new List<Vector3>();
             var indices = new List<int>();
-            /* var data = FrontFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BackFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = LeftFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = RightFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BottomFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = TopFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             data = BackFace(offset, Colors);
-             vertices.AddRange(data.Select(d => d.Position));
-             normals.AddRange(data.Take(3).Select(x => x.Normal).Distinct());
-             normals.AddRange(data.Skip(3).Take(3).Select(x => x.Normal).Distinct());
-             */
+
             vertices.AddRange(BackFace(offset, color));
             vertices.AddRange(FrontFace(offset, color));
             vertices.AddRange(LeftFace(offset, color));
@@ -155,17 +118,17 @@ namespace VisualizeScalars.Rendering.Models
             return new[]
             {
                 new PositionColorNormalVertex
-                    {Position = (CubeVertices[4] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
-                new PositionColorNormalVertex
                     {Position = (CubeVertices[0] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
-                new PositionColorNormalVertex
-                    {Position = (CubeVertices[3] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[3] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[7] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
-                    {Position = (CubeVertices[4] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color}
+                    {Position = (CubeVertices[7] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
+                new PositionColorNormalVertex
+                    {Position = (CubeVertices[4] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color},
+                new PositionColorNormalVertex
+                    {Position = (CubeVertices[0] + positionOffset) * scale, Normal = -Vector3.UnitX, Color = color}
             };
         }
 
@@ -176,15 +139,15 @@ namespace VisualizeScalars.Rendering.Models
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[1] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
-                    {Position = (CubeVertices[5] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
-                new PositionColorNormalVertex
-                    {Position = (CubeVertices[6] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
-                new PositionColorNormalVertex
                     {Position = (CubeVertices[6] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[2] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
                 new PositionColorNormalVertex
-                    {Position = (CubeVertices[1] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color}
+                    {Position = (CubeVertices[6] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
+                new PositionColorNormalVertex
+                    {Position = (CubeVertices[1] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color},
+                new PositionColorNormalVertex
+                    {Position = (CubeVertices[5] + positionOffset) * scale, Normal = Vector3.UnitX, Color = color}
             };
         }
 
@@ -193,17 +156,17 @@ namespace VisualizeScalars.Rendering.Models
             return new[]
             {
                 new PositionColorNormalVertex
+                    {Position = (CubeVertices[0] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
+                new PositionColorNormalVertex
                     {Position = (CubeVertices[4] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
+                new PositionColorNormalVertex
+                    {Position = (CubeVertices[5] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[5] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
                 new PositionColorNormalVertex
                     {Position = (CubeVertices[1] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
                 new PositionColorNormalVertex
-                    {Position = (CubeVertices[1] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
-                new PositionColorNormalVertex
-                    {Position = (CubeVertices[0] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color},
-                new PositionColorNormalVertex
-                    {Position = (CubeVertices[4] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color}
+                    {Position = (CubeVertices[0] + positionOffset) * scale, Normal = -Vector3.UnitY, Color = color}
             };
         }
 

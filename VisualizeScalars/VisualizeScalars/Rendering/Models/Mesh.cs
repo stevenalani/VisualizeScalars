@@ -43,18 +43,18 @@ namespace VisualizeScalars.Rendering.Models
 
             if (!Normals.TryAdd(Vertices[pos1], vertexNormal))
             {
-                var oldnormal = Normals[Vertices[pos1]];
-                Normals[Vertices[pos1]] = ((vertexNormal + oldnormal) / 2).Normalized();
+                Normals[Vertices[pos1]] += vertexNormal;
+                Normals[Vertices[pos1]] = Normals[Vertices[pos1]].Normalized();
             }
             if (!Normals.TryAdd(Vertices[pos2], vertexNormal))
             {
-                var oldnormal = Normals[Vertices[pos2]];
-                Normals[Vertices[pos2]] = ((vertexNormal + oldnormal) / 2).Normalized();
+                Normals[Vertices[pos2]] += vertexNormal;
+                Normals[Vertices[pos2]] = Normals[Vertices[pos2]].Normalized();
             }
-            if (!Normals.TryAdd(Vertices[pos3], MathHelpers.GetSurfaceNormal(pos1, pos2, pos3)))
+            if (!Normals.TryAdd(Vertices[pos3], vertexNormal))
             {
-                var oldnormal = Normals[Vertices[pos3]];
-                Normals[Vertices[pos3]] = ((vertexNormal + oldnormal) / 2).Normalized();
+                Normals[Vertices[pos3]] += vertexNormal;
+                Normals[Vertices[pos3]] = Normals[Vertices[pos3]].Normalized();
             }
         }
 

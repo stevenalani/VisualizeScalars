@@ -149,7 +149,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
 
         public bool IsLeftfaceVisible(int x, int y, int z)
         {
-            if (x == 0 || DataPointers[y][x, z] == 0 || Data[DataPointers[y][x - 1, z]].IsSet) return true;
+            if (x == 0 || DataPointers[y][x-1, z] == 0 || Data[DataPointers[y][x - 1, z]].IsSet) return true;
             return false;
         }
 

@@ -56,6 +56,7 @@ namespace VisualizeScalars
             this.cmdLoadMap = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.flpTextures = new System.Windows.Forms.FlowLayoutPanel();
             this.cmdCreateTexture = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -63,7 +64,7 @@ namespace VisualizeScalars
             this.label16 = new System.Windows.Forms.Label();
             this.cbxViewScalar = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.flpTextures = new System.Windows.Forms.FlowLayoutPanel();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -306,6 +307,7 @@ namespace VisualizeScalars
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.checkBox2);
             this.tabPage1.Controls.Add(this.flpTextures);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -324,6 +326,15 @@ namespace VisualizeScalars
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // flpTextures
+            // 
+            this.flpTextures.AutoScroll = true;
+            this.flpTextures.Dock = System.Windows.Forms.DockStyle.Right;
+            this.flpTextures.Location = new System.Drawing.Point(308, 3);
+            this.flpTextures.Name = "flpTextures";
+            this.flpTextures.Size = new System.Drawing.Size(974, 754);
+            this.flpTextures.TabIndex = 30;
+            // 
             // cmdCreateTexture
             // 
             this.cmdCreateTexture.Location = new System.Drawing.Point(199, 722);
@@ -337,7 +348,7 @@ namespace VisualizeScalars
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(166, 560);
+            this.checkBox1.Location = new System.Drawing.Point(3, 470);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(99, 19);
             this.checkBox1.TabIndex = 23;
@@ -353,7 +364,7 @@ namespace VisualizeScalars
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1018, 803);
+            this.tabPage2.Size = new System.Drawing.Size(1285, 760);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -395,20 +406,22 @@ namespace VisualizeScalars
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1018, 803);
+            this.tabPage3.Size = new System.Drawing.Size(1285, 760);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
-            // flpTextures
+            // checkBox2
             // 
-            this.flpTextures.AutoScroll = true;
-            this.flpTextures.Dock = System.Windows.Forms.DockStyle.Right;
-            this.flpTextures.Location = new System.Drawing.Point(308, 3);
-            this.flpTextures.Name = "flpTextures";
-            this.flpTextures.Size = new System.Drawing.Size(974, 754);
-            this.flpTextures.TabIndex = 30;
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(3, 445);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(186, 19);
+            this.checkBox2.TabIndex = 31;
+            this.checkBox2.Text = "Normalen Durchschnitt bilden";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
             // Form1
             // 
@@ -464,5 +477,6 @@ namespace VisualizeScalars
         private Button cmdCreateTexture;
         private CheckBox checkBox1;
         private FlowLayoutPanel flpTextures;
+        private CheckBox checkBox2;
     }
 }

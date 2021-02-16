@@ -59,46 +59,45 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                     var width = volume.GetSameNeighborsX(currentX, currentY, currentZ, volume.IsFrontfaceVisible);
                     var height = volume.GetSameNeighborsY(currentX, currentY, currentZ, volume.IsFrontfaceVisible);
                     var depth = volume.GetSameNeighborsZ(currentX, currentY, currentZ, volume.IsFrontfaceVisible);
-                    var test = CubeWithNormals.FrontFace(offset, color, width, height, depth, volume.CubeScale);
                     var verts = CubeWithNormals.FrontFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
                 }
 
                 if (volume.IsBackfaceVisible(currentX, currentY, currentZ))
                 {
                     var verts = CubeWithNormals.BackFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
-                }
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
+                        }
 
                 if (volume.IsLeftfaceVisible(currentX, currentY, currentZ))
                 {
                     var verts = CubeWithNormals.LeftFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
-                }
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
+                        }
 
                 if (volume.IsRightfaceVisible(currentX, currentY, currentZ))
                 {
                     var verts = CubeWithNormals.RightFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
-                }
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
+                        }
 
                 if (volume.IsBottomfaceVisible(currentX, currentY, currentZ))
                 {
                     var verts = CubeWithNormals.BottomFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
-                }
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
+                        }
 
                 if (volume.IsTopfaceVisible(currentX, currentY, currentZ))
                 {
                     var verts = CubeWithNormals.TopFace(offset, color, volume.CubeScale);
-                    mesh.AppendTriangle(verts[0], verts[1], verts[2]);
-                    mesh.AppendTriangle(verts[3], verts[4], verts[5]);
-                }
+                    mesh.AppendTriangle(verts[0], verts[2], verts[1]);
+                    mesh.AppendTriangle(verts[3], verts[5], verts[4]);
+                        }
             }
             sw.Stop();
             Console.WriteLine($"Cubic Mesh -> Dimensionen:{volume.Dimensions.ToString() + Environment.NewLine } Voxel count: {volume.DataPointers.SelectMany(x => x.Cast<int>()).Count(i => i != 0) + Environment.NewLine}{Environment.NewLine} Vertices: {mesh.Vertices.Count}{Environment.NewLine} Triangles:{mesh.Indices.Count / 3}Elapsed Time: {sw.Elapsed.ToString("g")}");

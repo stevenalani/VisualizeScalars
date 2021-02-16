@@ -34,13 +34,9 @@ namespace VisualizeScalars
         private bool isInstanced = false;
         public Model Pin;
         private ShaderProgram instancedShader;
-        // Todo: löschen!
-        private ColorVolume<Material> voxTerrain;
-        private RenderObject<PositionColorNormalVertex> voxRO = new RenderObject<PositionColorNormalVertex>("mcDemo");
+
         public RenderingForm()
         {
-            voxTerrain = VoxelImporter.LoadVoxelModelFromVox(
-                "C:\\Users\\Steven\\Documents\\Eigene Dokumente\\Studium\\Softwaretechnik\\Thesis\\Artikel\\Bilder\\volland.vox");
             instancedShader = new ShaderProgram(".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
                 ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");
             modelManager = new ModelManager();
@@ -51,9 +47,7 @@ namespace VisualizeScalars
                 new[] {typeof(ColorVolume<Material>), typeof(RenderObject<PositionColorNormalVertex>)},
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.vert",
                 ".\\Rendering\\Shaders\\DefaultVoxelShader.frag");
-            /*shaderManager.AddShader(new[] {typeof(RenderObject<PositionNormalVertex>)},
-                ".\\Rendering\\Shaders\\InstancedVoxelShader.vert",
-                ".\\Rendering\\Shaders\\InstancedVoxelShader.frag");*/
+
             shaderManager.AddShader(new[] { typeof(RenderObject<PositionNormalVertex>) },
                 ".\\Rendering\\Shaders\\InstancedYRayShader.vert",
                 ".\\Rendering\\Shaders\\InstancedYRayShader.frag");
@@ -91,12 +85,10 @@ namespace VisualizeScalars
 
         private void glControl_Load(object sender, EventArgs e)
         {
-            //voxRO.Mesh = MeshExtractor.ComputeMarchingCubesMesh(voxTerrain, material => material.IsSet ? 1f : 0f,1f);
-            //.Scales = new Vector3(30);
             Camera.AspectRatio = glControl.AspectRatio;
-            GL.ClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+            GL.ClearColor(1f, 1f, 1f, 1.0f);
             GL.Enable(EnableCap.Multisample);
-            //GL.Hint(HintTarget.MultisampleFilterHintNv, HintMode.Nicest);
+            GL.Hint(HintTarget.MultisampleFilterHintNv,HintMode.Nicest);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
             GL.Enable(EnableCap.CullFace);
@@ -151,7 +143,7 @@ namespace VisualizeScalars
             GL.ActiveTexture(TextureUnit.Texture1);
             ShadowShader.Use();
             ShadowShader.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
-            //voxRO.Draw(ShadowShader, null);
+
             if (Pin != null)
             {
                 if (!Pin.IsReady) Pin.InitBuffers();
@@ -170,18 +162,7 @@ namespace VisualizeScalars
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, depthMap);
-            var shaderVox = shaderManager.GetShader(voxRO.GetType());
-            shaderVox.Use();
-            shaderVox.SetUniformMatrix4X4("projection", projection);
-            shaderVox.SetUniformMatrix4X4("view", view);
-            shaderVox.SetUniformMatrix4X4("lightSpaceMatrix", Light.LightSpaceMatrix(glControl.AspectRatio, 1.0f, 1000f));
-            shaderVox.SetUniformVector3("lightPos", Light.Position);
-            shaderVox.SetUniformVector3("lightColor", Light.Color);
-            shaderVox.SetUniformVector3("viewpos", Camera.Position);
-            shaderVox.SetUniformFloat("ambientStrength", AmbientStrength);
-            shaderVox.SetUniformFloat("diffuseStrength", DiffuseStrength);
-            shaderVox.SetUniformFloat("specularStrength", SpecularStrength);
-            //voxRO.Draw(shaderVox,null);
+
             if (Pin != null)
             {
                 if(!Pin.IsReady) Pin.InitBuffers();
@@ -285,6 +266,7 @@ namespace VisualizeScalars
             e.SuppressKeyPress = true;
             if (e.KeyCode == Keys.G) SwitchWireFrame();
             if (e.KeyCode == Keys.I) isInstanced = !isInstanced;
+            
         }
 
         private void SwitchWireFrame()

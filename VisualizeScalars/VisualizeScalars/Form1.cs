@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -151,6 +152,8 @@ namespace VisualizeScalars
 
         private void cmdLoadMap_Click(object sender, EventArgs e)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             if (Model == null) return;
             var interpol = Convert.ToSingle(mtbxInterpolation.Text);
             if (Math.Abs(interpol - 1.0f) > 0.01)
@@ -174,7 +177,8 @@ namespace VisualizeScalars
             }
             renderobj.Instances = renderobj.Images.Count + 1;
             UpdateMesh(renderobj);
-
+            sw.Stop();
+            Console.WriteLine($"Overall Process -> { Environment.NewLine } Vertices: {renderobj.Mesh.Vertices.Count}{Environment.NewLine} Triangles:{renderobj.Mesh.Indices.Count / 3}{Environment.NewLine}Elapsed Time: {sw.Elapsed.ToString("g")}");
             renderobj.PivotPoint = new Vector3(Model.DataGrid.Width/2.0f, 0, Model.DataGrid.Height / 2.0f);
             selectionForm.Activate();
             try
@@ -187,21 +191,8 @@ namespace VisualizeScalars
                 return;
             }
             
-            //renderobj.Images.Add(selectionForm.TargetBitmap);
             var map = new ImagePlane(selectionForm.TargetBitmap);
-            
-            
-            var coord = new ColorVolume<Material>(100,100,100);
-            for (var i = 0; i < 100; i++)
-            {
-                coord.SetVoxel(i, 0, 0, new Material {Color = new Vector4(1, 0, 0, 1)});
-                coord.SetVoxel(0, i, 0, new Material {Color = new Vector4(0, 1, 0, 1)});
-                coord.SetVoxel(0, 0, i, new Material {Color = new Vector4(0, 0, 1, 1)});
-            }
 
-            var mesh2 = MeshExtractor.ComputeCubicMesh(coord);
-            var renderobj2 = new RenderObject<PositionColorNormalVertex>(mesh2, "coordinates");
-            
 
             renderingForm.ClearModels();
             var interpolation = Convert.ToSingle(mtbxInterpolation.Text);
@@ -210,7 +201,7 @@ namespace VisualizeScalars
             map.Scales = new Vector3(Model.DataGrid.Width * renderobj.Scales.X / map.Width,1, Model.DataGrid.Height * renderobj.Scales.Z / map.Height);
             renderingForm.AddModel(map);
             renderingForm.AddModel(renderobj);
-            renderingForm.AddModel(renderobj2);
+
             
             renderingForm.Camera.ViewDirection = (renderobj.Position - renderingForm.Camera.Position).Normalized();
             mtbxInterpolation.Text = "1.0";
@@ -448,6 +439,23 @@ namespace VisualizeScalars
             }
             var newCtrl = new CustomTextureUC(Model.DataGrid) {Top = top};
             this.flpTextures.Controls.Add(newCtrl);
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Model == null) return;
+            try
+            {
+                var renderObject =
+                    (RenderObject<PositionNormalVertex>) renderingForm.GetModel("model").FirstOrDefault();
+                if (renderObject == null) return;
+                renderObject.AverageNormals = checkBox2.Checked;
+                renderObject.IsReady = false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }
