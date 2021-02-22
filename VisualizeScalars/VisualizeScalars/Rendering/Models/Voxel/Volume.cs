@@ -89,7 +89,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             return Data.IndexOf(material);
         }
 
-        public virtual T GetMaterial(int x, int y, int z)
+        public virtual T GetData(int x, int y, int z)
         {
             if (DataPointers != null)
                 return Data[DataPointers[y][x, z]];

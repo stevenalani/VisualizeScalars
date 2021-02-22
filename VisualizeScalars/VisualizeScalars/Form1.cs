@@ -29,7 +29,7 @@ namespace VisualizeScalars
 
         public Form1()
         {
-            downloader = new EarthdataDownloader(workdir, "alani", "Ibm4037!ajs");
+            downloader = new EarthdataDownloader(workdir, "alani", "");
             Reader = new HgtFileReader("D:\\earthdata");
             Querernt = new DataFileQuerent(workdir, downloader, Reader);
             InitializeComponent();

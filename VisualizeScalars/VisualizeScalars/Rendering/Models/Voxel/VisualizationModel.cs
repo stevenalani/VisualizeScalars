@@ -41,9 +41,9 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             }
 
             var deltaheight = maxVal - minVal;
-            Dimensions.X = colCount + 2;
-            Dimensions.Y = (int) Math.Ceiling(deltaheight + 4);
-            Dimensions.Z = rowCount + 2;
+            Dimensions.X = colCount;
+            Dimensions.Y = (int) Math.Ceiling(deltaheight);
+            Dimensions.Z = rowCount;
             InitializeVolumeData();
 
 
@@ -52,8 +52,8 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             {
                 var minNeighbour = getNeighbours(ref height, x, z).Min();
                 var value = Math.Ceiling(height[x, z]);
-                for (var i = minNeighbour - minVal - 2; i <= value - minVal; i++)
-                    SetVoxel(x + 1, (int) (i + 1), z + 1, DataGrid[x, z]);
+                for (var i = minNeighbour - minVal -1; i <= value - minVal; i++)
+                    SetVoxel(x , (int) (i), z, DataGrid[x, z]);
             }
         }
 

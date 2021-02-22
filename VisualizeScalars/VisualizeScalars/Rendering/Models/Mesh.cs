@@ -7,9 +7,15 @@ using VisualizeScalars.Rendering.DataStructures;
 namespace VisualizeScalars.Rendering.Models
 {
     public class Mesh
-    {
-        internal readonly List<Vector4> Colors = new List<Vector4>();
+    {        
+        public Dictionary<Vector3, int> Vertices { get; set; } = new Dictionary<Vector3, int>();
+        public List<int> Indices { get; set; } = new List<int>();
         internal Dictionary<int, Vector3> Normals = new Dictionary<int, Vector3>();
+
+        internal readonly List<Vector4> Colors = new List<Vector4>();
+        public List<int> ColorIndices { get; set; } = new List<int>();
+
+
         public Mesh()
         {
         }
@@ -21,11 +27,6 @@ namespace VisualizeScalars.Rendering.Models
             Colors.AddRange(colors.Distinct());
             ColorIndices.AddRange(colors.Select(x => Colors.IndexOf(x)));
         }
-
-        public Dictionary<Vector3, int> Vertices { get; set; } = new Dictionary<Vector3, int>();
-
-        public List<int> ColorIndices { get; set; } = new List<int>();
-        public List<int> Indices { get; set; } = new List<int>();
 
         public void AppendTriangle(Vector3 pos1, Vector3 pos2, Vector3 pos3)
         {
@@ -99,12 +100,7 @@ namespace VisualizeScalars.Rendering.Models
                 var color1 = Colors.Count > 0 ? Colors[ColorIndices[i]] : defaultColor;
                 var color2 = Colors.Count > 0 ? Colors[ColorIndices[i+1]] : defaultColor;
                 var color3 = Colors.Count > 0 ? Colors[ColorIndices[i+2]] : defaultColor;
-                /* 
-                 var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);
-                 positions.Add(new T {Position = pos1, Normal = normal, Color = color});
-                 positions.Add(new T {Position = pos2, Normal = normal, Color = color});
-                 positions.Add(new T {Position = pos3, Normal = normal, Color = color});
-                */
+
                 if (Normals.Count == 0 || avgerageNormals == false)
                 {
                     var normal = MathHelpers.GetSurfaceNormal(pos1, pos2, pos3);

@@ -94,7 +94,7 @@ namespace VisualizeScalars
                     for (int j = 0; j < resultGrid1.GetLength(1); j++)
                     for (int i = 0; i < resultGrid1.GetLength(0); i++)
                     {
-                        if (resultGrid1[i, j] >= resultGrid2[i, j] && resultGrid1[i, j] <= resultGrid3[i, j])
+                        if (resultGrid1[i, j] > resultGrid2[i, j] && resultGrid1[i, j] < resultGrid3[i, j])
                         {
                             Grid[i, j] = resultGrid1[i, j];
                         }
@@ -110,7 +110,7 @@ namespace VisualizeScalars
 
         private float[,] CalculateGrid(string mathExpression)
         {
-            Regex maxFuncRegex = new Regex($"(?<func>max|min)\\(\\s*(?<property>\\w+)\\s*\\)");
+            Regex maxFuncRegex = new Regex("(?<func>max|min)\\(\\s*(?<property>\\w+)\\s*\\)");
             if (maxFuncRegex.IsMatch(mathExpression))
             {
                 var properties = maxFuncRegex.Matches(mathExpression);

@@ -82,16 +82,25 @@ void main()
     if(instanceID == 0){
         FragColor = vec4(result, layerColor.w );
     }else if(instanceID == 1){
-        vec4 col = vec4(0.0,0.0,0.0,0.0);
-        int texPos = 0;
+        vec4 col = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(0))/(2*texDimensions.z)));
+
         for(int i = 0 ; i < texDimensions.z;i++){
             vec4 texColor = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(i))/(2*texDimensions.z)));
             float alpha = texColor.w;
-            vec3 resultColor = col.rgb + (1 - col.w) * texColor.xyz * alpha;
-            float resultAlpha = col.w + (1 - col.w)*alpha;
+            vec3 resultColor = col.rgb + (1.0 - col.w) * texColor.xyz * alpha;
+            float resultAlpha = col.w + (1.0 - col.w)*alpha;
             col = vec4(resultColor,resultAlpha);
         }
-        FragColor = col;
+        vec4 col2 = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(0))/(2*texDimensions.z)));
+
+        for(int i = 0 ; i < texDimensions.z;i++){
+            vec4 texColor = texture(textures,vec3(apos.x/texDimensions.x,apos.z/texDimensions.y,(1 + 2*(i))/(2*texDimensions.z)));
+            float alpha = col2.w;
+            vec3 resultColor = texColor.rgb + (1.0 - texColor.w) * col2.xyz * alpha;
+            float resultAlpha = texColor.w + (1.0 - texColor.w)*alpha;
+            col2 = vec4(resultColor,resultAlpha);
+        }
+        FragColor = (col+col2)/2.0;
     }else
     {
         FragColor = vec4(0.0,0.0,0.0,0.0);

@@ -112,7 +112,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
             var voxelPosZ = z % ChunkSize;
 
 
-            var currentMaterial = Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].GetMaterial(voxelPosX, voxelPosY, voxelPosZ);
+            var currentMaterial = Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].GetData(voxelPosX, voxelPosY, voxelPosZ);
             if (!Equals(currentMaterial, data) || data.IsSet)
             {
                 Chunks[chunkIdxX, chunkIdxY, chunkIdxZ].SetVoxel(voxelPosX, voxelPosY, voxelPosZ, data);

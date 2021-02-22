@@ -76,13 +76,13 @@ namespace VisualizeScalars
             if (OverlayMarkers.Markers.Count > 1) return;
             if (OverlayMarkers.Markers.Count == 0 || OverlayMarkers.Markers.Any(x => (string) x.Tag == "marker2"))
             {
-                //OverlayMarkers.Markers.Add(new GMarkerGoogle(pointClick, GMarkerGoogleType.red_dot) {Tag = "marker1"});
-                OverlayMarkers.Markers.Add(new GMarkerGoogle(new PointLatLng(48.7658709607648, 9.162020485610962), GMarkerGoogleType.red_dot) {Tag = "marker1"});
+                OverlayMarkers.Markers.Add(new GMarkerGoogle(pointClick, GMarkerGoogleType.red_dot) {Tag = "marker1"});
+                //OverlayMarkers.Markers.Add(new GMarkerGoogle(new PointLatLng(48.7658709607648, 9.162020485610962), GMarkerGoogleType.red_dot) {Tag = "marker1"});
             }
             else if (OverlayMarkers.Markers.Count == 1)
             {
-                //OverlayMarkers.Markers.Add(new GMarkerGoogle(pointClick, GMarkerGoogleType.green_dot)
-                OverlayMarkers.Markers.Add(new GMarkerGoogle(new PointLatLng(48.77031417098421, 9.166215995191633), GMarkerGoogleType.green_dot) {Tag = "marker2"});
+                OverlayMarkers.Markers.Add(new GMarkerGoogle(pointClick, GMarkerGoogleType.green_dot) { Tag = "marker2" });
+                //OverlayMarkers.Markers.Add(new GMarkerGoogle(new PointLatLng(48.77031417098421, 9.166215995191633), GMarkerGoogleType.green_dot) {Tag = "marker2"});
             }
 
             
@@ -95,8 +95,7 @@ namespace VisualizeScalars
                 MessageBox.Show("Start oder Endemarker fehlt");
                 return null;
             }
-            //List<double> lats = new List<double>(){ 48.76587096076482 , 48.77031417098421 };
-            //List<double> lngs = new List<double>(){ 9.162050485610962, 9.166215995191633 };
+
             var lats = OverlayMarkers.Markers.Select(x => x.Position.Lat);
             var lngs = OverlayMarkers.Markers.Select(x => x.Position.Lng);
             var dataSet = DataQuerernt.GetDataForArea(lats.Min(), lngs.Min(), lats.Max(), lngs.Max());
@@ -107,7 +106,6 @@ namespace VisualizeScalars
 
         private void GetBitmapOnTileLoad(long elapsedMilliseconds)
         {
-            //Task.Delay(3000);
             if (InvokeRequired)
             {
                 Invoke(getImageDelegate, (object) elapsedMilliseconds);

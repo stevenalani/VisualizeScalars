@@ -55,13 +55,6 @@ namespace VisualizeScalars.Helpers
             double t = (Vector3.Dot(planeNormal, planePoint) - Vector3.Dot(planeNormal, rayPoint)) /
                        Vector3.Dot(planeNormal, rayDirection);
             return rayPoint + Vector3.Multiply(rayDirection, (float) t);
-
-            var difference = rayDirection - planePoint;
-            var dot1 = Vector3.Dot(difference, planeNormal);
-            var dot2 = Vector3.Dot(rayDirection, planeNormal);
-            var length = dot1 / dot2;
-            var intersection = rayPoint - rayDirection * length;
-            return intersection;
         }
 
         public static float ToRad(this float self)

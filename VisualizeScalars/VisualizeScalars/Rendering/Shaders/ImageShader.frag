@@ -16,7 +16,7 @@ in vec2 texCoord;
 
 void main()
 {
-    //float ambientStrength = 0.1;
+
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 

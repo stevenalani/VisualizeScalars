@@ -331,14 +331,14 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                 {
                     var vertlist = new Vector3[12];
 
-                    var vertexMatIndex1 = plane1[x, z];
-                    var vertexMatIndex2 = plane1[x + 1, z];
-                    var vertexMatIndex3 = plane1[x + 1, z + 1];
-                    var vertexMatIndex4 = plane1[x, z + 1];
-                    var vertexMatIndex5 = plane2[x, z];
-                    var vertexMatIndex6 = plane2[x + 1, z];
-                    var vertexMatIndex7 = plane2[x + 1, z + 1];
-                    var vertexMatIndex8 = plane2[x, z + 1];
+                    var DataPointer1 = plane1[x, z];
+                    var DataPointer2 = plane1[x + 1, z];
+                    var DataPointer3 = plane1[x + 1, z + 1];
+                    var DataPointer4 = plane1[x, z + 1];
+                    var DataPointer5 = plane2[x, z];
+                    var DataPointer6 = plane2[x + 1, z];
+                    var DataPointer7 = plane2[x + 1, z + 1];
+                    var DataPointer8 = plane2[x, z + 1];
 
                     var p = new[]
                     {
@@ -354,14 +354,14 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                     };
                     var val = new[]
                     {
-                        densityFunc(volume.Data[vertexMatIndex1]),
-                        densityFunc(volume.Data[vertexMatIndex2]),
-                        densityFunc(volume.Data[vertexMatIndex3]),
-                        densityFunc(volume.Data[vertexMatIndex4]),
-                        densityFunc(volume.Data[vertexMatIndex5]),
-                        densityFunc(volume.Data[vertexMatIndex6]),
-                        densityFunc(volume.Data[vertexMatIndex7]),
-                        densityFunc(volume.Data[vertexMatIndex8])
+                        densityFunc(volume.Data[DataPointer1]),
+                        densityFunc(volume.Data[DataPointer2]),
+                        densityFunc(volume.Data[DataPointer3]),
+                        densityFunc(volume.Data[DataPointer4]),
+                        densityFunc(volume.Data[DataPointer5]),
+                        densityFunc(volume.Data[DataPointer6]),
+                        densityFunc(volume.Data[DataPointer7]),
+                        densityFunc(volume.Data[DataPointer8])
                     };
 
                     var cubeindex = 0;
@@ -381,8 +381,7 @@ namespace VisualizeScalars.Rendering.Models.Voxel
                     /* Find the vertices where the surface intersects the cube */
                     if ((CubeEdgeFlag[cubeindex] & 1) != 0)
                         vertlist[0] =
-                            VertexInterpolation(isolevel, new Vector3(x, y, z), new Vector3(x + 1, y, z), val[0],
-                                val[1]);
+                            VertexInterpolation(isolevel, p[0], p[1], val[0], val[1]);
                     if ((CubeEdgeFlag[cubeindex] & 2) != 0)
                         vertlist[1] =
                             VertexInterpolation(isolevel, p[1], p[2], val[1], val[2]);

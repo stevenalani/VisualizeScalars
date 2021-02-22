@@ -302,7 +302,7 @@ namespace VisualizeScalars
 
         private void tbSpecularFactor_Scroll(object sender, EventArgs e)
         {
-            SpecularStrength = tbSpecularFactor.Value / 100f;
+            SpecularStrength = 32.0f;
             glControl.Invalidate();
         }
 

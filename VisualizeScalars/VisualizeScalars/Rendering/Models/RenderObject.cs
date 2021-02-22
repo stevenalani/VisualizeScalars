@@ -69,7 +69,6 @@ namespace VisualizeScalars.Rendering.Models
                     image.Save(stream, ImageFormat.Png);
                     stream.Seek(0, SeekOrigin.Begin);
                     Image<Rgba32> tex = SixLabors.ImageSharp.Image.Load<Rgba32>(stream, new PngDecoder());
-                    //tex.Mutate(x => x.Flip(FlipMode.Vertical));
 
                     var pixels = new List<byte>(4 * image.Width * image.Height);
 
@@ -95,7 +94,9 @@ namespace VisualizeScalars.Rendering.Models
             GL.TexStorage3D(TextureTarget3d.Texture3D, 1, SizedInternalFormat.Rgba32f, newWidth, newHeight,
                 Images.Count);
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMinFilter,
-                (int) TextureMinFilter.Linear);
+                (int) TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureMagFilter,
+                (int) TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapS,
                 (int) TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture3D, TextureParameterName.TextureWrapT,
